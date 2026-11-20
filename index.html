@@ -4,237 +4,88 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Official website of Dungsree Paschim Para Cricket Club">
-<meta name="theme-color" content="#063b2b">
 <title>DPPCC | Official Cricket Club</title>
 <style>
-:root{--green:#063b2b;--green2:#07543b;--gold:#ffc400;--red:#c62828;--ink:#13233a;--muted:#64748b;--bg:#f4f7fb}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
-a{text-decoration:none;color:inherit}header{background:var(--green);color:#fff;position:sticky;top:0;z-index:10}
-.nav{max-width:1150px;margin:auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-weight:900}.brand img{width:48px;height:48px;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
-.brand small{display:block;color:var(--gold);font-size:10px;letter-spacing:2px;margin-top:4px}
-nav{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:bold}nav a:hover{color:var(--gold)}
-button,.btn{border:0;border-radius:7px;padding:11px 16px;background:var(--gold);color:var(--green);font-weight:900;cursor:pointer;display:inline-block}
-button:hover,.btn:hover{opacity:.88}button:disabled{opacity:.5;cursor:not-allowed}
-button.secondary,.btn.secondary{background:transparent;color:inherit;border:1px solid currentColor}
-button.danger{background:var(--red);color:#fff}button.neutral{background:#e8edf2;color:#1e293b}
-.hero{background:linear-gradient(120deg,#032b22,#08734f);color:#fff}.hero-inner{max-width:1150px;margin:auto;padding:62px 22px;display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:30px}
-.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.05;margin:12px 0}.hero h1 span{color:var(--gold)}.hero p{line-height:1.8;color:#d6e5f7}
-.hero-logo{width:min(100%,350px);justify-self:center;background:#fff;border:5px solid var(--gold);border-radius:22px;padding:10px}
-.kicker{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:3px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
-.ticker{background:#e32636;color:#fff;text-align:center;padding:12px;font-weight:bold;font-size:12px}
-.wrap{max-width:1150px;margin:auto;padding:52px 22px}.heading{text-align:center;margin-bottom:28px}
-.heading small{color:#087fc4;font-weight:bold;letter-spacing:2px}.heading h2{color:var(--green);font-size:30px;margin:8px 0}.heading p{color:var(--muted)}
-.dark{background:#043a2b;color:#fff}.dark .heading h2{color:#fff}.dark .heading p{color:#c5d5e9}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:#fff;border:1px solid #e5eaf0;border-radius:13px;padding:20px;box-shadow:0 8px 25px #09284b0c;min-width:0}
-.dark .card{background:#07543b;border-color:#24775a;color:#fff}.card h3{color:var(--green);margin-top:8px}.dark .card h3{color:#fff}
-.card p{color:var(--muted);line-height:1.65;font-size:14px}.dark .card p{color:#d0e0ed}
-.formbox{background:#fff;padding:22px;border-radius:13px;max-width:720px;margin:18px auto;box-shadow:0 8px 25px #09284b0c}
-input,select,textarea{width:100%;padding:12px;margin:7px 0 14px;border:1px solid #ccd5df;border-radius:7px;font:inherit;background:#fff}
-label{font-size:13px;font-weight:bold}.formbox h3{color:var(--green)}
-.status{padding:12px;border-radius:8px;background:#fff8dc;color:#594600;margin:12px 0;font-size:13px;line-height:1.5}
-.hidden{display:none!important}.item{padding:13px 0;border-bottom:1px solid #e3e9ef}.item:last-child{border:0}.item small{color:var(--muted)}
-footer{background:#02271e;color:#d5e3f4;padding:35px 20px;text-align:center}footer img{width:65px;background:#fff;border-radius:50%;padding:3px}footer p{font-size:12px;color:#9db2cb}
-.sponsor{display:flex;justify-content:center;align-items:center;gap:25px;flex-wrap:wrap;background:#111;color:#fff;padding:25px;border-radius:15px}.sponsor img{width:190px;max-width:70%}
-.admin-panel{border:2px solid var(--gold)}.admin-panel hr{border:0;border-top:1px solid #ddd;margin:25px 0}
-.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.admin-section{border:1px solid #e5eaf0;border-radius:10px;padding:16px;margin:16px 0}
-.actions-small{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions-small button{padding:8px 11px;font-size:12px}
-.pill{display:inline-block;border-radius:20px;padding:4px 9px;background:#e8f5ee;color:#14532d;font-size:11px;font-weight:bold}
-.modal{position:fixed;inset:0;background:#0009;z-index:30;display:flex;align-items:center;justify-content:center;padding:16px}
-.modal-box{background:#fff;border-radius:14px;padding:22px;width:min(100%,560px);max-height:90vh;overflow:auto}.modal-box h3{color:var(--green)}
-.notice{font-size:12px;color:var(--muted);line-height:1.5}
-@media(max-width:800px){.hero-inner{grid-template-columns:1fr;text-align:center}.hero-logo{width:230px}.actions{justify-content:center}.grid{grid-template-columns:1fr 1fr}nav{font-size:11px}.admin-grid{grid-template-columns:1fr}}
-@media(max-width:520px){.grid{grid-template-columns:1fr}.nav{justify-content:center}nav{justify-content:center}.wrap{padding:38px 16px}.hero-inner{padding:45px 18px}}
+:root{--green:#063b2b;--green2:#08734f;--gold:#ffc400;--red:#c62828;--ink:#13233a;--muted:#64748b;--bg:#f4f7fb}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}a{text-decoration:none;color:inherit}
+header{background:var(--green);color:white;position:sticky;top:0;z-index:5}.nav{max-width:1150px;margin:auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:10px;font-weight:900}.brand img{width:48px;height:48px;object-fit:contain;background:white;border-radius:50%;padding:2px}.brand small{display:block;color:var(--gold);font-size:10px;letter-spacing:2px;margin-top:4px}nav{display:flex;gap:13px;flex-wrap:wrap;font-size:12px;font-weight:bold}nav a:hover{color:var(--gold)}
+button,.btn{border:0;border-radius:7px;padding:11px 15px;background:var(--gold);color:var(--green);font-weight:900;cursor:pointer;display:inline-block}button:disabled{opacity:.5;cursor:not-allowed}.secondary{background:transparent;color:white;border:1px solid white}.danger{background:var(--red);color:white}.smallbtn{padding:7px 10px;font-size:11px;margin:4px 3px 0 0}
+.hero{background:linear-gradient(120deg,#032b22,#08734f);color:white}.hero-inner{max-width:1150px;margin:auto;padding:60px 22px;display:grid;grid-template-columns:1.2fr .8fr;align-items:center;gap:30px}.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.05}.hero h1 span{color:var(--gold)}.hero p{line-height:1.8;color:#d6e5f7}.hero-logo{width:min(100%,330px);justify-self:center;background:white;border:5px solid var(--gold);border-radius:22px;padding:10px}.kicker{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:3px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}.ticker{background:var(--red);color:white;text-align:center;padding:12px;font-weight:bold;font-size:12px}
+.wrap{max-width:1150px;margin:auto;padding:48px 22px}.heading{text-align:center;margin-bottom:26px}.heading small{color:#087fc4;font-weight:bold;letter-spacing:2px}.heading h2{color:var(--green);font-size:30px;margin:8px 0}.heading p{color:var(--muted)}.dark{background:#043a2b;color:white}.dark .heading h2{color:white}.dark .heading p{color:#c5d5e9}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:white;border:1px solid #e5eaf0;border-radius:13px;padding:20px;box-shadow:0 8px 25px #09284b0c}.dark .card{background:#07543b;border-color:#24775a;color:white}.card h3{color:var(--green)}.dark .card h3{color:white}.card p{color:var(--muted);line-height:1.6;font-size:14px}.dark .card p{color:#d0e0ed}
+.formbox{background:white;padding:22px;border-radius:13px;max-width:680px;margin:18px auto;box-shadow:0 8px 25px #09284b0c}.formbox h3{color:var(--green)}input,select,textarea{width:100%;padding:12px;margin:7px 0 14px;border:1px solid #ccd5df;border-radius:7px;font:inherit;background:white}label{font-size:13px;font-weight:bold}.status{padding:12px;border-radius:8px;background:#fff8dc;color:#594600;margin:12px 0;font-size:13px;line-height:1.5}.hidden{display:none!important}.item{padding:13px 0;border-bottom:1px solid #e3e9ef}.item:last-child{border:0}.item small{color:var(--muted)}.admin-panel{border:2px solid var(--gold);max-width:850px}.admin-panel hr{border:0;border-top:1px solid #ddd;margin:24px 0}.sponsor{display:flex;justify-content:center;align-items:center;gap:25px;flex-wrap:wrap;background:#111;color:white;padding:25px;border-radius:15px}.sponsor img{width:190px;max-width:70%}footer{background:#02271e;color:#d5e3f4;padding:35px 20px;text-align:center}footer img{width:65px;background:white;border-radius:50%;padding:3px}footer p{font-size:12px;color:#9db2cb}.muted{color:var(--muted);font-size:13px}
+@media(max-width:800px){.hero-inner{grid-template-columns:1fr;text-align:center}.hero-logo{width:230px}.actions{justify-content:center}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.nav{justify-content:center}nav{justify-content:center}.wrap{padding:38px 16px}}
 </style>
 </head>
 <body>
 <header><div class="nav">
 <a class="brand" href="#home"><img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo"><span>DUNGSREE PASCHIM PARA<small>CRICKET CLUB · DPPCC</small></span></a>
-<nav>
-<a href="#home">HOME</a><a href="#about">ABOUT</a><a href="#players">PLAYERS</a><a href="#register">REGISTER</a><a href="#jersey">JERSEY</a><a href="#matches">MATCHES</a><a href="#sponsors">SPONSOR</a><a href="#login">ADMIN LOGIN</a>
-</nav></div></header>
+<nav><a href="#home">HOME</a><a href="#about">ABOUT</a><a href="#players">PLAYERS</a><a href="#register">REGISTER</a><a href="#jersey">JERSEY</a><a href="#matches">MATCHES</a><a href="#sponsors">SPONSOR</a><a href="#login">ADMIN LOGIN</a></nav>
+</div></header>
 <main id="home">
-<section class="hero"><div class="hero-inner"><div>
-<div class="kicker">DPPCC · OFFICIAL CRICKET CLUB</div><h1>DUNGSREE PASCHIM PARA <span>CRICKET CLUB</span></h1>
-<p>One club. One team. One passion. Play with pride, grow together and represent our community.</p>
-<div class="actions"><a class="btn" href="#register">JOIN THE TEAM</a><a class="btn secondary" href="#matches">MATCH CENTRE</a></div>
-</div><img class="hero-logo" src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo"></div></section>
+<section class="hero"><div class="hero-inner"><div><div class="kicker">DPPCC · OFFICIAL CRICKET CLUB</div><h1>DUNGSREE PASCHIM PARA <span>CRICKET CLUB</span></h1><p>One club. One team. One passion. Play with pride, grow together and represent our community.</p><div class="actions"><a class="btn" href="#register">JOIN THE TEAM</a><a class="btn secondary" href="#matches">MATCH CENTRE</a></div></div><img class="hero-logo" src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo"></div></section>
 <div class="ticker">DPPCC · PLAY · FRIENDSHIP · UNITY · ESTABLISHED 2003</div>
-<section class="wrap" id="about"><div class="heading"><small>WHO WE ARE</small><h2>ABOUT OUR CLUB</h2><p>A community united by cricket.</p></div>
-<div class="card"><h3>Welcome to DPPCC</h3><p>Dungsree Paschim Para Cricket Club is a cricket community built on teamwork, discipline, friendship and a love for the game. Our goal is to create opportunities for players and bring our community together through cricket.</p></div></section>
+<section class="wrap" id="about"><div class="heading"><small>WHO WE ARE</small><h2>ABOUT OUR CLUB</h2><p>A community united by cricket.</p></div><div class="card"><h3>Welcome to DPPCC</h3><p>Dungsree Paschim Para Cricket Club is a cricket community built on teamwork, discipline, friendship and a love for the game. Our goal is to create opportunities for players and bring our community together through cricket.</p></div></section>
 <section class="dark" id="players"><div class="wrap"><div class="heading"><small>THE SQUAD</small><h2>MEET OUR PLAYERS</h2><p>Every player matters. Every run counts.</p></div><div class="grid" id="playersList"><div class="card">Loading players...</div></div></div></section>
-<section class="wrap" id="register"><div class="heading"><small>BE PART OF DPPCC</small><h2>PLAYER REGISTRATION</h2><p>Register your interest in joining the club.</p></div>
-<div class="formbox"><h3>Player Registration Form</h3><form id="registrationForm">
-<label>Full Name</label><input name="name" maxlength="70" required placeholder="Your full name">
-<label>Phone Number</label><input name="phone" maxlength="20" required placeholder="Your phone number">
-<label>Age</label><input name="age" type="number" min="8" max="70" required>
-<label>Playing Role</label><select name="role" required><option value="">Select your role</option><option>Batsman</option><option>Bowler</option><option>All-Rounder</option><option>Wicket Keeper</option></select>
-<label>Address</label><textarea name="address" maxlength="120" required placeholder="Your address"></textarea>
-<button type="submit">SUBMIT REGISTRATION</button><div id="registrationMessage" class="status hidden"></div></form></div></section>
-<section class="wrap" id="jersey"><div class="heading"><small>OFFICIAL CLUB KIT</small><h2>DPPCC JERSEY ORDER</h2><p>Place your club jersey order online.</p></div>
-<div class="formbox"><h3>Jersey Order Form</h3><form id="jerseyForm">
-<label>Your Name</label><input name="name" maxlength="70" required><label>Phone Number</label><input name="phone" maxlength="20" required>
-<label>Jersey Size</label><select name="size" required><option value="">Choose size</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
-<label>Jersey Number (0–99)</label><input name="number" type="number" min="0" max="99" required>
-<button type="submit">SUBMIT JERSEY ORDER</button><div id="jerseyMessage" class="status hidden"></div></form></div></section>
+<section class="wrap" id="register"><div class="heading"><small>BE PART OF DPPCC</small><h2>PLAYER REGISTRATION</h2><p>Register your interest in joining the club.</p></div><div class="formbox"><h3>Player Registration Form</h3><form id="registrationForm">
+<label>Full Name</label><input name="name" maxlength="70" required><label>Phone Number</label><input name="phone" maxlength="20" required>
+<label>Age</label><input name="age" type="number" min="8" max="70" required><label>Playing Role</label><select name="role" required><option value="">Select role</option><option>Batsman</option><option>Bowler</option><option>All-Rounder</option><option>Wicket Keeper</option></select>
+<label>Address</label><textarea name="address" maxlength="120" required></textarea><button type="submit">SUBMIT REGISTRATION</button><div id="registrationMessage" class="status hidden"></div></form></div></section>
+<section class="wrap" id="jersey"><div class="heading"><small>OFFICIAL CLUB KIT</small><h2>DPPCC JERSEY ORDER</h2><p>Place your club jersey order online.</p></div><div class="formbox"><h3>Jersey Order Form</h3><form id="jerseyForm">
+<label>Your Name</label><input name="name" maxlength="70" required><label>Phone Number</label><input name="phone" maxlength="20" required><label>Jersey Size</label><select name="size" required><option value="">Choose size</option><option>S</option><option>M</option><option>L</option><option>XL</option><option>XXL</option></select><label>Jersey Number (0–99)</label><input name="number" type="number" min="0" max="99" required><button type="submit">SUBMIT JERSEY ORDER</button><div id="jerseyMessage" class="status hidden"></div></form></div></section>
 <section class="dark" id="matches"><div class="wrap"><div class="heading"><small>FIXTURES & RESULTS</small><h2>MATCH CENTRE</h2><p>Follow DPPCC's cricket action.</p></div><div class="grid" id="matchesList"><div class="card">Loading matches...</div></div></div></section>
-<section class="wrap" id="sponsors"><div class="heading"><small>OUR SUPPORT</small><h2>OFFICIAL SPONSOR</h2></div>
-<div class="sponsor"><img src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor"><div><h3>2003 · OFFICIAL SPONSOR</h3><p>Thank you for supporting our cricket family.</p></div></div></section>
+<section class="wrap" id="sponsors"><div class="heading"><small>OUR SUPPORT</small><h2>OFFICIAL SPONSOR</h2></div><div class="sponsor"><img src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor"><div><h3>2003 · OFFICIAL SPONSOR</h3><p>Thank you for supporting our cricket family.</p></div></div></section>
 <section class="wrap" id="login"><div class="heading"><small>AUTHORIZED ACCESS</small><h2>DPPCC ADMIN LOGIN</h2><p>Only the President and authorized Admin can sign in.</p></div>
-<div class="formbox" id="loginBox"><form id="loginForm"><label>Email Address</label><input name="email" type="email" required autocomplete="username" placeholder="Authorized Gmail address"><label>Password</label><input name="password" type="password" required autocomplete="current-password" placeholder="Your password"><button type="submit">LOGIN TO DASHBOARD</button><div id="loginMessage" class="status hidden"></div></form></div>
-<div class="formbox hidden admin-panel" id="dashboard">
-<h3 id="welcomeTitle">DPPCC Dashboard</h3><p id="roleText"></p><button type="button" id="logoutButton" class="danger">LOG OUT</button>
-<div class="admin-section"><h3>Add Player</h3><form id="addPlayerForm">
-<label>Player Name</label><input name="name" maxlength="70" required><label>Playing Role</label><select name="role"><option>Batsman</option><option>Bowler</option><option>All-Rounder</option><option>Wicket Keeper</option></select>
-<label>Jersey Number</label><input name="jerseyNo" type="number" min="0" max="999" required><button type="submit">ADD PLAYER</button></form></div>
-<div class="admin-section"><h3>Add Match / Result</h3><form id="addMatchForm">
-<label>Opponent Team</label><input name="opponent" maxlength="70" required><label>Match Date</label><input name="date" type="date" required>
-<label>Venue</label><input name="venue" maxlength="100" required><label>Match Status</label><select name="status"><option>Upcoming</option><option>Live</option><option>Completed</option></select>
-<label>Score / Result</label><input name="result" maxlength="150" placeholder="Example: DPPCC 120/5"><button type="submit">ADD MATCH</button></form></div>
-<div class="admin-section"><h3>Manage Players</h3><div id="adminPlayersList">Loading...</div></div>
-<div class="admin-section"><h3>Manage Matches</h3><div id="adminMatchesList">Loading...</div></div>
-<div class="admin-section"><h3>Player Registrations</h3><div id="registrationsList">Loading...</div></div>
-<div class="admin-section"><h3>Jersey Orders</h3><div id="ordersList">Loading...</div></div>
-<p class="notice">Security: Admin and President can add/edit records. Only President can permanently delete records. Registration and order status can be updated by authorized admins after publishing the matching Firestore Rules below.</p>
-</div></section>
-</main>
+<div class="formbox" id="loginBox"><form id="loginForm"><label>Email Address</label><input name="email" type="email" required placeholder="Authorized Gmail address"><label>Password</label><input name="password" type="password" required placeholder="Your password"><button type="submit">LOGIN TO DASHBOARD</button><div id="loginMessage" class="status hidden"></div></form></div>
+<div class="formbox hidden admin-panel" id="dashboard"><h3 id="welcomeTitle">DPPCC Dashboard</h3><p id="roleText"></p><button type="button" id="logoutButton" class="danger">LOG OUT</button>
+<hr><h3 id="playerFormTitle">Add Player</h3><form id="playerForm"><input type="hidden" name="docId"><label>Player Name</label><input name="name" maxlength="70" required><label>Playing Role</label><select name="role"><option>Batsman</option><option>Bowler</option><option>All-Rounder</option><option>Wicket Keeper</option></select><label>Jersey Number</label><input name="jerseyNo" type="number" min="0" max="999" required><button type="submit" id="playerSubmit">ADD PLAYER</button><button type="button" class="secondary hidden" id="cancelPlayerEdit">CANCEL EDIT</button></form>
+<hr><h3 id="matchFormTitle">Add Match / Result</h3><form id="matchForm"><input type="hidden" name="docId"><label>Opponent Team</label><input name="opponent" maxlength="70" required><label>Match Date</label><input name="date" type="date" required><label>Venue</label><input name="venue" maxlength="100" required><label>Match Status</label><select name="status"><option>Upcoming</option><option>Live</option><option>Completed</option></select><label>Score / Result</label><input name="result" maxlength="150" placeholder="Example: DPPCC 120/5"><button type="submit" id="matchSubmit">ADD MATCH</button><button type="button" class="secondary hidden" id="cancelMatchEdit">CANCEL EDIT</button></form>
+<hr><h3>Player Registrations</h3><div id="registrationsList">Login to view.</div>
+<hr><h3>Jersey Orders</h3><div id="ordersList">Login to view.</div>
+</div></section></main>
 <footer><img src="assets/dppcc-club-logo.jpg" alt="DPPCC"><h3>DUNGSREE PASCHIM PARA CRICKET CLUB</h3><strong style="color:#ffc400">DPPCC · PLAY • FRIENDSHIP • UNITY</strong><p>© <span id="year"></span> DPPCC. All rights reserved.</p><p>Official Club Contact: +880 1339 050455</p></footer>
-
-<div id="editModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="editTitle"><div class="modal-box">
-<h3 id="editTitle">Edit Record</h3><form id="editForm"><div id="editFields"></div><div class="actions-small"><button type="submit">SAVE CHANGES</button><button type="button" class="neutral" id="cancelEdit">CANCEL</button></div><div id="editMessage" class="status hidden"></div></form></div></div>
-
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 "use strict";
 document.getElementById("year").textContent=new Date().getFullYear();
-const firebaseConfig={
- apiKey:"AIzaSyAd--LMKzEIiPxBHCu-rWZojbKExwe_CAA",
- authDomain:"dppcc-official.firebaseapp.com",
- projectId:"dppcc-official",
- storageBucket:"dppcc-official.firebasestorage.app",
- messagingSenderId:"476337423288",
- appId:"1:476337423288:web:a81ff59d9cc742ed5b854d"
-};
-const PRESIDENT_EMAIL="mdshiponahmed0455@gmail.com";
-const ADMIN_EMAIL="shiponahmed5710@gmail.com";
-firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth(),db=firebase.firestore();
-let currentUser=null,currentRole=null,editingRecord=null;
+const firebaseConfig={apiKey:"AIzaSyAd--LMKzEIiPxBHCu-rWZojbKExwe_CAA",authDomain:"dppcc-official.firebaseapp.com",projectId:"dppcc-official",storageBucket:"dppcc-official.firebasestorage.app",messagingSenderId:"476337423288",appId:"1:476337423288:web:a81ff59d9cc742ed5b854d"};
+const PRESIDENT_EMAIL="mdshiponahmed0455@gmail.com",ADMIN_EMAIL="shiponahmed5710@gmail.com";
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();
+let currentUser=null,currentRole=null;
 const $=id=>document.getElementById(id);
+const val=(f,n)=>f.elements.namedItem(n).value;
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const val=(form,name)=>form.elements.namedItem(name).value;
-const roleFor=email=>{const e=(email||"").toLowerCase();return e===PRESIDENT_EMAIL?"President":e===ADMIN_EMAIL?"Admin":null};
-function message(id,text,error=false){const el=$(id);el.textContent=text;el.classList.remove("hidden");el.style.background=error?"#ffe5e5":"#e5f7eb";el.style.color=error?"#9b1717":"#14532d"}
-function statusPill(s){return `<span class="pill">${esc(s||"Pending")}</span>`}
+function roleFor(email){email=(email||"").toLowerCase();return email===PRESIDENT_EMAIL?"President":email===ADMIN_EMAIL?"Admin":null}
+function message(id,text,error=false){const e=$(id);e.textContent=text;e.classList.remove("hidden");e.style.background=error?"#ffe5e5":"#e5f7eb";e.style.color=error?"#9b1717":"#14532d"}
+function canManage(){return !!currentRole}
 function canDelete(){return currentRole==="President"}
-function safeError(error){console.error(error);return error?.message||"Please try again."}
-
-async function loadPlayers(){
- const pub=$("playersList"),admin=$("adminPlayersList");
- try{
-  const snap=await db.collection("players").get();
-  if(snap.empty){pub.innerHTML='<div class="card"><p>No player profiles have been added yet.</p></div>';if(admin)admin.textContent="No players yet.";return}
-  pub.innerHTML=snap.docs.map(d=>{const p=d.data();return `<article class="card"><div class="kicker">DPPCC PLAYER</div><h3>${esc(p.name)}</h3><p>Role: ${esc(p.role)}<br>Jersey No: ${esc(p.jerseyNo)}</p></article>`}).join("");
-  if(admin)admin.innerHTML=snap.docs.map(d=>{const p=d.data();return `<div class="item"><b>${esc(p.name)}</b> · ${esc(p.role)} · #${esc(p.jerseyNo)}<div class="actions-small"><button data-edit="players" data-id="${esc(d.id)}">EDIT</button>${canDelete()?`<button class="danger" data-delete="players" data-id="${esc(d.id)}">DELETE</button>`:""}</div></div>`}).join("");
- }catch(e){pub.innerHTML='<div class="card">Player list unavailable. Check Firestore Rules.</div>';if(admin)admin.textContent="Could not load players: "+safeError(e)}
-}
-async function loadMatches(){
- const pub=$("matchesList"),admin=$("adminMatchesList");
- try{
-  const snap=await db.collection("matches").get();
-  if(snap.empty){pub.innerHTML='<div class="card"><p>No matches have been added yet.</p></div>';if(admin)admin.textContent="No matches yet.";return}
-  pub.innerHTML=snap.docs.map(d=>{const m=d.data();return `<article class="card"><div class="kicker">${esc(m.status||"Upcoming")}</div><h3>DPPCC vs ${esc(m.opponent)}</h3><p>Date: ${esc(m.date)}<br>Venue: ${esc(m.venue)}<br>Score / Result: ${esc(m.result||"To be announced")}</p></article>`}).join("");
-  if(admin)admin.innerHTML=snap.docs.map(d=>{const m=d.data();return `<div class="item"><b>DPPCC vs ${esc(m.opponent)}</b><br>${esc(m.date)} · ${esc(m.status||"Upcoming")}<div class="actions-small"><button data-edit="matches" data-id="${esc(d.id)}">EDIT</button>${canDelete()?`<button class="danger" data-delete="matches" data-id="${esc(d.id)}">DELETE</button>`:""}</div></div>`}).join("");
- }catch(e){pub.innerHTML='<div class="card">Match information unavailable. Check Firestore Rules.</div>';if(admin)admin.textContent="Could not load matches: "+safeError(e)}
-}
-async function loadSubmissions(){
- if(!currentRole)return;
- const rb=$("registrationsList"),ob=$("ordersList");rb.textContent="Loading...";ob.textContent="Loading...";
- try{
-  const [regs,orders]=await Promise.all([db.collection("registrations").get(),db.collection("jerseyOrders").get()]);
-  rb.innerHTML=regs.empty?"No registrations yet.":regs.docs.map(d=>{const r=d.data(),s=r.status||"Pending";return `<div class="item"><b>${esc(r.name)}</b> ${statusPill(s)}<br>Phone: ${esc(r.phone)} · Age: ${esc(r.age)}<br>Role: ${esc(r.role)}<br>Address: ${esc(r.address)}<div class="actions-small"><button data-reg-status="${esc(d.id)}" data-status="Approved">APPROVE</button><button class="neutral" data-reg-status="${esc(d.id)}" data-status="Rejected">REJECT</button>${canDelete()?`<button class="danger" data-delete="registrations" data-id="${esc(d.id)}">DELETE</button>`:""}</div></div>`}).join("");
-  ob.innerHTML=orders.empty?"No jersey orders yet.":orders.docs.map(d=>{const o=d.data(),s=o.status||"Pending";return `<div class="item"><b>${esc(o.name)}</b> ${statusPill(s)}<br>Phone: ${esc(o.phone)} · Size: ${esc(o.size)}<br>Jersey Number: ${esc(o.number)}<div class="actions-small"><button data-order-status="${esc(d.id)}" data-status="Processing">PROCESSING</button><button data-order-status="${esc(d.id)}" data-status="Completed">COMPLETED</button>${canDelete()?`<button class="danger" data-delete="jerseyOrders" data-id="${esc(d.id)}">DELETE</button>`:""}</div></div>`}).join("");
- }catch(e){rb.textContent="Could not load registrations: "+safeError(e);ob.textContent="Could not load orders: "+safeError(e)}
-}
-async function deleteRecord(collection,id){
- if(!canDelete()){alert("Only the President can delete records.");return}
- if(!["players","matches","registrations","jerseyOrders"].includes(collection))return;
- if(!confirm("Permanently delete this record? This cannot be undone."))return;
- try{await db.collection(collection).doc(id).delete();await refreshAll();alert("Deleted successfully.")}catch(e){alert("Delete failed: "+safeError(e))}
-}
-function openEdit(collection,id,data){
- editingRecord={collection,id};
- const fields=$("editFields");
- if(collection==="players"){
-  $("editTitle").textContent="Edit Player";
-  fields.innerHTML=`<label>Player Name</label><input name="name" maxlength="70" required value="${esc(data.name)}"><label>Playing Role</label><select name="role"><option ${data.role==="Batsman"?"selected":""}>Batsman</option><option ${data.role==="Bowler"?"selected":""}>Bowler</option><option ${data.role==="All-Rounder"?"selected":""}>All-Rounder</option><option ${data.role==="Wicket Keeper"?"selected":""}>Wicket Keeper</option></select><label>Jersey Number</label><input name="jerseyNo" type="number" min="0" max="999" required value="${esc(data.jerseyNo)}">`;
- }else{
-  $("editTitle").textContent="Edit Match";
-  fields.innerHTML=`<label>Opponent Team</label><input name="opponent" maxlength="70" required value="${esc(data.opponent)}"><label>Match Date</label><input name="date" type="date" required value="${esc(data.date)}"><label>Venue</label><input name="venue" maxlength="100" required value="${esc(data.venue)}"><label>Match Status</label><select name="status"><option ${data.status==="Upcoming"?"selected":""}>Upcoming</option><option ${data.status==="Live"?"selected":""}>Live</option><option ${data.status==="Completed"?"selected":""}>Completed</option></select><label>Score / Result</label><input name="result" maxlength="150" value="${esc(data.result||"")}">`;
- }
- $("editMessage").classList.add("hidden");$("editModal").classList.remove("hidden");
-}
-$("cancelEdit").addEventListener("click",()=>$("editModal").classList.add("hidden"));
-$("editModal").addEventListener("click",e=>{if(e.target===$("editModal"))$("editModal").classList.add("hidden")});
-$("editForm").addEventListener("submit",async e=>{
- e.preventDefault();if(!editingRecord||!currentRole)return;
- const f=e.target,b=f.querySelector('button[type="submit"]');b.disabled=true;
- let data;
- if(editingRecord.collection==="players")data={name:val(f,"name").trim(),role:val(f,"role"),jerseyNo:Number(val(f,"jerseyNo"))};
- else data={opponent:val(f,"opponent").trim(),date:val(f,"date"),venue:val(f,"venue").trim(),status:val(f,"status"),result:val(f,"result").trim()};
- try{await db.collection(editingRecord.collection).doc(editingRecord.id).update(data);$("editModal").classList.add("hidden");await refreshAll();alert("Changes saved successfully.")}catch(err){message("editMessage","Save failed: "+safeError(err),true)}finally{b.disabled=false}
+async function loadPlayers(){const box=$("playersList");try{const s=await db.collection("players").get();if(s.empty){box.innerHTML='<div class="card"><p>No player profiles have been added yet.</p></div>';return}
+box.innerHTML=s.docs.map(d=>{const p=d.data();return `<article class="card"><div class="kicker">DPPCC PLAYER</div><h3>${esc(p.name)}</h3><p>Role: ${esc(p.role)}<br>Jersey No: ${esc(p.jerseyNo)}</p>${canManage()?`<button class="smallbtn edit-player" data-id="${esc(d.id)}">EDIT</button>`:""}${canDelete()?`<button class="smallbtn danger delete-record" data-col="players" data-id="${esc(d.id)}">DELETE</button>`:""}</article>`}).join("")}catch(e){console.error(e);box.innerHTML='<div class="card">Player list unavailable. Check Firestore Rules.</div>'}}
+async function loadMatches(){const box=$("matchesList");try{const s=await db.collection("matches").get();if(s.empty){box.innerHTML='<div class="card"><p>No matches have been added yet.</p></div>';return}
+box.innerHTML=s.docs.map(d=>{const m=d.data();return `<article class="card"><div class="kicker">${esc(m.status)}</div><h3>DPPCC vs ${esc(m.opponent)}</h3><p>Date: ${esc(m.date)}<br>Venue: ${esc(m.venue)}<br>Score / Result: ${esc(m.result||"To be announced")}</p>${canManage()?`<button class="smallbtn edit-match" data-id="${esc(d.id)}">EDIT</button>`:""}${canDelete()?`<button class="smallbtn danger delete-record" data-col="matches" data-id="${esc(d.id)}">DELETE</button>`:""}</article>`}).join("")}catch(e){console.error(e);box.innerHTML='<div class="card">Match list unavailable. Check Firestore Rules.</div>'}}
+async function loadSubmissions(){if(!currentRole)return;const rb=$("registrationsList"),ob=$("ordersList");rb.textContent="Loading...";ob.textContent="Loading...";
+try{const [rs,os]=await Promise.all([db.collection("registrations").get(),db.collection("jerseyOrders").get()]);
+rb.innerHTML=rs.empty?"No registrations yet.":rs.docs.map(d=>{const r=d.data(),st=r.status||"Pending";return `<div class="item"><b>${esc(r.name)}</b> · <b>${esc(st)}</b><br>Phone: ${esc(r.phone)} · Age: ${esc(r.age)}<br>Role: ${esc(r.role)}<br>Address: ${esc(r.address)}<br>${canManage()?`<button class="smallbtn review-reg" data-id="${esc(d.id)}" data-status="Approved">APPROVE</button><button class="smallbtn danger review-reg" data-id="${esc(d.id)}" data-status="Rejected">REJECT</button>`:""}${canDelete()?`<button class="smallbtn danger delete-record" data-col="registrations" data-id="${esc(d.id)}">DELETE</button>`:""}</div>`}).join("");
+ob.innerHTML=os.empty?"No jersey orders yet.":os.docs.map(d=>{const o=d.data(),st=o.status||"Pending";return `<div class="item"><b>${esc(o.name)}</b> · <b>${esc(st)}</b><br>Phone: ${esc(o.phone)} · Size: ${esc(o.size)}<br>Jersey Number: ${esc(o.number)}<br>${canManage()?`<label>Order Status</label><select class="order-status" data-id="${esc(d.id)}"><option ${st==="Pending"?"selected":""}>Pending</option><option ${st==="Processing"?"selected":""}>Processing</option><option ${st==="Completed"?"selected":""}>Completed</option><option ${st==="Cancelled"?"selected":""}>Cancelled</option></select>`:""}${canDelete()?`<button class="smallbtn danger delete-record" data-col="jerseyOrders" data-id="${esc(d.id)}">DELETE</button>`:""}</div>`}).join("");
+}catch(e){console.error(e);rb.textContent="Could not load registrations. Check Firestore Rules.";ob.textContent="Could not load orders. Check Firestore Rules."}}
+async function deleteRecord(col,id){if(!canDelete()){alert("Only the President can delete records.");return}if(!["players","matches","registrations","jerseyOrders"].includes(col))return;if(!confirm("Are you sure you want to permanently delete this record?"))return;try{await db.collection(col).doc(id).delete();alert("Deleted successfully.");if(col==="players")await loadPlayers();else if(col==="matches")await loadMatches();else await loadSubmissions()}catch(e){alert("Delete failed: "+e.message)}}
+document.addEventListener("click",async e=>{const del=e.target.closest(".delete-record");if(del){await deleteRecord(del.dataset.col,del.dataset.id);return}
+const ep=e.target.closest(".edit-player");if(ep){const d=await db.collection("players").doc(ep.dataset.id).get();if(!d.exists)return;const p=d.data(),f=$("playerForm");f.elements.docId.value=d.id;f.elements.name.value=p.name||"";f.elements.role.value=p.role||"Batsman";f.elements.jerseyNo.value=p.jerseyNo??"";$("playerFormTitle").textContent="Edit Player";$("playerSubmit").textContent="SAVE PLAYER";$("cancelPlayerEdit").classList.remove("hidden");f.scrollIntoView({behavior:"smooth"});return}
+const em=e.target.closest(".edit-match");if(em){const d=await db.collection("matches").doc(em.dataset.id).get();if(!d.exists)return;const m=d.data(),f=$("matchForm");f.elements.docId.value=d.id;["opponent","date","venue","status","result"].forEach(k=>f.elements[k].value=m[k]||"");$("matchFormTitle").textContent="Edit Match";$("matchSubmit").textContent="SAVE MATCH";$("cancelMatchEdit").classList.remove("hidden");f.scrollIntoView({behavior:"smooth"});return}
+const rev=e.target.closest(".review-reg");if(rev){try{await db.collection("registrations").doc(rev.dataset.id).update({status:rev.dataset.status,reviewedAt:firebase.firestore.FieldValue.serverTimestamp(),reviewedBy:currentUser.email});await loadSubmissions()}catch(err){alert("Update failed: "+err.message)}}
 });
-async function refreshAll(){await Promise.all([loadPlayers(),loadMatches(),loadSubmissions()])}
-document.addEventListener("click",async e=>{
- const del=e.target.closest("[data-delete]");if(del){await deleteRecord(del.dataset.delete,del.dataset.id);return}
- const edit=e.target.closest("[data-edit]");if(edit){
-  try{const snap=await db.collection(edit.dataset.edit).doc(edit.dataset.id).get();if(!snap.exists){alert("Record no longer exists.");return}openEdit(edit.dataset.edit,edit.dataset.id,snap.data())}catch(err){alert("Could not open record: "+safeError(err))}return
- }
- const rs=e.target.closest("[data-reg-status]");if(rs){try{await db.collection("registrations").doc(rs.dataset.regStatus).update({status:rs.dataset.status});await loadSubmissions()}catch(err){alert("Status update failed. Publish the updated Firestore Rules first. "+safeError(err))}return}
- const os=e.target.closest("[data-order-status]");if(os){try{await db.collection("jerseyOrders").doc(os.dataset.orderStatus).update({status:os.dataset.status});await loadSubmissions()}catch(err){alert("Status update failed. Publish the updated Firestore Rules first. "+safeError(err))}}
-});
-$("registrationForm").addEventListener("submit",async e=>{
- e.preventDefault();const f=e.target,b=f.querySelector('button[type="submit"]');b.disabled=true;
- try{await db.collection("registrations").add({name:val(f,"name").trim(),phone:val(f,"phone").trim(),age:Number(val(f,"age")),role:val(f,"role"),address:val(f,"address").trim(),status:"Pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});message("registrationMessage","Registration submitted successfully. Thank you!");f.reset()}
- catch(err){message("registrationMessage","Registration failed: "+safeError(err),true)}finally{b.disabled=false}
-});
-$("jerseyForm").addEventListener("submit",async e=>{
- e.preventDefault();const f=e.target,b=f.querySelector('button[type="submit"]');b.disabled=true;
- try{await db.collection("jerseyOrders").add({name:val(f,"name").trim(),phone:val(f,"phone").trim(),size:val(f,"size"),number:Number(val(f,"number")),status:"Pending",createdAt:firebase.firestore.FieldValue.serverTimestamp()});message("jerseyMessage","Your jersey order has been submitted successfully!");f.reset()}
- catch(err){message("jerseyMessage","Order submission failed: "+safeError(err),true)}finally{b.disabled=false}
-});
-$("loginForm").addEventListener("submit",async e=>{
- e.preventDefault();const f=e.target,b=f.querySelector('button[type="submit"]'),email=val(f,"email").trim().toLowerCase(),password=val(f,"password");
- if(![PRESIDENT_EMAIL,ADMIN_EMAIL].includes(email)){message("loginMessage","This email is not authorized for DPPCC admin access.",true);return}
- b.disabled=true;b.textContent="PLEASE WAIT...";
- try{await auth.signInWithEmailAndPassword(email,password)}
- catch(err){message("loginMessage","Login failed: "+safeError(err),true)}
- finally{b.disabled=false;b.textContent="LOGIN TO DASHBOARD"}
-});
-$("logoutButton").addEventListener("click",async()=>{try{await auth.signOut()}catch(e){alert("Logout failed: "+safeError(e))}});
-$("addPlayerForm").addEventListener("submit",async e=>{
- e.preventDefault();if(!currentRole)return;const f=e.target,b=f.querySelector('button[type="submit"]');b.disabled=true;
- try{await db.collection("players").add({name:val(f,"name").trim(),role:val(f,"role"),jerseyNo:Number(val(f,"jerseyNo"))});f.reset();await loadPlayers();alert("Player added successfully.")}
- catch(err){alert("Could not add player: "+safeError(err))}finally{b.disabled=false}
-});
-$("addMatchForm").addEventListener("submit",async e=>{
- e.preventDefault();if(!currentRole)return;const f=e.target,b=f.querySelector('button[type="submit"]');b.disabled=true;
- try{await db.collection("matches").add({opponent:val(f,"opponent").trim(),date:val(f,"date"),venue:val(f,"venue").trim(),status:val(f,"status"),result:val(f,"result").trim()});f.reset();await loadMatches();alert("Match added successfully.")}
- catch(err){alert("Could not add match: "+safeError(err))}finally{b.disabled=false}
-});
-auth.onAuthStateChanged(async user=>{
- currentUser=user;currentRole=user?roleFor(user.email):null;
- if(user&&!currentRole){await auth.signOut();return}
- if(currentRole){
-  $("loginBox").classList.add("hidden");$("dashboard").classList.remove("hidden");
-  $("welcomeTitle").textContent="Welcome, "+currentRole;
-  $("roleText").textContent=currentRole==="President"?"President access: full dashboard and delete permissions.":"Admin access: add/edit players and matches; manage submissions. No delete permission.";
-  await refreshAll();
- }else{$("loginBox").classList.remove("hidden");$("dashboard").classList.add("hidden");await Promise.all([loadPlayers(),loadMatches()])}
-});
+document.addEventListener("change",async e=>{if(e.target.matches(".order-status")){try{await db.collection("jerseyOrders").doc(e.target.dataset.id).update({status:e.target.value,statusUpdatedAt:firebase.firestore.FieldValue.serverTimestamp(),statusUpdatedBy:currentUser.email});await loadSubmissions();alert("Order status updated.")}catch(err){alert("Status update failed: "+err.message)}}});
+$("registrationForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.target,b=f.querySelector("button");b.disabled=true;try{await db.collection("registrations").add({name:val(f,"name").trim(),phone:val(f,"phone").trim(),age:Number(val(f,"age")),role:val(f,"role"),address:val(f,"address").trim(),createdAt:firebase.firestore.FieldValue.serverTimestamp()});message("registrationMessage","Registration submitted successfully. Thank you!");f.reset()}catch(err){console.error(err);message("registrationMessage","Registration failed. Please try again later.",true)}finally{b.disabled=false}});
+$("jerseyForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.target,b=f.querySelector("button");b.disabled=true;try{await db.collection("jerseyOrders").add({name:val(f,"name").trim(),phone:val(f,"phone").trim(),size:val(f,"size"),number:Number(val(f,"number")),createdAt:firebase.firestore.FieldValue.serverTimestamp()});message("jerseyMessage","Jersey order submitted successfully!");f.reset()}catch(err){console.error(err);message("jerseyMessage","Order submission failed. Please try again.",true)}finally{b.disabled=false}});
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();const f=e.target,b=f.querySelector("button"),email=val(f,"email").trim().toLowerCase(),password=val(f,"password");if(![PRESIDENT_EMAIL,ADMIN_EMAIL].includes(email)){message("loginMessage","This email is not authorized.",true);return}b.disabled=true;try{await auth.signInWithEmailAndPassword(email,password)}catch(err){console.error(err);message("loginMessage","Login failed. Check email/password and Firebase Authentication.",true)}finally{b.disabled=false}});
+$("logoutButton").addEventListener("click",()=>auth.signOut());
+$("playerForm").addEventListener("submit",async e=>{e.preventDefault();if(!canManage())return;const f=e.target,b=$("playerSubmit"),id=val(f,"docId"),data={name:val(f,"name").trim(),role:val(f,"role"),jerseyNo:Number(val(f,"jerseyNo"))};b.disabled=true;try{if(id)await db.collection("players").doc(id).update(data);else await db.collection("players").add(data);alert(id?"Player updated.":"Player added.");resetPlayerForm();await loadPlayers()}catch(err){alert("Player save failed: "+err.message)}finally{b.disabled=false}});
+$("matchForm").addEventListener("submit",async e=>{e.preventDefault();if(!canManage())return;const f=e.target,b=$("matchSubmit"),id=val(f,"docId"),data={opponent:val(f,"opponent").trim(),date:val(f,"date"),venue:val(f,"venue").trim(),status:val(f,"status"),result:val(f,"result").trim()};b.disabled=true;try{if(id)await db.collection("matches").doc(id).update(data);else await db.collection("matches").add(data);alert(id?"Match updated.":"Match added.");resetMatchForm();await loadMatches()}catch(err){alert("Match save failed: "+err.message)}finally{b.disabled=false}});
+function resetPlayerForm(){const f=$("playerForm");f.reset();f.elements.docId.value="";$("playerFormTitle").textContent="Add Player";$("playerSubmit").textContent="ADD PLAYER";$("cancelPlayerEdit").classList.add("hidden")}
+function resetMatchForm(){const f=$("matchForm");f.reset();f.elements.docId.value="";$("matchFormTitle").textContent="Add Match / Result";$("matchSubmit").textContent="ADD MATCH";$("cancelMatchEdit").classList.add("hidden")}
+$("cancelPlayerEdit").addEventListener("click",resetPlayerForm);$("cancelMatchEdit").addEventListener("click",resetMatchForm);
+auth.onAuthStateChanged(async user=>{currentUser=user;currentRole=user?roleFor(user.email):null;if(user&&!currentRole){await auth.signOut();return}
+if(currentRole){$("loginBox").classList.add("hidden");$("dashboard").classList.remove("hidden");$("welcomeTitle").textContent="Welcome, "+currentRole;$("roleText").textContent=currentRole==="President"?"President: full access including delete permissions.":"Admin: add/edit players and matches, review registrations and update jersey orders. Delete is President-only.";await loadSubmissions()}else{$("loginBox").classList.remove("hidden");$("dashboard").classList.add("hidden")}
+await loadPlayers();await loadMatches()});
 loadPlayers();loadMatches();
-</script>
-</body>
-</html>
+</script></body></html>
