@@ -5,16 +5,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Official website of Dungsree Paschim Para Cricket Club">
+<meta name="theme-color" content="#063b2b">
 <title>DPPCC | Official Cricket Club</title>
 
 <style>
 :root{
---green:#063b2b;--green2:#07543b;--gold:#ffc400;
---red:#e32636;--white:#fff;--ink:#13233a;
---muted:#64748b;--bg:#f4f7fb;
+  --green:#063b2b;
+  --green2:#07543b;
+  --gold:#ffc400;
+  --red:#e32636;
+  --ink:#13233a;
+  --muted:#64748b;
+  --bg:#f4f7fb;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
 body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
 a{text-decoration:none;color:inherit}
 header{background:var(--green);color:white;position:sticky;top:0;z-index:10}
@@ -24,8 +29,9 @@ header{background:var(--green);color:white;position:sticky;top:0;z-index:10}
 .brand small{display:block;color:var(--gold);font-size:10px;letter-spacing:2px;margin-top:4px}
 nav{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;font-weight:bold}
 nav a:hover{color:var(--gold)}
-button,.btn{border:0;border-radius:7px;padding:12px 17px;background:var(--gold);color:var(--green);font-weight:900;cursor:pointer}
+button,.btn{display:inline-block;border:0;border-radius:7px;padding:12px 17px;background:var(--gold);color:var(--green);font-weight:900;cursor:pointer}
 button:hover,.btn:hover{opacity:.88}
+button:disabled{opacity:.6;cursor:not-allowed}
 button.secondary,.btn.secondary{background:transparent;color:white;border:1px solid white}
 button.danger{background:#c62828;color:white}
 .hero{background:linear-gradient(120deg,#032b22,#08734f);color:white}
@@ -52,8 +58,6 @@ button.danger{background:#c62828;color:white}
 .dark .card h3{color:white}
 .card p{color:var(--muted);line-height:1.6;font-size:14px}
 .dark .card p{color:#d0e0ed}
-.cta{background:linear-gradient(110deg,#043a2b,#08734f);color:white;padding:28px;border-radius:15px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
-.cta p{color:#d5e5ef}
 .formbox{background:white;padding:23px;border-radius:13px;max-width:650px;margin:20px auto;box-shadow:0 8px 25px #09284b0c}
 input,select,textarea{width:100%;padding:12px;margin:7px 0 14px;border:1px solid #ccd5df;border-radius:7px;font:inherit;background:white}
 label{font-size:13px;font-weight:bold}
@@ -62,247 +66,282 @@ label{font-size:13px;font-weight:bold}
 .hidden{display:none!important}
 .item{padding:13px 0;border-bottom:1px solid #e3e9ef}
 .item:last-child{border:0}
-.item small{color:var(--muted)}
 footer{background:#02271e;color:#d5e3f4;padding:35px 20px;text-align:center}
 footer img{width:65px;background:white;border-radius:50%;padding:3px}
 footer p{font-size:12px;color:#9db2cb}
 .sponsor{display:flex;justify-content:center;align-items:center;gap:25px;flex-wrap:wrap;background:#111;color:white;padding:25px;border-radius:15px}
 .sponsor img{width:190px;max-width:70%}
 .admin-panel{border:2px solid var(--gold)}
+hr{border:0;border-top:1px solid #e5eaf0;margin:25px 0}
 @media(max-width:800px){
-.hero-inner{grid-template-columns:1fr;text-align:center}
-.hero-logo{width:230px}
-.actions{justify-content:center}
-.grid{grid-template-columns:1fr 1fr}
-nav{font-size:11px}
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero-logo{width:230px}
+  .actions{justify-content:center}
+  .grid{grid-template-columns:1fr 1fr}
+  nav{font-size:11px}
 }
 @media(max-width:520px){
-.grid{grid-template-columns:1fr}
-.nav{justify-content:center}
-nav{justify-content:center}
-.wrap{padding:40px 16px}
+  .grid{grid-template-columns:1fr}
+  .nav{justify-content:center}
+  nav{justify-content:center}
+  .wrap{padding:40px 16px}
 }
 </style>
 </head>
 
 <body>
 <header>
-<div class="nav">
-<a class="brand" href="#home">
-<img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo">
-<span>DUNGSREE PASCHIM PARA<small>CRICKET CLUB · DPPCC</small></span>
-</a>
-<nav>
-<a href="#home">HOME</a>
-<a href="#about">ABOUT</a>
-<a href="#players">PLAYERS</a>
-<a href="#register">REGISTER</a>
-<a href="#jersey">JERSEY</a>
-<a href="#matches">MATCHES</a>
-<a href="#sponsors">SPONSOR</a>
-<a href="#login">ADMIN LOGIN</a>
-</nav>
-</div>
+  <div class="nav">
+    <a class="brand" href="#home">
+      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo">
+      <span>DUNGSREE PASCHIM PARA
+        <small>CRICKET CLUB · DPPCC</small>
+      </span>
+    </a>
+    <nav>
+      <a href="#home">HOME</a>
+      <a href="#about">ABOUT</a>
+      <a href="#players">PLAYERS</a>
+      <a href="#register">REGISTER</a>
+      <a href="#jersey">JERSEY</a>
+      <a href="#matches">MATCHES</a>
+      <a href="#sponsors">SPONSOR</a>
+      <a href="#login">ADMIN LOGIN</a>
+    </nav>
+  </div>
 </header>
 
 <main id="home">
-<section class="hero">
-<div class="hero-inner">
-<div>
-<div class="kicker">DPPCC · OFFICIAL CRICKET CLUB</div>
-<h1>DUNGSREE PASCHIM PARA <span>CRICKET CLUB</span></h1>
-<p>One club. One team. One passion. Play with pride, grow together and represent our community.</p>
-<div class="actions">
-<a class="btn" href="#register">JOIN THE TEAM</a>
-<a class="btn secondary" href="#matches">MATCH CENTRE</a>
-</div>
-</div>
-<img class="hero-logo" src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo">
-</div>
-</section>
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="kicker">DPPCC · OFFICIAL CRICKET CLUB</div>
+        <h1>DUNGSREE PASCHIM PARA <span>CRICKET CLUB</span></h1>
+        <p>One club. One team. One passion. Play with pride, grow together and represent our community.</p>
+        <div class="actions">
+          <a class="btn" href="#register">JOIN THE TEAM</a>
+          <a class="btn secondary" href="#matches">MATCH CENTRE</a>
+        </div>
+      </div>
+      <img class="hero-logo" src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo">
+    </div>
+  </section>
 
-<div class="ticker">DPPCC · PLAY · FRIENDSHIP · UNITY · ESTABLISHED 2003</div>
+  <div class="ticker">DPPCC · PLAY · FRIENDSHIP · UNITY · ESTABLISHED 2003</div>
 
-<section class="wrap" id="about">
-<div class="heading">
-<small>WHO WE ARE</small>
-<h2>ABOUT OUR CLUB</h2>
-<p>A community united by cricket.</p>
-</div>
-<div class="card">
-<h3>Welcome to DPPCC</h3>
-<p>Dungsree Paschim Para Cricket Club is a cricket community built on teamwork, discipline, friendship and a love for the game. Our goal is to create opportunities for players and bring our community together through cricket.</p>
-</div>
-</section>
+  <section class="wrap" id="about">
+    <div class="heading">
+      <small>WHO WE ARE</small>
+      <h2>ABOUT OUR CLUB</h2>
+      <p>A community united by cricket.</p>
+    </div>
+    <div class="card">
+      <h3>Welcome to DPPCC</h3>
+      <p>Dungsree Paschim Para Cricket Club is a cricket community built on teamwork, discipline, friendship and a love for the game. Our goal is to create opportunities for players and bring our community together through cricket.</p>
+    </div>
+  </section>
 
-<section class="dark" id="players">
-<div class="wrap">
-<div class="heading">
-<small>THE SQUAD</small>
-<h2>MEET OUR PLAYERS</h2>
-<p>Every player matters. Every run counts.</p>
-</div>
-<div class="grid" id="playersList">
-<div class="card"><p>Loading players...</p></div>
-</div>
-</div>
-</section>
+  <section class="dark" id="players">
+    <div class="wrap">
+      <div class="heading">
+        <small>THE SQUAD</small>
+        <h2>MEET OUR PLAYERS</h2>
+        <p>Every player matters. Every run counts.</p>
+      </div>
+      <div class="grid" id="playersList">
+        <div class="card"><p>Loading players...</p></div>
+      </div>
+    </div>
+  </section>
 
-<section class="wrap" id="register">
-<div class="heading">
-<small>BE PART OF DPPCC</small>
-<h2>PLAYER REGISTRATION</h2>
-<p>Register your interest in joining the club.</p>
-</div>
-<div class="formbox">
-<h3>Player Registration Form</h3>
-<form id="registrationForm">
-<label>Full Name</label>
-<input name="name" maxlength="70" required placeholder="Your full name">
-<label>Phone Number</label>
-<input name="phone" maxlength="20" required placeholder="Your phone number">
-<label>Age</label>
-<input name="age" type="number" min="8" max="70" required>
-<label>Playing Role</label>
-<select name="role" required>
-<option value="">Select your role</option>
-<option>Batsman</option>
-<option>Bowler</option>
-<option>All-Rounder</option>
-<option>Wicket Keeper</option>
-</select>
-<label>Address</label>
-<textarea name="address" maxlength="120" required placeholder="Your address"></textarea>
-<button type="submit">SUBMIT REGISTRATION</button>
-<div id="registrationMessage" class="status hidden"></div>
-</form>
-</div>
-</section>
+  <section class="wrap" id="register">
+    <div class="heading">
+      <small>BE PART OF DPPCC</small>
+      <h2>PLAYER REGISTRATION</h2>
+      <p>Register your interest in joining the club.</p>
+    </div>
+    <div class="formbox">
+      <h3>Player Registration Form</h3>
+      <form id="registrationForm">
+        <label>Full Name</label>
+        <input name="name" maxlength="70" required placeholder="Your full name">
 
-<section class="wrap" id="jersey">
-<div class="heading">
-<small>OFFICIAL CLUB KIT</small>
-<h2>DPPCC JERSEY ORDER</h2>
-<p>Place your club jersey order online.</p>
-</div>
-<div class="formbox">
-<h3>Jersey Order Form</h3>
-<form id="jerseyForm">
-<label>Your Name</label>
-<input name="name" maxlength="70" required>
-<label>Phone Number</label>
-<input name="phone" maxlength="20" required>
-<label>Jersey Size</label>
-<select name="size" required>
-<option value="">Choose size</option>
-<option>S</option><option>M</option><option>L</option>
-<option>XL</option><option>XXL</option>
-</select>
-<label>Jersey Number (0–99)</label>
-<input name="number" type="number" min="0" max="99" required>
-<button type="submit">SUBMIT JERSEY ORDER</button>
-<div id="jerseyMessage" class="status hidden"></div>
-</form>
-</div>
-</section>
+        <label>Phone Number</label>
+        <input name="phone" maxlength="20" required placeholder="Your phone number">
 
-<section class="dark" id="matches">
-<div class="wrap">
-<div class="heading">
-<small>FIXTURES & RESULTS</small>
-<h2>MATCH CENTRE</h2>
-<p>Follow DPPCC's cricket action.</p>
-</div>
-<div class="grid" id="matchesList">
-<div class="card"><p>Loading matches...</p></div>
-</div>
-</div>
-</section>
+        <label>Age</label>
+        <input name="age" type="number" min="8" max="70" step="1" required>
 
-<section class="wrap" id="sponsors">
-<div class="heading">
-<small>OUR SUPPORT</small>
-<h2>OFFICIAL SPONSOR</h2>
-</div>
-<div class="sponsor">
-<img src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor">
-<div><h3>2003 · OFFICIAL SPONSOR</h3><p>Thank you for supporting our cricket family.</p></div>
-</div>
-</section>
+        <label>Playing Role</label>
+        <select name="role" required>
+          <option value="">Select your role</option>
+          <option value="Batsman">Batsman</option>
+          <option value="Bowler">Bowler</option>
+          <option value="All-Rounder">All-Rounder</option>
+          <option value="Wicket Keeper">Wicket Keeper</option>
+        </select>
 
-<section class="wrap" id="login">
-<div class="heading">
-<small>AUTHORIZED ACCESS</small>
-<h2>DPPCC ADMIN LOGIN</h2>
-<p>Only the President and authorized Admin can sign in.</p>
-</div>
+        <label>Address</label>
+        <textarea name="address" maxlength="120" required placeholder="Your address"></textarea>
 
-<div class="formbox" id="loginBox">
-<form id="loginForm">
-<label>Email Address</label>
-<input name="email" type="email" required placeholder="Authorized Gmail address">
-<label>Password</label>
-<input name="password" type="password" required placeholder="Your password">
-<button type="submit">LOGIN TO DASHBOARD</button>
-<div id="loginMessage" class="status hidden"></div>
-</form>
-</div>
+        <button type="submit">SUBMIT REGISTRATION</button>
+        <div id="registrationMessage" class="status hidden" role="status"></div>
+      </form>
+    </div>
+  </section>
 
-<div class="formbox hidden admin-panel" id="dashboard">
-<h3 id="welcomeTitle">DPPCC Dashboard</h3>
-<p id="roleText"></p>
-<button type="button" id="logoutButton" class="danger">LOG OUT</button>
+  <section class="wrap" id="jersey">
+    <div class="heading">
+      <small>OFFICIAL CLUB KIT</small>
+      <h2>DPPCC JERSEY ORDER</h2>
+      <p>Place your club jersey order online.</p>
+    </div>
+    <div class="formbox">
+      <h3>Jersey Order Form</h3>
+      <form id="jerseyForm">
+        <label>Your Name</label>
+        <input name="name" maxlength="70" required>
 
-<hr>
-<h3>Add Player</h3>
-<form id="addPlayerForm">
-<label>Player Name</label>
-<input name="name" maxlength="70" required>
-<label>Playing Role</label>
-<select name="role" required>
-<option>Batsman</option><option>Bowler</option>
-<option>All-Rounder</option><option>Wicket Keeper</option>
-</select>
-<label>Jersey Number</label>
-<input name="jerseyNo" type="number" min="0" max="999" required>
-<button type="submit">ADD PLAYER</button>
-</form>
+        <label>Phone Number</label>
+        <input name="phone" maxlength="20" required>
 
-<hr>
-<h3>Add Match / Result</h3>
-<form id="addMatchForm">
-<label>Opponent Team</label>
-<input name="opponent" maxlength="70" required>
-<label>Match Date</label>
-<input name="date" type="date" required>
-<label>Venue</label>
-<input name="venue" maxlength="100" required>
-<label>Match Status</label>
-<select name="status">
-<option>Upcoming</option><option>Live</option><option>Completed</option>
-</select>
-<label>Score / Result</label>
-<input name="result" maxlength="150" placeholder="Example: DPPCC 120/5">
-<button type="submit">ADD MATCH</button>
-</form>
+        <label>Jersey Size</label>
+        <select name="size" required>
+          <option value="">Choose size</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        </select>
 
-<hr>
-<h3>Player Registrations</h3>
-<div id="registrationsList">Loading...</div>
+        <label>Jersey Number (0–99)</label>
+        <input name="number" type="number" min="0" max="99" step="1" required>
 
-<hr>
-<h3>Jersey Orders</h3>
-<div id="ordersList">Loading...</div>
-</div>
-</section>
+        <button type="submit">SUBMIT JERSEY ORDER</button>
+        <div id="jerseyMessage" class="status hidden" role="status"></div>
+      </form>
+    </div>
+  </section>
+
+  <section class="dark" id="matches">
+    <div class="wrap">
+      <div class="heading">
+        <small>FIXTURES & RESULTS</small>
+        <h2>MATCH CENTRE</h2>
+        <p>Follow DPPCC's cricket action.</p>
+      </div>
+      <div class="grid" id="matchesList">
+        <div class="card"><p>Loading matches...</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="sponsors">
+    <div class="heading">
+      <small>OUR SUPPORT</small>
+      <h2>OFFICIAL SPONSOR</h2>
+    </div>
+    <div class="sponsor">
+      <img src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor">
+      <div>
+        <h3>2003 · OFFICIAL SPONSOR</h3>
+        <p>Thank you for supporting our cricket family.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="login">
+    <div class="heading">
+      <small>AUTHORIZED ACCESS</small>
+      <h2>DPPCC ADMIN LOGIN</h2>
+      <p>Only the President and authorized Admin can sign in.</p>
+    </div>
+
+    <div class="formbox" id="loginBox">
+      <form id="loginForm">
+        <label>Email Address</label>
+        <input name="email" type="email" required placeholder="Authorized Gmail address">
+
+        <label>Password</label>
+        <input name="password" type="password" required placeholder="Your password">
+
+        <button type="submit">LOGIN TO DASHBOARD</button>
+        <div id="loginMessage" class="status hidden" role="status"></div>
+      </form>
+    </div>
+
+    <div class="formbox hidden admin-panel" id="dashboard">
+      <h3 id="welcomeTitle">DPPCC Dashboard</h3>
+      <p id="roleText"></p>
+      <button type="button" id="logoutButton" class="danger">LOG OUT</button>
+
+      <hr>
+
+      <h3>Add Player</h3>
+      <form id="addPlayerForm">
+        <label>Player Name</label>
+        <input name="name" maxlength="70" required>
+
+        <label>Playing Role</label>
+        <select name="role" required>
+          <option value="Batsman">Batsman</option>
+          <option value="Bowler">Bowler</option>
+          <option value="All-Rounder">All-Rounder</option>
+          <option value="Wicket Keeper">Wicket Keeper</option>
+        </select>
+
+        <label>Jersey Number</label>
+        <input name="jerseyNo" type="number" min="0" max="999" step="1" required>
+
+        <button type="submit">ADD PLAYER</button>
+      </form>
+
+      <hr>
+
+      <h3>Add Match / Result</h3>
+      <form id="addMatchForm">
+        <label>Opponent Team</label>
+        <input name="opponent" maxlength="70" required>
+
+        <label>Match Date</label>
+        <input name="date" type="date" required>
+
+        <label>Venue</label>
+        <input name="venue" maxlength="100" required>
+
+        <label>Match Status</label>
+        <select name="status" required>
+          <option value="Upcoming">Upcoming</option>
+          <option value="Live">Live</option>
+          <option value="Completed">Completed</option>
+        </select>
+
+        <label>Score / Result</label>
+        <input name="result" maxlength="150" placeholder="Example: DPPCC 120/5">
+
+        <button type="submit">ADD MATCH</button>
+      </form>
+
+      <hr>
+
+      <h3>Player Registrations</h3>
+      <div id="registrationsList">Loading...</div>
+
+      <hr>
+
+      <h3>Jersey Orders</h3>
+      <div id="ordersList">Loading...</div>
+    </div>
+  </section>
 </main>
 
 <footer>
-<img src="assets/dppcc-club-logo.jpg" alt="DPPCC">
-<h3>DUNGSREE PASCHIM PARA CRICKET CLUB</h3>
-<strong style="color:#ffc400">DPPCC · PLAY • FRIENDSHIP • UNITY</strong>
-<p>© <span id="year"></span> DPPCC. All rights reserved.</p>
-<p>Official Club Contact: +880 1339 050455</p>
+  <img src="assets/dppcc-club-logo.jpg" alt="DPPCC">
+  <h3>DUNGSREE PASCHIM PARA CRICKET CLUB</h3>
+  <strong style="color:#ffc400">DPPCC · PLAY • FRIENDSHIP • UNITY</strong>
+  <p>© <span id="year"></span> DPPCC. All rights reserved.</p>
+  <p>Official Club Contact: +880 1339 050455</p>
 </footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -310,6 +349,8 @@ nav{justify-content:center}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
 <script>
+"use strict";
+
 document.getElementById("year").textContent = new Date().getFullYear();
 
 const firebaseConfig = {
@@ -325,250 +366,399 @@ const PRESIDENT_EMAIL = "mdshiponahmed0455@gmail.com";
 const ADMIN_EMAIL = "shiponahmed5710@gmail.com";
 
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 let currentUser = null;
 let currentRole = null;
 
- showMessage(id, message, error=false) {
+function showMessage(id, message, error = false) {
   const el = document.getElementById(id);
+  if (!el) return;
+
   el.textContent = message;
   el.classList.remove("hidden");
   el.style.background = error ? "#ffe5e5" : "#e5f7eb";
   el.style.color = error ? "#9b1717" : "#14532d";
 }
+
 function getRole(email) {
+  email = String(email || "").trim().toLowerCase();
+
   if (email === PRESIDENT_EMAIL) return "President";
   if (email === ADMIN_EMAIL) return "Admin";
+
   return null;
 }
 
+function fieldValue(form, name) {
+  const field = form.elements.namedItem(name);
+  return field ? String(field.value).trim() : "";
+}
+
 function safeText(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
 }
 
 async function loadPlayers() {
   const box = document.getElementById("playersList");
+
   try {
     const snap = await db.collection("players").get();
+
     if (snap.empty) {
       box.innerHTML = '<div class="card"><p>No player profiles have been added yet.</p></div>';
       return;
     }
+
     box.innerHTML = snap.docs.map(doc => {
       const p = doc.data();
+
       return `<article class="card">
         <div class="kicker">DPPCC PLAYER</div>
         <h3>${safeText(p.name)}</h3>
         <p>Role: ${safeText(p.role)}<br>Jersey No: ${safeText(p.jerseyNo)}</p>
-        ${currentRole === "President" ? `<button class="danger" onclick="deleteRecord('players','${doc.id}')">DELETE</button>` : ""}
+        ${currentRole === "President" ? `<button class="danger delete-button" type="button" data-collection="players" data-id="${safeText(doc.id)}">DELETE</button>` : ""}
       </article>`;
     }).join("");
-  } catch(e) {
+
+  } catch (error) {
+    console.error("Players loading error:", error);
     box.innerHTML = '<div class="card"><p>Player list is temporarily unavailable.</p></div>';
   }
 }
 
 async function loadMatches() {
   const box = document.getElementById("matchesList");
+
   try {
     const snap = await db.collection("matches").get();
+
     if (snap.empty) {
       box.innerHTML = '<div class="card"><p>No matches have been added yet.</p></div>';
       return;
     }
+
     box.innerHTML = snap.docs.map(doc => {
       const m = doc.data();
+
       return `<article class="card">
         <div class="kicker">${safeText(m.status)}</div>
         <h3>DPPCC vs ${safeText(m.opponent)}</h3>
-        <p>Date: ${safeText(m.date)}<br>Venue: ${safeText(m.venue)}<br>Score / Result: ${safeText(m.result || "To be announced")}</p>
-        ${currentRole === "President" ? `<button class="danger" onclick="deleteRecord('matches','${doc.id}')">DELETE</button>` : ""}
+        <p>Date: ${safeText(m.date)}<br>
+        Venue: ${safeText(m.venue)}<br>
+        Score / Result: ${safeText(m.result || "To be announced")}</p>
+        ${currentRole === "President" ? `<button class="danger delete-button" type="button" data-collection="matches" data-id="${safeText(doc.id)}">DELETE</button>` : ""}
       </article>`;
     }).join("");
-  } catch(e) {
+
+  } catch (error) {
+    console.error("Matches loading error:", error);
     box.innerHTML = '<div class="card"><p>Match information is temporarily unavailable.</p></div>';
   }
 }
 
 async function loadSubmissions() {
   if (!currentRole) return;
+
   const regBox = document.getElementById("registrationsList");
   const orderBox = document.getElementById("ordersList");
+
   regBox.textContent = "Loading...";
   orderBox.textContent = "Loading...";
+
   try {
     const regs = await db.collection("registrations").get();
+
     regBox.innerHTML = regs.empty ? "No registrations yet." :
       regs.docs.map(doc => {
         const r = doc.data();
-        return `<div class="item"><b>${safeText(r.name)}</b><br>
+
+        return `<div class="item">
+          <b>${safeText(r.name)}</b><br>
           Phone: ${safeText(r.phone)} · Age: ${safeText(r.age)}<br>
-          Role: ${safeText(r.role)}<br>Address: ${safeText(r.address)}
-          ${currentRole === "President" ? `<br><button class="danger" onclick="deleteRecord('registrations','${doc.id}')">DELETE</button>` : ""}
+          Role: ${safeText(r.role)}<br>
+          Address: ${safeText(r.address)}
+          ${currentRole === "President" ? `<br><button class="danger delete-button" type="button" data-collection="registrations" data-id="${safeText(doc.id)}">DELETE</button>` : ""}
         </div>`;
       }).join("");
 
     const orders = await db.collection("jerseyOrders").get();
+
     orderBox.innerHTML = orders.empty ? "No jersey orders yet." :
       orders.docs.map(doc => {
         const o = doc.data();
-        return `<div class="item"><b>${safeText(o.name)}</b><br>
+
+        return `<div class="item">
+          <b>${safeText(o.name)}</b><br>
           Phone: ${safeText(o.phone)} · Size: ${safeText(o.size)}<br>
           Jersey Number: ${safeText(o.number)}
-          ${currentRole === "President" ? `<br><button class="danger" onclick="deleteRecord('jerseyOrders','${doc.id}')">DELETE</button>` : ""}
+          ${currentRole === "President" ? `<br><button class="danger delete-button" type="button" data-collection="jerseyOrders" data-id="${safeText(doc.id)}">DELETE</button>` : ""}
         </div>`;
       }).join("");
-  } catch(e) {
+
+  } catch (error) {
+    console.error("Submission loading error:", error);
     regBox.textContent = "Could not load registrations. Check Firestore Rules.";
     orderBox.textContent = "Could not load orders. Check Firestore Rules.";
   }
 }
 
-window.deleteRecord = async function(collection, id) {
+async function deleteRecord(collection, id) {
   if (currentRole !== "President") {
     alert("Only the President can delete records.");
     return;
   }
+
   if (!confirm("Are you sure you want to delete this record?")) return;
+
   try {
     await db.collection(collection).doc(id).delete();
-    alert("Record deleted.");
-    if (collection === "players") loadPlayers();
-    else if (collection === "matches") loadMatches();
-    else loadSubmissions();
-  } catch(e) {
-    alert("Delete failed: " + e.message);
-  }
-};
+    alert("Record deleted successfully.");
 
-document.getElementById("registrationForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = e.target;
-  const b = f.querySelector("button");
-  b.disabled = true;
+    if (collection === "players") {
+      await loadPlayers();
+    } else if (collection === "matches") {
+      await loadMatches();
+    } else {
+      await loadSubmissions();
+    }
+
+  } catch (error) {
+    alert("Delete failed: " + error.message);
+  }
+}
+
+document.addEventListener("click", event => {
+  const button = event.target.closest(".delete-button");
+  if (!button) return;
+
+  const collection = button.dataset.collection;
+  const id = button.dataset.id;
+
+  if (collection && id) {
+    deleteRecord(collection, id);
+  }
+});
+
+document.getElementById("registrationForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const form = event.target;
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+
   try {
+    const age = Number(fieldValue(form, "age"));
+
+    if (!Number.isInteger(age) || age < 8 || age > 70) {
+      throw new Error("Age must be a whole number between 8 and 70.");
+    }
+
     await db.collection("registrations").add({
-      name: f.name.value.trim(),
-      phone: f.phone.value.trim(),
-      age: Number(f.age.value),
-      role: f.role.value,
-      address: f.address.value.trim(),
+      name: fieldValue(form, "name"),
+      phone: fieldValue(form, "phone"),
+      age: age,
+      role: fieldValue(form, "role"),
+      address: fieldValue(form, "address"),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+
     showMessage("registrationMessage", "Registration submitted successfully. Thank you!");
-    f.reset();
-  } catch(err) {
-    showMessage("registrationMessage", "Submission failed. Please try again later.", true);
+    form.reset();
+
+  } catch (error) {
+    console.error("Registration error:", error);
+    showMessage("registrationMessage", "Submission failed: " + error.message, true);
+
+  } finally {
+    button.disabled = false;
   }
-  b.disabled = false;
 });
 
-document.getElementById("jerseyForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = e.target;
-  const b = f.querySelector("button");
-  b.disabled = true;
+document.getElementById("jerseyForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const form = event.target;
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+
   try {
+    const number = Number(fieldValue(form, "number"));
+
+    if (!Number.isInteger(number) || number < 0 || number > 99) {
+      throw new Error("Jersey number must be between 0 and 99.");
+    }
+
     await db.collection("jerseyOrders").add({
-      name: f.name.value.trim(),
-      phone: f.phone.value.trim(),
-      size: f.size.value,
-      number: Number(f.number.value),
+      name: fieldValue(form, "name"),
+      phone: fieldValue(form, "phone"),
+      size: fieldValue(form, "size"),
+      number: number,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+
     showMessage("jerseyMessage", "Your jersey order has been submitted successfully!");
-    f.reset();
-  } catch(err) {
-    showMessage("jerseyMessage", "Order submission failed. Please try again later.", true);
+    form.reset();
+
+  } catch (error) {
+    console.error("Jersey order error:", error);
+    showMessage("jerseyMessage", "Order submission failed: " + error.message, true);
+
+  } finally {
+    button.disabled = false;
   }
-  b.disabled = false;
 });
 
-document.getElementById("loginForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const f = e.target;
-  const email = f.email.value.trim().toLowerCase();
-  const password = f.password.value;
-  if (![PRESIDENT_EMAIL, ADMIN_EMAIL].includes(email)) {
+document.getElementById("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const form = event.target;
+  const email = fieldValue(form, "email").toLowerCase();
+  const password = form.elements.namedItem("password").value;
+  const button = form.querySelector('button[type="submit"]');
+
+  if (!getRole(email)) {
     showMessage("loginMessage", "This email is not authorized for DPPCC admin access.", true);
     return;
   }
+
+  button.disabled = true;
+
   try {
     await auth.signInWithEmailAndPassword(email, password);
-  } catch(err) {
-    showMessage("loginMessage", "Login failed. Check your email and password.", true);
+    showMessage("loginMessage", "Login successful. Opening dashboard...");
+
+  } catch (error) {
+    console.error("Login error:", error);
+    showMessage("loginMessage", "Login failed: " + error.code + " — " + error.message, true);
+
+  } finally {
+    button.disabled = false;
   }
 });
 
-document.getElementById("logoutButton").addEventListener("click", () => auth.signOut());
-
-document.getElementById("addPlayerForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  if (!currentRole) return;
-  const f = e.target;
+document.getElementById("logoutButton").addEventListener("click", async () => {
   try {
-    await db.collection("players").add({
-      name: f.name.value.trim(),
-      role: f.role.value,
-      jerseyNo: Number(f.jerseyNo.value)
-    });
-    alert("Player added successfully.");
-    f.reset();
-    loadPlayers();
-  } catch(err) {
-    alert("Could not add player. Check Firestore Rules.");
+    await auth.signOut();
+  } catch (error) {
+    alert("Logout failed: " + error.message);
   }
 });
 
-document.getElementById("addMatchForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  if (!currentRole) return;
-  const f = e.target;
+document.getElementById("addPlayerForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!currentRole) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const form = event.target;
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+
+  try {
+    const jerseyNo = Number(fieldValue(form, "jerseyNo"));
+
+    if (!Number.isInteger(jerseyNo) || jerseyNo < 0 || jerseyNo > 999) {
+      throw new Error("Jersey number must be between 0 and 999.");
+    }
+
+    await db.collection("players").add({
+      name: fieldValue(form, "name"),
+      role: fieldValue(form, "role"),
+      jerseyNo: jerseyNo
+    });
+
+    alert("Player added successfully.");
+    form.reset();
+    await loadPlayers();
+
+  } catch (error) {
+    console.error("Add player error:", error);
+    alert("Could not add player: " + error.message);
+
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.getElementById("addMatchForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!currentRole) {
+    alert("Please log in first.");
+    return;
+  }
+
+  const form = event.target;
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true;
+
   try {
     await db.collection("matches").add({
-      opponent: f.opponent.value.trim(),
-      date: f.date.value,
-      venue: f.venue.value.trim(),
-      status: f.status.value,
-      result: f.result.value.trim()
+      opponent: fieldValue(form, "opponent"),
+      date: fieldValue(form, "date"),
+      venue: fieldValue(form, "venue"),
+      status: fieldValue(form, "status"),
+      result: fieldValue(form, "result")
     });
+
     alert("Match added successfully.");
-    f.reset();
-    loadMatches();
-  } catch(err) {
-    alert("Could not add match. Check Firestore Rules.");
+    form.reset();
+    await loadMatches();
+
+  } catch (error) {
+    console.error("Add match error:", error);
+    alert("Could not add match: " + error.message);
+
+  } finally {
+    button.disabled = false;
   }
 });
 
 auth.onAuthStateChanged(async user => {
   currentUser = user;
-  currentRole = user ? getRole((user.email || "").toLowerCase()) : null;
+  currentRole = user ? getRole(user.email) : null;
 
   const loginBox = document.getElementById("loginBox");
   const dashboard = document.getElementById("dashboard");
 
+  if (user && !currentRole) {
+    await auth.signOut();
+    return;
+  }
+
   if (currentRole) {
     loginBox.classList.add("hidden");
     dashboard.classList.remove("hidden");
+
     document.getElementById("welcomeTitle").textContent = "Welcome, " + currentRole;
+
     document.getElementById("roleText").textContent =
       currentRole === "President"
-      ? "President access: full dashboard and delete permissions."
-      : "Admin access: manage players, matches and view submissions.";
+        ? "President access: full dashboard and delete permissions."
+        : "Admin access: manage players, matches and view submissions.";
+
     await loadSubmissions();
+
   } else {
     loginBox.classList.remove("hidden");
     dashboard.classList.add("hidden");
-    if (user) await auth.signOut();
   }
-  loadPlayers();
-  loadMatches();
-});
 
+  await loadPlayers();
+  await loadMatches();
+});
 </script>
+
 </body>
 </html>
