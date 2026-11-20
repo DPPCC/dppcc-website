@@ -331,14 +331,13 @@ const db = firebase.firestore();
 let currentUser = null;
 let currentRole = null;
 
-function showMessage(id, message, error=false) {
+ showMessage(id, message, error=false) {
   const el = document.getElementById(id);
   el.textContent = message;
   el.classList.remove("hidden");
   el.style.background = error ? "#ffe5e5" : "#e5f7eb";
   el.style.color = error ? "#9b1717" : "#14532d";
 }
-
 function getRole(email) {
   if (email === PRESIDENT_EMAIL) return "President";
   if (email === ADMIN_EMAIL) return "Admin";
