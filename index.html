@@ -1,1 +1,137 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#063b2b"><meta name="description" content="Official website of Dungsree Paschim Para Cricket Club"><title>Home | DPPCC</title><link rel="stylesheet" href="styles.css"></head><body data-role=""><div class="top">OFFICIAL WEBSITE · DUNGSREE PASCHIM PARA CRICKET CLUB · ESTABLISHED 2026</div><header class="header"><div class="container nav"><a class="brand" href="index.html"><img src="assets/dppcc-club-logo.jpg" onerror="this.src='assets/player-placeholder.svg'" alt="DPPCC Club Logo"><span>DUNGSREE PASCHIM PARA<br>CRICKET CLUB · DPPCC</span></a><button class="menu" type="button" aria-label="Toggle navigation">MENU ☰</button><nav class="links"><a href="index.html">HOME</a><a href="about.html">ABOUT</a><a href="players.html">PLAYERS</a><a href="registration.html">REGISTER</a><a href="jersey.html">JERSEY</a><a href="matches.html">MATCHES</a><a href="news.html">NEWS</a><a href="gallery.html">GALLERY</a><a href="contact.html">CONTACT</a><a href="staff.html">STAFF</a></nav></div></header><main><section class="hero"><div class="container"><div class="eyebrow">OFFICIAL CRICKET CLUB · ESTABLISHED 2026</div><h1>DUNGSREE PASCHIM PARA CRICKET CLUB</h1><p>Building a stronger cricket community through teamwork, discipline and passion for the game.</p><a class="btn" href="registration.html">JOIN THE TEAM</a><a class="btn line" href="matches.html">MATCH CENTRE</a></div></section><section class="section"><div class="container"><div class="eyebrow">WELCOME TO DPPCC</div><h2>ONE CLUB. ONE TEAM. ONE DREAM.</h2><p class="section-intro">A community cricket club built on commitment, sportsmanship and the love of the game.</p><div class="grid"><article class="card"><h3>Our Players</h3><p>Meet the approved squad and player profiles.</p><a class="btn dark" href="players.html">VIEW PLAYERS</a></article><article class="card"><h3>Match Centre</h3><p>Fixtures, results and score updates.</p><a class="btn dark" href="matches.html">MATCH CENTRE</a></article><article class="card"><h3>Player Registration</h3><p>Apply through our dedicated registration page.</p><a class="btn dark" href="registration.html">REGISTER</a></article></div></div></section><section class="sponsor"><div class="eyebrow">OUR SPONSOR</div><img src="assets/dppcc-sponsor-2003.jpg" alt="Official sponsor logo"></section></main><footer class="footer"><div class="container footergrid"><div><h3>ONE CLUB. ONE TEAM. ONE DREAM.</h3><p>Established 2026.</p><a href="mailto:dungsreepaschimparacricketclub@gmail.com">dungsreepaschimparacricketclub@gmail.com</a></div><div><h3>CLUB</h3><a href="registration.html">Player Registration</a><a href="jersey.html">Jersey Order</a><a href="players.html">Players</a><a href="matches.html">Match Centre</a></div><div><h3>STAFF</h3><a href="login.html">Staff Login</a><a href="staff.html">Staff Portal</a></div></div></footer><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script><script src="firebase-config.js"></script><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#063b2b">
+  <meta name="description" content="Dungsree Paschim Para Cricket Club — One Club. One Team. One Dream.">
+  <title>DPPCC | Dungsree Paschim Para Cricket Club</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="topline"><div class="container top-inner"><span>OFFICIAL CLUB WEBSITE</span><span>ESTABLISHED 2026</span></div></div>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="DPPCC Home">
+        <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo" onerror="this.hidden=true">
+        <span><strong>DUNGSREE PASCHIM PARA</strong><small>CRICKET CLUB · DPPCC</small></span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="মেনু খুলুন" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav" id="mainNav" aria-label="প্রধান মেনু">
+        <a class="active" href="index.html">HOME</a>
+        <a href="about.html">ABOUT</a>
+        <a href="players.html">PLAYERS</a>
+        <a href="matches.html">MATCHES</a>
+        <a href="news.html">NEWS</a>
+        <a href="gallery.html">GALLERY</a>
+        <a href="contact.html">CONTACT</a>
+        <a class="nav-login" href="login.html">STAFF LOGIN</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-pattern"></div>
+      <div class="container hero-content">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> THE OFFICIAL HOME OF DPPCC</p>
+          <h1>ONE CLUB.<br><em>ONE TEAM.</em><br>ONE DREAM.</h1>
+          <p class="hero-description">একতা, শৃঙ্খলা ও ক্রিকেটের ভালোবাসায় — Dungsree Paschim Para Cricket Club.</p>
+          <div class="hero-actions">
+            <a class="btn btn-gold" href="players.html">MEET OUR PLAYERS <span>→</span></a>
+            <a class="btn btn-outline" href="matches.html">MATCH CENTRE</a>
+          </div>
+        </div>
+        <div class="hero-mark">
+          <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo" onerror="this.hidden=true">
+          <span>EST. 2026</span>
+        </div>
+      </div>
+      <div class="hero-bottom"><div class="container"><span>DISCIPLINE</span><i></i><span>TEAMWORK</span><i></i><span>PASSION</span></div></div>
+    </section>
+
+    <section class="quick-strip">
+      <div class="container quick-grid">
+        <a href="players.html"><b>01</b><span>OUR SQUAD</span><small>Meet the team</small></a>
+        <a href="matches.html"><b>02</b><span>MATCH CENTRE</span><small>Fixtures & results</small></a>
+        <a href="news.html"><b>03</b><span>CLUB NEWS</span><small>Latest updates</small></a>
+        <a href="gallery.html"><b>04</b><span>MEDIA</span><small>Photos & videos</small></a>
+      </div>
+    </section>
+
+    <section class="section" id="players">
+      <div class="container">
+        <div class="section-heading">
+          <div><p class="eyebrow green">THE TEAM</p><h2>OUR <em>PLAYERS</em></h2><p class="section-sub">আমাদের দলের খেলোয়াড়দের পরিচিতি ও প্রোফাইল।</p></div>
+          <a class="text-link" href="players.html">VIEW ALL PLAYERS ↗</a>
+        </div>
+        <div class="player-grid" id="homePlayers">
+          <article class="player-card placeholder-card"><div class="player-photo"><span>PLAYER PHOTO</span></div><div class="player-info"><small>PLAYER PROFILE</small><h3>খেলোয়াড়ের নাম</h3><p>ছবি ও তথ্য যোগ হলে এখানে দেখা যাবে</p></div></article>
+          <article class="player-card placeholder-card"><div class="player-photo"><span>PLAYER PHOTO</span></div><div class="player-info"><small>PLAYER PROFILE</small><h3>খেলোয়াড়ের নাম</h3><p>ছবি ও তথ্য যোগ হলে এখানে দেখা যাবে</p></div></article>
+          <article class="player-card placeholder-card"><div class="player-photo"><span>PLAYER PHOTO</span></div><div class="player-info"><small>PLAYER PROFILE</small><h3>খেলোয়াড়ের নাম</h3><p>ছবি ও তথ্য যোগ হলে এখানে দেখা যাবে</p></div></article>
+          <article class="player-card placeholder-card"><div class="player-photo"><span>PLAYER PHOTO</span></div><div class="player-info"><small>PLAYER PROFILE</small><h3>খেলোয়াড়ের নাম</h3><p>ছবি ও তথ্য যোগ হলে এখানে দেখা যাবে</p></div></article>
+        </div>
+        <p class="section-note">খেলোয়াড়ের আসল নাম ও ছবি <code>app.js</code>-এর PLAYERS তালিকায় যোগ করলে এখানে স্বয়ংক্রিয়ভাবে দেখাবে।</p>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="matches">
+      <div class="container">
+        <div class="section-heading light">
+          <div><p class="eyebrow">ON THE FIELD</p><h2>MATCH <em>CENTRE</em></h2><p class="section-sub">সাম্প্রতিক ফলাফল ও আসন্ন ম্যাচের আপডেট।</p></div>
+          <a class="text-link" href="matches.html">ALL MATCHES ↗</a>
+        </div>
+        <div class="match-grid" id="homeMatches">
+          <article class="match-card"><div class="match-label">UPCOMING MATCH</div><div class="match-teams"><div><b>DPPCC</b><small>HOME TEAM</small></div><strong>VS</strong><div><b>OPPONENT</b><small>AWAY TEAM</small></div></div><div class="match-footer"><span>তারিখ ও সময় শিগগিরই জানানো হবে</span><b>FIXTURE</b></div></article>
+          <article class="match-card result-card"><div class="match-label">LATEST RESULT</div><div class="match-teams"><div><b>DPPCC</b><small>HOME TEAM</small></div><strong>—</strong><div><b>OPPONENT</b><small>AWAY TEAM</small></div></div><div class="match-footer"><span>ম্যাচের ফলাফল প্রকাশিত হলে এখানে দেখাবে</span><b>RESULT</b></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="news">
+      <div class="container">
+        <div class="section-heading"><div><p class="eyebrow green">STAY CONNECTED</p><h2>CLUB <em>NEWS</em></h2><p class="section-sub">ক্লাবের ঘোষণা, খবর ও গুরুত্বপূর্ণ আপডেট।</p></div><a class="text-link" href="news.html">ALL NEWS ↗</a></div>
+        <div class="news-grid" id="homeNews">
+          <article class="news-card"><div class="news-art"><span>DPPCC</span></div><div class="news-body"><small>CLUB UPDATE</small><h3>ক্লাবের সর্বশেষ খবর এখানে প্রকাশিত হবে</h3><p>নতুন সংবাদ যোগ করতে app.js-এর NEWS তালিকা সম্পাদনা করুন।</p><a href="news.html">READ MORE ↗</a></div></article>
+          <article class="news-card"><div class="news-art news-art-two"><span>TEAM</span></div><div class="news-body"><small>ANNOUNCEMENT</small><h3>খেলোয়াড় ও ম্যাচ সংক্রান্ত ঘোষণা</h3><p>ক্লাবের গুরুত্বপূর্ণ আপডেট এখানে দেখানো যাবে।</p><a href="news.html">READ MORE ↗</a></div></article>
+          <article class="news-card"><div class="news-art news-art-three"><span>CRICKET</span></div><div class="news-body"><small>CLUB LIFE</small><h3>অনুশীলন ও কার্যক্রমের খবর</h3><p>আসল তথ্য যোগ না করা পর্যন্ত এটি নমুনা কনটেন্ট।</p><a href="news.html">READ MORE ↗</a></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section video-section">
+      <div class="container">
+        <div class="section-heading"><div><p class="eyebrow green">WATCH DPPCC</p><h2>VIDEO <em>HIGHLIGHTS</em></h2><p class="section-sub">ক্লাবের YouTube ভিডিও ও ম্যাচের হাইলাইটস।</p></div><a class="text-link" href="gallery.html">MORE MEDIA ↗</a></div>
+        <div class="video-frame" id="homeVideo"><div class="video-placeholder"><div class="play-icon">▶</div><h3>DPPCC ON YOUTUBE</h3><p>YouTube ভিডিও যুক্ত করতে app.js-এর YOUTUBE_VIDEO_ID পরিবর্তন করুন।</p></div></div>
+      </div>
+    </section>
+
+    <section class="section honours-section" id="honours">
+      <div class="container honours-wrap">
+        <div><p class="eyebrow">OUR JOURNEY</p><h2>HONOURS & <em>PRIZES</em></h2><p>ক্লাবের অর্জন, ট্রফি, পুরস্কার ও স্মরণীয় মুহূর্তগুলো এখানে তুলে ধরা হবে।</p><a class="btn btn-gold" href="about.html">ABOUT THE CLUB <span>→</span></a></div>
+        <div class="honour-placeholder"><div class="trophy">🏆</div><b>OUR ACHIEVEMENTS</b><small>অর্জনের তথ্য যোগ হলে এখানে প্রদর্শিত হবে</small></div>
+      </div>
+    </section>
+
+    <section class="section sponsor-section">
+      <div class="container sponsor-wrap">
+        <div><p class="eyebrow green">WITH THE SUPPORT OF</p><h2>OUR <em>SPONSOR</em></h2><p class="section-sub">ক্লাবের পাশে থাকার জন্য আন্তরিক ধন্যবাদ।</p></div>
+        <div class="sponsor-logo"><img src="assets/dppcc-sponsor-2003.jpg" alt="Official Sponsor Logo" onerror="this.hidden=true"><span class="sponsor-fallback">SPONSOR LOGO</span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-main">
+      <div class="footer-brand"><strong>DPPCC</strong><h3>DUNGSREE PASCHIM PARA<br>CRICKET CLUB</h3><p>ONE CLUB. ONE TEAM. ONE DREAM.</p></div>
+      <div><b>EXPLORE</b><a href="about.html">About Us</a><a href="players.html">Players</a><a href="matches.html">Match Centre</a><a href="gallery.html">Gallery</a></div>
+      <div><b>CONTACT</b><a href="mailto:dungsreepaschimparacricketclub@gmail.com">Official Club Email</a><a href="contact.html">Contact Page</a></div>
+    </div>
+    <div class="container footer-bottom"><span>© <span id="yearNow">2026</span> DPPCC. ALL RIGHTS RESERVED.</span><span>ESTABLISHED 2026</span></div>
+  </footer>
+</body>
+</html>

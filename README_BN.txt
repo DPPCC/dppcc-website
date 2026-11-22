@@ -1,33 +1,36 @@
-DPPCC OFFICIAL WEBSITE — FINAL FIXED PACKAGE
-
-এই প্যাকেজটি একই GitHub Repository এবং একই Firebase Project-এর জন্য তৈরি।
-
-এইবার যেসব সমস্যা ঠিক করা হয়েছে:
-1. সব পেজে Menu সরাসরি HTML-এর মধ্যে আছে — JavaScript বন্ধ থাকলেও Menu দেখা যাবে।
-2. সব পেজে Club Logo সরাসরি HTML-এ আছে। Home Page-এর Hero Logo আগের মতোই রাখা হয়েছে (Desktop-এ সর্বোচ্চ 320px, Mobile-এ 220px)।
-3. CSS ও JavaScript-এর সঠিক ফোল্ডার/পাথ দেওয়া হয়েছে: css/style.css এবং js/app.js।
-4. Owner, Admin, Captain ও Manager-এর আলাদা Dashboard এবং Role যাচাই ঠিক করা হয়েছে।
-5. Player, Match ও News Edit; Owner-only Delete; Live Score; Registration Review; Jersey Order Status; Staff Access এবং Owner Backup যুক্ত আছে।
-6. Club Established Year 2026। 2003 শুধু Sponsor branding-এ আছে।
-
-গুরুত্বপূর্ণ — ছবি ও Firebase:
-- তোমার GitHub Repository-র assets ফোল্ডারে থাকা এই দুটি আগের ছবি অপরিবর্তিত রাখবে:
-  assets/dppcc-club-logo.jpg
-  assets/dppcc-sponsor-2003.jpg
-- এই ZIP-এ assets ফোল্ডার রাখা হয়নি, যাতে আগের ছবিগুলো ভুল করে Replace/Delete না হয়।
-- Firebase Project: dppcc-official — আগেরটাই ব্যবহার করা হয়েছে।
-- Firestore Collections: players, matches, registrations, jerseyOrders, staff, liveScores, news — আগের নামই রাখা হয়েছে।
-- আগের Published Firestore Rules পরিবর্তন করার দরকার নেই। এই প্যাকেজের জন্য নতুন Rules Publish করবে না।
-- Firebase Authentication-এর Owner/Admin/Captain/Manager account বা password এই কোডে রাখা হয়নি।
-
-GitHub-এ ফাইল বসানোর নিয়ম:
-- ZIP Extract করলে index.html, অন্য HTML পেজ, css ফোল্ডার, js ফোল্ডার এবং এই README পাওয়া যাবে।
-- GitHub Repository-র মূল জায়গায় (যেখানে বর্তমান index.html আছে) Extract করা সব ফাইল/ফোল্ডার Upload করবে।
-- DPPCC_FINAL নামে আলাদা Folder-এর ভিতরে সব ফাইল রেখে দেবে না। index.html অবশ্যই Repository-র মূল জায়গায় থাকতে হবে।
-- আগের assets ফোল্ডার এবং Firestore Rules file মুছবে না।
-- পুরোনো root-level style.css থাকলে সেটি থাকলেও সমস্যা নেই; নতুন পেজগুলো css/style.css ব্যবহার করবে।
+DPPCC HOMEPAGE FIX — বাংলা নির্দেশনা
 
 এই প্যাকেজে আছে:
-index.html, about.html, players.html, register.html, jersey.html, matches.html,
-news.html, sponsor.html, login.html, owner.html, admin.html, captain.html,
-manager.html, css/style.css, js/app.js
+1. index.html — নতুন হোমপেজ
+2. styles.css — responsive design
+3. app.js — মোবাইল মেনু এবং হোমপেজের তথ্য দেখানোর JavaScript
+
+GitHub-এ বসানোর নিয়ম:
+1. ZIP Extract করুন।
+2. GitHub repository-এর মূল জায়গায় (root) যান।
+3. Add file → Upload files চাপুন।
+4. এই প্যাকেজের index.html, styles.css, app.js — তিনটি ফাইল একসঙ্গে আপলোড করুন।
+5. আগের index.html ও styles.css থাকলে GitHub Replace/overwrite করতে বললে সেটি নিশ্চিত করুন।
+6. Commit changes চাপুন।
+
+গুরুত্বপূর্ণ:
+- assets/dppcc-club-logo.jpg এবং assets/dppcc-sponsor-2003.jpg আগের মতো repository-তে রাখবেন।
+- images/players ফোল্ডার মুছবেন না।
+- মেনুতে About, Players, Matches, News, Gallery, Contact, Staff Login লিংক আছে। সংশ্লিষ্ট HTML পেজগুলো repository-তে থাকতে হবে।
+- প্রতিষ্ঠার বছর 2026 রাখা হয়েছে। Sponsor logo-র 2003-কে প্রতিষ্ঠার বছর বলা হয়নি।
+- স্পনসরের নাম টেক্সট হিসেবে দেখানো হয়নি; শুধু sponsor logo দেখানোর ব্যবস্থা আছে।
+- খেলোয়াড়ের নাম/ছবি, আসল নিউজ, ম্যাচের ফলাফল এবং YouTube ভিডিও ID না পাওয়া পর্যন্ত কোনো বাস্তব তথ্য বানিয়ে দেওয়া হয়নি।
+
+খেলোয়াড় যোগ করা:
+app.js খুলে PLAYERS তালিকায় এই ফরম্যাটে তথ্য দিন:
+{ name: "খেলোয়াড়ের নাম", role: "Batter", photo: "images/players/player-01.jpg", number: "07" }
+
+YouTube ভিডিও যোগ করা:
+app.js-এ YOUTUBE_VIDEO_ID = "" এর ভেতরে YouTube URL-এর 11 অক্ষরের video ID বসান।
+উদাহরণ: https://www.youtube.com/watch?v=abcdefghijk হলে ID হলো abcdefghijk।
+
+নিউজ/ম্যাচ:
+app.js-এর NEWS এবং MATCHES তালিকায় শুধু নিশ্চিত তথ্য যোগ করবেন।
+
+নিরাপত্তা ও Firebase:
+এই তিনটি ফাইল হোমপেজের UI ও menu ঠিক করে। এগুলো Firebase Authentication, Firestore, Storage বা dashboard security rules-এর বিকল্প নয়। Firebase config বা Security Rules এই প্যাকেজে পরিবর্তন করা হয়নি।
