@@ -1,1 +1,0 @@
-Open index.html to preview the site. Firebase must be configured and its rules published for live data/forms/login.
