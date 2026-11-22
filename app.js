@@ -1,37 +1,38 @@
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Mobile menu
-  const menu = document.querySelector(".menu");
-  const links = document.querySelector(".links");
 
-  if (menu && links) {
+  // Mobile Menu
+  const menu = document.querySelector(".toggle");
+  const nav = document.querySelector(".nav");
+
+  if (menu && nav) {
     menu.addEventListener("click", function () {
-      const open = links.classList.toggle("open");
-      menu.setAttribute("aria-expanded", String(open));
-      menu.textContent = open ? "✕ CLOSE" : "☰ MENU";
+      const isOpen = nav.classList.toggle("open");
+      menu.setAttribute("aria-expanded", String(isOpen));
+      menu.textContent = isOpen ? "✕" : "☰";
     });
 
-    links.querySelectorAll("a").forEach(function (link) {
+    nav.querySelectorAll("a").forEach(function (link) {
       link.addEventListener("click", function () {
-        links.classList.remove("open");
+        nav.classList.remove("open");
         menu.setAttribute("aria-expanded", "false");
-        menu.textContent = "☰ MENU";
+        menu.textContent = "☰";
       });
     });
   }
 
-  // Club year
+  // Club Year
   document.querySelectorAll("[data-year]").forEach(function (el) {
     el.textContent = "2026";
   });
 
-  // Sponsor logo
+  // Sponsor Logo
   document.querySelectorAll("[data-sponsor]").forEach(function (img) {
     img.src = "assets/dppcc-sponsor-2003.jpg";
     img.alt = "DPPCC sponsor logo";
   });
 
-  // Official player directory
+  // Player Directory
   const playersList = document.getElementById("playersList");
 
   if (playersList) {
@@ -68,4 +69,5 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
     }).join("");
   }
+
 });
