@@ -1,42 +1,33 @@
-DPPCC WEBSITE DEMO — BANGLADESH-INSPIRED CRICKET CLUB STYLE
+DPPCC OFFICIAL WEBSITE — FINAL PROJECT PACKAGE
 
-FILES
-- index.html: the website
-- assets/dppcc-club-logo.jpg: your original club logo
-- assets/dppcc-sponsor-2003.jpg: your original sponsor image
+প্রজেক্টে আছে: Home, About, Players, Registration, Jersey Order, Match Centre, News, Gallery, Contact, Staff Login, Owner, Admin, Manager ও Captain dashboard।
 
-PUBLISH FREE WITH GITHUB PAGES
-1. Open https://github.com in Chrome and create/sign in to a free account.
-2. Tap + > New repository. Name it: dppcc-website. Set Public and create it.
-3. Upload index.html and the complete assets folder (keep the folder name exactly "assets").
-   On GitHub mobile website, use Add file > Upload files. If selecting folders is difficult,
-   upload the two image files into an assets folder using Add file > Create new file and
-   create assets/.gitkeep first, then upload images into that folder.
-4. Open repository Settings > Pages.
-5. Under Build and deployment, choose Deploy from a branch; select main and /(root), then Save.
-6. Wait a few minutes and open the published URL shown in Settings > Pages.
-   It will look like https://YOUR-USERNAME.github.io/dppcc-website/
+ব্র্যান্ডিং: Club established 2026। Sponsor logo-র 2003 বছরটি ক্লাবের প্রতিষ্ঠাবর্ষ নয়। Sponsor-এর নাম টেক্সট হিসেবে দেখানো হয় না; শুধু logo image দেখানো হয়।
 
-CONNECT REAL REGISTRATION AND JERSEY FORMS
-1. On your phone open https://forms.google.com and create a blank form.
-2. Registration form fields: Full name, Date of birth/age, Phone/WhatsApp, Playing role,
-   Batting style, Bowling style, Previous team/experience, Address, Photo (optional).
-3. Create another form for jersey orders: Full name, Phone/WhatsApp, Jersey size,
-   Name to print, Jersey number, Quantity, Delivery/pickup details.
-4. In each form, use Responses > Link to Sheets (or select a response destination) to save answers.
-5. Copy each form's responder link.
-6. Edit index.html in GitHub. Find REGISTRATION_FORM_URL and JERSEY_ORDER_FORM_URL near
-   the bottom, paste the two links between the quotation marks, and save/commit.
-7. Test both buttons from the live website.
+গুরুত্বপূর্ণ পুরোনো ছবি: আগের GitHub repository-তে থাকা এই ফাইলগুলো অক্ষত রাখুন এবং নতুন ZIP আপলোডের সময় assets ফোল্ডার মুছবেন না:
+- assets/dppcc-club-logo.jpg
+- assets/dppcc-sponsor-2003.jpg
 
-DESIGN NOTE
-- The layout uses a modern international cricket-team style with green/red accents inspired by Bangladesh cricket presentation.
-- Your supplied DPPCC crest and black 2003 sponsor artwork are used as-is; they are not redrawn.
+PLAYER PHOTO: Registration form-এ JPG/PNG/WEBP, সর্বোচ্চ 5MB ছবি আবশ্যক। Preview ও Players list-এ 7:9 passport-style crop ব্যবহার হয়। Manager application approve করলে private application photo-র download URL approved public player profile-এ যুক্ত হয়; অনুমোদনের আগে photo read শুধু authorized staff করতে পারে।
 
-IMPORTANT
-- This is a static demo. The registration/order buttons do not collect data until you connect
-  your own Google Forms links.
-- Do not publish players' private phone numbers, addresses, birth dates or personal photos
-  without their permission. Keep form response Sheets private to club admins.
-- Replace sample player names, fixture details, club history and contact email before launch.
-- GitHub Pages sites from public repositories are publicly visible. Do not upload private data.
+FIREBASE CONFIG (অবশ্যই করতে হবে):
+1. Firebase Console → Project settings → General → Your apps → Web app config নিন।
+2. firebase-config.js খুলে apiKey, authDomain, projectId, storageBucket (Firebase Console-এ দেখানো হুবহু value), messagingSenderId, appId বসান।
+3. Firebase Console-এ Authentication → Sign-in method → Email/Password enable করুন।
+4. Firestore Database এবং Storage চালু করুন।
+5. Firebase Console-এ firestore.rules-এর সব কোড Firestore Rules-এ publish করুন।
+6. storage.rules-এর সব কোড Storage Rules-এ publish করুন।
+
+OWNER EMAIL: বর্তমান GitHub repository-র DPPCC_FIRESTORE_RULES_REFERENCE.txt-এ Owner email হিসেবে mdshiponahmed0455@gmail.com দেওয়া আছে; এই প্যাকেজে সেটিই রাখা হয়েছে। আগের Staff Access পেজে shiponahmed5710@gmail.com-কে Admin দেখানো হয়েছিল—সেই account-টি Owner Dashboard থেকে Admin role পাবে, Owner নয়। Firebase Authentication-এ Owner email-এর account থাকতে হবে। যদি Owner account অন্য email হয়, firebase-config.js এবং firestore.rules/storage.rules-এ একই owner email পরিবর্তন করতে হবে।
+
+STAFF ACCOUNT: Firebase Authentication → Add user দিয়ে প্রথমে Admin/Manager/Captain-এর email/password account তৈরি করুন। এরপর Owner dashboard → Staff account roles থেকে একই email-কে role দিন। Dashboard থেকে নতুন Firebase Auth user/password তৈরি করা হয় না।
+
+GITHUB PAGES: সব HTML, CSS, JS, rules, config এবং assets folder repository root-এ রাখুন। GitHub Pages শুধু static hosting করে; Firebase Firestore/Storage আলাদাভাবে Firebase Console-এ configure করতে হবে। Firebase Hosting-এ deploy করতে Firebase CLI দিয়ে `firebase deploy --only hosting,firestore:rules,storage` চালান।
+
+SECURITY NOTES:
+- firebase-config.js-এর Firebase web config public client config; এখানে service account private key/API secret দেবেন না।
+- Firestore/Storage rules হলো প্রকৃত access control; শুধু dashboard URL গোপন রাখা নিরাপত্তা নয়।
+- Public registration create করা যায়, কিন্তু submissions শুধু active Admin/Manager/Owner দেখতে পারে। Registration photo read private staff roles-এ সীমাবদ্ধ।
+- Auto email notification এই প্যাকেজে নেই। Forms Firebase-এ save হয়; email alert চাইলে আলাদা Cloud Function/Email extension লাগবে। Production public forms চালুর আগে Firebase App Check চালু করার পরামর্শ দেওয়া হচ্ছে।
+
+TESTING: HTML parse, JavaScript syntax, JSON config এবং ZIP integrity স্থানীয়ভাবে যাচাই করা হবে। Firebase config ও live project credentials ছাড়া বাস্তব Firebase login/upload/security deployment test করা যায় না।
