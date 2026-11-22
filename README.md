@@ -1,2 +1,3 @@
 # DPPCC Official Website
-15-page responsive cricket club site. See README-BN.txt for Bengali Firebase and GitHub setup. Club established 2026. Preserve existing logo assets.
+
+See `README-BN.txt` for setup instructions. 15 separate HTML pages, Firebase Auth/Firestore/Storage integration, and Firestore/Storage security rules. Club established 2026. Preserve existing `assets/` and `images/players/` files when merging into GitHub.

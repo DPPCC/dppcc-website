@@ -1,23 +1,25 @@
-DPPCC WEBSITE SOURCE PACKAGE — বাংলা নির্দেশনা
+DPPCC WEBSITE — FINAL SOURCE PACKAGE (বাংলা নির্দেশনা)
 
-১৫টি আলাদা পেজ: index, about, players, registration, jersey, matches, news, gallery, contact, staff, login, owner, admin, manager, captain.
+১৫টি আলাদা HTML পেজ: index, about, players, registration, jersey, matches, news, gallery, contact, staff, login, owner, admin, manager, captain।
 
-GitHub Pages: main branch / root থেকে publish করুন। সব ফাইল Repository-এর Root-এ রাখুন। assets/ ও images/players/ ফোল্ডার রাখুন। আগের আসল ছবি এই নামেই assets-এ রাখুন: dppcc-club-logo.jpg এবং dppcc-sponsor-2003.jpg। Sponsor-এর নাম কোনো টেক্সট হিসেবে দেখানো হয় না; শুধু logo image path আছে। Club established 2026.
+গুরুত্বপূর্ণ ব্র্যান্ডিং: Club Established 2026. Sponsor-এর নাম কোনো টেক্সট হিসেবে দেখানো হয় না; sponsor logo image path assets/dppcc-sponsor-2003.jpg। Club logo assets/dppcc-club-logo.jpg। আপনার আগের GitHub assets/ এবং images/players/ ফোল্ডার এই প্যাকেজের .gitkeep দিয়ে overwrite করবেন না; আগের আসল ছবি সংরক্ষণ করে ফোল্ডার merge করবেন।
 
-Firebase config: firebase-config.js-এ আগের DPPCC Web App configuration বসানো আছে। Firebase Web API key browser-এ দৃশ্যমান হওয়া স্বাভাবিক; Security Rules-ই data access রক্ষা করে।
+GitHub Pages: Settings > Pages > Deploy from branch > main > /(root)। সব HTML, CSS, JS, Firebase config, rules এবং firebase.json Repository Root-এ রাখুন।
 
-Firebase Console checklist:
-1. Authentication > Sign-in method > Email/Password enable.
-2. Firestore Database তৈরি/চালু রাখুন।
-3. Storage bucket তৈরি/চালু রাখুন।
-4. Authentication > Settings > Authorized domains-এ dppcc.github.io যোগ করুন।
-5. firestore.rules সম্পূর্ণ copy করে Firestore Rules-এ Publish করুন।
-6. storage.rules সম্পূর্ণ copy করে Storage Rules-এ Publish করুন।
-7. President account: mdshiponahmed0455@gmail.com; Admin account: shiponahmed5710@gmail.com — Firebase Authentication-এ account থাকতে হবে।
-8. Manager/Captain-এর Auth UID দিয়ে Firestore staff collection-এ document তৈরি করুন; field role = manager অথবা captain। Staff role document কেবল President তৈরি/পরিবর্তন করতে পারবেন।
+Firebase Project: dppcc-official. Web App configuration firebase-config.js-এ আগের কথোপকথনে দেওয়া তথ্য থেকে রাখা হয়েছে। Web API key browser-এ দৃশ্যমান হওয়া স্বাভাবিক; নিরাপত্তা Firestore/Storage Rules দিয়ে প্রয়োগ হয়। Firebase Console-এ Project Settings-এর Web App config-এর সঙ্গে মিলিয়ে নেবেন।
 
-Registration: player photo JPG/PNG/WEBP, maximum 5MB, 7:9 passport-style preview; image Firebase Storage-এ এবং application Firestore registrations collection-এ Pending হিসেবে জমা হয়। Jersey order jerseyOrders-এ Pending হিসেবে জমা হয়। Email notification স্বয়ংক্রিয় নয়; email sending-এর জন্য Cloud Function/Email Extension দরকার।
+Firebase setup checklist:
+1) Authentication > Sign-in method > Email/Password enable করুন।
+2) Firestore Database চালু রাখুন (আগের তথ্য অনুযায়ী asia-south1)।
+3) Storage bucket চালু/তৈরি করুন এবং firebase-config.js-এর storageBucket-এর সঙ্গে মিলিয়ে নিন।
+4) Authentication > Settings > Authorized domains-এ dppcc.github.io যোগ করুন।
+5) firestore.rules সম্পূর্ণ কপি করে Firestore Rules-এ Publish করুন।
+6) storage.rules সম্পূর্ণ কপি করে Storage Rules-এ Publish করুন।
+7) Owner account: mdshiponahmed0455@gmail.com; Admin account: shiponahmed5710@gmail.com — এই ইমেইল দিয়ে Firebase Authentication-এ account থাকতে হবে।
+8) Manager/Captain: Authentication user UID অনুযায়ী staff collection-এ document তৈরি করুন; role field manager বা captain দিন। staff role document কেবল Owner তৈরি/পরিবর্তন করতে পারবেন।
 
-গুরুত্বপূর্ণ সীমাবদ্ধতা: Firebase project-এর live access ছাড়া deployed login/upload/rules test করা যায়নি। Dashboard-এ request list read-only; approval/edit interface, news editor, gallery uploader ও live scoring input এই package-এ নেই। Public photo upload-এ abuse প্রতিরোধে App Check/rate limiting/Cloud Function যোগ করা উচিত। Storage rules-এ file size/type সীমা আছে।
+ফাংশন: Player Registration photo Firebase Storage-এ upload এবং Firestore registrations collection-এ pending আবেদন তৈরি করে। Manager/উচ্চতর অনুমোদন করলে players collection-এ approved profile তৈরি হয়। Jersey order Firestore-এ জমা হয়। Public website approved player, matches, news, gallery দেখায়। Manager/উচ্চতর news/gallery পরিচালনা করতে পারে; Captain/উচ্চতর match পরিচালনা করতে পারে। Dashboard-এ Registration approval এবং submission list আছে।
 
-Demo: index.html খুলুন। অথবা computer-এ folder থেকে `python3 -m http.server 8000` চালিয়ে http://localhost:8000 খুলুন। Firebase connect না থাকলে empty/demo state দেখাবে।
+সীমাবদ্ধতা ও নিরাপত্তা নোট: GitHub Pages static hosting; Cloud Functions/Email extension ছাড়া email notification পাঠানো হয় না। Public registration endpoint-এ spam/abuse কমাতে Firebase App Check ও rate-limiting/Cloud Function পরবর্তীতে যোগ করুন। Firebase live project-এ publish/test না করা পর্যন্ত authentication, Storage bucket, Firestore/Storage rules live কার্যকর হয়েছে বলে ধরে নেবেন না। Rules publish করার পর owner/admin account দিয়ে পরীক্ষা করুন।
+
+Demo: index.html। Firebase config অনুপস্থিত/নিষ্ক্রিয় থাকলে data form submit হবে না; এটি নিরাপদ failure state।

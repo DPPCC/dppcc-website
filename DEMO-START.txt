@@ -1,1 +1,1 @@
-Open index.html in browser. Firebase-connected forms require Firebase services and published rules.
+Open index.html to preview the site. Firebase must be configured and its rules published for live data/forms/login.
