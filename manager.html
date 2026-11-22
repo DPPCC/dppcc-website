@@ -1,1 +1,206 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Official website of Dungsree Paschim Para Cricket Club"><title>Manager Dashboard | DPPCC</title><link rel="stylesheet" href="styles.css"></head><body><div class="top"><span>OFFICIAL CLUB WEBSITE · EST. 2026</span><span><a href="mailto:dungsreepaschimparacricketclub@gmail.com">CONTACT</a>　<a href="login.html">STAFF SIGN IN</a></span></div><header class="header"><div class="head"><a class="brand" href="index.html"><img src="assets/dppcc-club-logo.jpg" alt="DPPCC logo" onerror="this.style.display='none'"><span><b>DUNGSREE PASCHIM PARA<br>CRICKET CLUB</b><small>DPPCC · EST. 2026</small></span></a><button class="toggle" aria-label="Open menu" aria-expanded="false">☰</button><nav class="nav"><a href="index.html">HOME</a><a href="about.html">ABOUT</a><a href="players.html">PLAYERS</a><a href="rankings.html">RANKINGS</a><a href="matches.html">MATCH CENTRE</a><a href="news.html">NEWS</a><a href="videos.html">VIDEOS</a><a href="gallery.html">GALLERY</a></nav></div></header><div class="sub"><div class="subin"><a href="match-centre.html">FIXTURES & RESULTS</a><a href="awards.html">AWARDS</a><a href="history.html">HISTORY</a><a href="registration.html">REGISTER</a><a href="jersey.html">JERSEY</a><a href="contact.html">CONTACT</a><a href="login.html">STAFF LOGIN</a></div></div><section class="title"><div class="titlein"><h1>Manager Dashboard</h1><p>Dungsree Paschim Para Cricket Club · ONE CLUB. ONE TEAM. ONE DREAM.</p></div></section><main class="wrap"><div class="notice">Manager dashboard layout. Firebase role verification is required.</div><div class="panel"><h2>Manager Dashboard</h2><p>Manage assigned player and match information.</p></div></main><footer class="footer"><div class="foot"><div><h3>DPPCC</h3><p>Dungsree Paschim Para Cricket Club</p><p>ONE CLUB. ONE TEAM. ONE DREAM.</p><p>Established 2026</p><a href="mailto:dungsreepaschimparacricketclub@gmail.com">dungsreepaschimparacricketclub@gmail.com</a></div><div><h3>Explore</h3><a href="index.html">Home</a><a href="about.html">About</a><a href="players.html">Players</a><a href="rankings.html">Rankings</a><a href="matches.html">Match Centre</a><a href="news.html">News</a></div><div><h3>Club</h3><a href="match-centre.html">Fixtures & Results</a><a href="awards.html">Awards</a><a href="history.html">History</a><a href="registration.html">Register</a><a href="jersey.html">Jersey</a><a href="contact.html">Contact</a><a href="login.html">Staff Login</a><img class="sponsor" data-sponsor alt="Official sponsor logo"></div></div><div class="copy">© <span data-year>2026</span> Dungsree Paschim Para Cricket Club. All rights reserved.</div></footer><script src="app.js"></script></body></html>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Official Manager Dashboard of DPPCC">
+  <title>Manager Dashboard | DPPCC</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="top">
+  <span>OFFICIAL CLUB WEBSITE · EST. 2026</span>
+  <span>
+    <a href="mailto:dungsreepaschimparacricketclub@gmail.com">CONTACT</a>
+    <a href="login.html">STAFF SIGN IN</a>
+  </span>
+</div>
+
+<header class="header">
+  <div class="head">
+    <a class="brand" href="index.html">
+      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC logo"
+           onerror="this.style.display='none'">
+      <span>
+        <b>DUNGSREE PASCHIM PARA<br>CRICKET CLUB</b>
+        <small>DPPCC · EST. 2026</small>
+      </span>
+    </a>
+    <button class="toggle" aria-label="Open menu"
+            aria-expanded="false">☰</button>
+    <nav class="nav">
+      <a href="index.html">HOME</a>
+      <a href="about.html">ABOUT</a>
+      <a href="players.html">PLAYERS</a>
+      <a href="rankings.html">RANKINGS</a>
+      <a href="matches.html">MATCH CENTRE</a>
+      <a href="news.html">NEWS</a>
+      <a href="videos.html">VIDEOS</a>
+      <a href="gallery.html">GALLERY</a>
+    </nav>
+  </div>
+</header>
+
+<div class="sub">
+  <div class="subin">
+    <a href="match-centre.html">FIXTURES & RESULTS</a>
+    <a href="awards.html">AWARDS</a>
+    <a href="history.html">HISTORY</a>
+    <a href="registration.html">REGISTER</a>
+    <a href="jersey.html">JERSEY</a>
+    <a href="contact.html">CONTACT</a>
+    <a href="login.html">STAFF LOGIN</a>
+  </div>
+</div>
+
+<section class="title">
+  <div class="titlein">
+    <h1>Manager Dashboard</h1>
+    <p>Dungsree Paschim Para Cricket Club · ONE CLUB.
+       ONE TEAM. ONE DREAM.</p>
+  </div>
+</section>
+
+<main class="wrap" id="managerContent" style="display:none">
+
+  <div class="notice" id="managerStatus" role="status">
+    Verifying Manager access...
+  </div>
+
+  <div class="panel">
+    <h2>Manager Dashboard</h2>
+    <p>Manage club operations and review club submissions.</p>
+    <p id="managerEmail"></p>
+  </div>
+
+  <div class="grid">
+
+    <div class="panel">
+      <h3>Match Management</h3>
+      <p>View fixtures and match results.</p>
+      <a class="btn dark" href="matches.html">View Matches</a>
+    </div>
+
+    <div class="panel">
+      <h3>Player Directory</h3>
+      <p>View the official club squad.</p>
+      <a class="btn dark" href="players.html">View Players</a>
+    </div>
+
+    <div class="panel">
+      <h3>Registrations</h3>
+      <p>Review player registration submissions.</p>
+      <a class="btn dark" href="registration.html">View Registration</a>
+    </div>
+
+    <div class="panel">
+      <h3>Jersey Orders</h3>
+      <p>View club jersey information and orders.</p>
+      <a class="btn dark" href="jersey.html">View Jerseys</a>
+    </div>
+
+  </div>
+
+  <div class="panel">
+    <button class="btn dark" id="managerLogout" type="button">
+      Sign Out
+    </button>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div class="foot">
+    <div>
+      <h3>DPPCC</h3>
+      <p>Dungsree Paschim Para Cricket Club</p>
+      <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
+      <p>Established 2026</p>
+      <a href="mailto:dungsreepaschimparacricketclub@gmail.com">
+        dungsreepaschimparacricketclub@gmail.com
+      </a>
+    </div>
+    <div>
+      <h3>Explore</h3>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="players.html">Players</a>
+      <a href="rankings.html">Rankings</a>
+      <a href="matches.html">Match Centre</a>
+      <a href="news.html">News</a>
+    </div>
+    <div>
+      <h3>Club</h3>
+      <a href="match-centre.html">Fixtures & Results</a>
+      <a href="awards.html">Awards</a>
+      <a href="history.html">History</a>
+      <a href="registration.html">Register</a>
+      <a href="jersey.html">Jersey</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Staff Login</a>
+      <img class="sponsor" data-sponsor alt="Official sponsor logo">
+    </div>
+  </div>
+  <div class="copy">
+    © <span data-year>2026</span>
+    Dungsree Paschim Para Cricket Club. All rights reserved.
+  </div>
+</footer>
+
+<script src="app.js"></script>
+
+<script type="module">
+  import {
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+  import { auth } from "./firebase-config.js";
+
+  const allowedEmails = [
+    "dungsreepaschimparacricketclub@gmail.com",
+    "dppccadmin@gmail.com",
+    "dppccmanager@gmail.com"
+  ];
+
+  const content = document.getElementById("managerContent");
+  const status = document.getElementById("managerStatus");
+  const emailDisplay = document.getElementById("managerEmail");
+  const logoutButton = document.getElementById("managerLogout");
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.replace("login.html");
+      return;
+    }
+
+    const email = user.email?.toLowerCase();
+
+    if (!allowedEmails.includes(email)) {
+      await signOut(auth);
+      window.location.replace("login.html");
+      return;
+    }
+
+    emailDisplay.textContent = "Signed in as: " + email;
+    status.textContent = "Manager access verified.";
+    content.style.display = "";
+  });
+
+  logoutButton.addEventListener("click", async () => {
+    logoutButton.disabled = true;
+
+    try {
+      await signOut(auth);
+      window.location.replace("login.html");
+    } catch (error) {
+      status.textContent = "Sign out failed. Please try again.";
+      logoutButton.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
