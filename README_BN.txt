@@ -1,13 +1,11 @@
-DPPCC FINAL MULTI-PAGE WEBSITE
+DPPCC WEBSITE UPDATE – INSTALLATION
 
-গুরুত্বপূর্ণ: ZIP-এ assets ফোল্ডার খালি রাখা হয়েছে। তোমার GitHub repository-তে আগে থেকে থাকা assets/dppcc-club-logo.jpg এবং assets/dppcc-sponsor-2003.jpg ফাইল দুটি অবশ্যই রেখে দেবে। সেগুলো মুছবে না।
+এই ZIP-এ আলাদা আলাদা পেজ দেওয়া হয়েছে। একই GitHub repository-তে পুরোনো index.html এবং সংশ্লিষ্ট পুরোনো HTML ফাইলগুলো replace করে ZIP-এর সব ফাইল upload করুন। css এবং js folder-সহ upload করতে হবে। assets folder-এ আগের logo ও sponsor image রাখবেন।
 
-ফাইলগুলো GitHub repository root-এ upload করবে: index.html, about.html, players.html, register.html, jersey.html, matches.html, news.html, sponsor.html, login.html, owner.html, admin.html, captain.html, manager.html, css/, js/।
+গুরুত্বপূর্ণ: assets/dppcc-club-logo.jpg এবং assets/dppcc-sponsor-2003.jpg আগের repository থেকে assets folder-এ রেখে দিন। ZIP-এ image file নেই।
 
-ESTABLISHED 2026। Sponsor page-এ শুধু ২০০৩ সালের Sponsor Logo; কোনো ব্যক্তির নাম লেখা নেই।
+Firebase project: dppcc-official (আগেরটাই)। Firestore collection names: players, matches, registrations, jerseyOrders, staff, liveScores, news. আগের Firestore Rules অপরিবর্তিত রাখুন।
 
-Firebase project ও config আগের dppcc-official। Firestore Rules নতুন করে publish করার দরকার নেই; বর্তমান email document ID ভিত্তিক rules-এর সঙ্গে role lookup মেলানো হয়েছে।
+Staff login: login.html. Role অনুযায়ী owner.html, admin.html, captain.html, manager.html-এ যাবে। Owner email code-এ mdshiponahmed0455@gmail.com। Staff account Firebase Authentication-এ আগে তৈরি থাকতে হবে; Owner Dashboard থেকে role assign করতে হবে।
 
-Staff যোগ করতে: আগে Firebase Authentication > Users থেকে email/password account তৈরি করতে হবে। এরপর Owner Dashboard > Staff Account & Role Management-এ একই email দিয়ে role assign করতে হবে। Password কখনো GitHub বা Firestore-এ লিখবে না।
-
-Owner email: mdshiponahmed0455@gmail.com
+নোট: Firebase Rules আগের মতো role-based access বজায় রাখে। এই package-এ public data read, public registration/order submission, এবং dashboard actions আগের collection schema অনুসারে করা হয়েছে। GitHub-এ publish করার আগে test করুন।
