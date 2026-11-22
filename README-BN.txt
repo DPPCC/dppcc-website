@@ -1,33 +1,23 @@
-DPPCC OFFICIAL WEBSITE — FINAL PROJECT PACKAGE
+DPPCC WEBSITE SOURCE PACKAGE — বাংলা নির্দেশনা
 
-প্রজেক্টে আছে: Home, About, Players, Registration, Jersey Order, Match Centre, News, Gallery, Contact, Staff Login, Owner, Admin, Manager ও Captain dashboard।
+১৫টি আলাদা পেজ: index, about, players, registration, jersey, matches, news, gallery, contact, staff, login, owner, admin, manager, captain.
 
-ব্র্যান্ডিং: Club established 2026। Sponsor logo-র 2003 বছরটি ক্লাবের প্রতিষ্ঠাবর্ষ নয়। Sponsor-এর নাম টেক্সট হিসেবে দেখানো হয় না; শুধু logo image দেখানো হয়।
+GitHub Pages: main branch / root থেকে publish করুন। সব ফাইল Repository-এর Root-এ রাখুন। assets/ ও images/players/ ফোল্ডার রাখুন। আগের আসল ছবি এই নামেই assets-এ রাখুন: dppcc-club-logo.jpg এবং dppcc-sponsor-2003.jpg। Sponsor-এর নাম কোনো টেক্সট হিসেবে দেখানো হয় না; শুধু logo image path আছে। Club established 2026.
 
-গুরুত্বপূর্ণ পুরোনো ছবি: আগের GitHub repository-তে থাকা এই ফাইলগুলো অক্ষত রাখুন এবং নতুন ZIP আপলোডের সময় assets ফোল্ডার মুছবেন না:
-- assets/dppcc-club-logo.jpg
-- assets/dppcc-sponsor-2003.jpg
+Firebase config: firebase-config.js-এ আগের DPPCC Web App configuration বসানো আছে। Firebase Web API key browser-এ দৃশ্যমান হওয়া স্বাভাবিক; Security Rules-ই data access রক্ষা করে।
 
-PLAYER PHOTO: Registration form-এ JPG/PNG/WEBP, সর্বোচ্চ 5MB ছবি আবশ্যক। Preview ও Players list-এ 7:9 passport-style crop ব্যবহার হয়। Manager application approve করলে private application photo-র download URL approved public player profile-এ যুক্ত হয়; অনুমোদনের আগে photo read শুধু authorized staff করতে পারে।
+Firebase Console checklist:
+1. Authentication > Sign-in method > Email/Password enable.
+2. Firestore Database তৈরি/চালু রাখুন।
+3. Storage bucket তৈরি/চালু রাখুন।
+4. Authentication > Settings > Authorized domains-এ dppcc.github.io যোগ করুন।
+5. firestore.rules সম্পূর্ণ copy করে Firestore Rules-এ Publish করুন।
+6. storage.rules সম্পূর্ণ copy করে Storage Rules-এ Publish করুন।
+7. President account: mdshiponahmed0455@gmail.com; Admin account: shiponahmed5710@gmail.com — Firebase Authentication-এ account থাকতে হবে।
+8. Manager/Captain-এর Auth UID দিয়ে Firestore staff collection-এ document তৈরি করুন; field role = manager অথবা captain। Staff role document কেবল President তৈরি/পরিবর্তন করতে পারবেন।
 
-FIREBASE CONFIG (অবশ্যই করতে হবে):
-1. Firebase Console → Project settings → General → Your apps → Web app config নিন।
-2. firebase-config.js খুলে apiKey, authDomain, projectId, storageBucket (Firebase Console-এ দেখানো হুবহু value), messagingSenderId, appId বসান।
-3. Firebase Console-এ Authentication → Sign-in method → Email/Password enable করুন।
-4. Firestore Database এবং Storage চালু করুন।
-5. Firebase Console-এ firestore.rules-এর সব কোড Firestore Rules-এ publish করুন।
-6. storage.rules-এর সব কোড Storage Rules-এ publish করুন।
+Registration: player photo JPG/PNG/WEBP, maximum 5MB, 7:9 passport-style preview; image Firebase Storage-এ এবং application Firestore registrations collection-এ Pending হিসেবে জমা হয়। Jersey order jerseyOrders-এ Pending হিসেবে জমা হয়। Email notification স্বয়ংক্রিয় নয়; email sending-এর জন্য Cloud Function/Email Extension দরকার।
 
-OWNER EMAIL: বর্তমান GitHub repository-র DPPCC_FIRESTORE_RULES_REFERENCE.txt-এ Owner email হিসেবে mdshiponahmed0455@gmail.com দেওয়া আছে; এই প্যাকেজে সেটিই রাখা হয়েছে। আগের Staff Access পেজে shiponahmed5710@gmail.com-কে Admin দেখানো হয়েছিল—সেই account-টি Owner Dashboard থেকে Admin role পাবে, Owner নয়। Firebase Authentication-এ Owner email-এর account থাকতে হবে। যদি Owner account অন্য email হয়, firebase-config.js এবং firestore.rules/storage.rules-এ একই owner email পরিবর্তন করতে হবে।
+গুরুত্বপূর্ণ সীমাবদ্ধতা: Firebase project-এর live access ছাড়া deployed login/upload/rules test করা যায়নি। Dashboard-এ request list read-only; approval/edit interface, news editor, gallery uploader ও live scoring input এই package-এ নেই। Public photo upload-এ abuse প্রতিরোধে App Check/rate limiting/Cloud Function যোগ করা উচিত। Storage rules-এ file size/type সীমা আছে।
 
-STAFF ACCOUNT: Firebase Authentication → Add user দিয়ে প্রথমে Admin/Manager/Captain-এর email/password account তৈরি করুন। এরপর Owner dashboard → Staff account roles থেকে একই email-কে role দিন। Dashboard থেকে নতুন Firebase Auth user/password তৈরি করা হয় না।
-
-GITHUB PAGES: সব HTML, CSS, JS, rules, config এবং assets folder repository root-এ রাখুন। GitHub Pages শুধু static hosting করে; Firebase Firestore/Storage আলাদাভাবে Firebase Console-এ configure করতে হবে। Firebase Hosting-এ deploy করতে Firebase CLI দিয়ে `firebase deploy --only hosting,firestore:rules,storage` চালান।
-
-SECURITY NOTES:
-- firebase-config.js-এর Firebase web config public client config; এখানে service account private key/API secret দেবেন না।
-- Firestore/Storage rules হলো প্রকৃত access control; শুধু dashboard URL গোপন রাখা নিরাপত্তা নয়।
-- Public registration create করা যায়, কিন্তু submissions শুধু active Admin/Manager/Owner দেখতে পারে। Registration photo read private staff roles-এ সীমাবদ্ধ।
-- Auto email notification এই প্যাকেজে নেই। Forms Firebase-এ save হয়; email alert চাইলে আলাদা Cloud Function/Email extension লাগবে। Production public forms চালুর আগে Firebase App Check চালু করার পরামর্শ দেওয়া হচ্ছে।
-
-TESTING: HTML parse, JavaScript syntax, JSON config এবং ZIP integrity স্থানীয়ভাবে যাচাই করা হবে। Firebase config ও live project credentials ছাড়া বাস্তব Firebase login/upload/security deployment test করা যায় না।
+Demo: index.html খুলুন। অথবা computer-এ folder থেকে `python3 -m http.server 8000` চালিয়ে http://localhost:8000 খুলুন। Firebase connect না থাকলে empty/demo state দেখাবে।

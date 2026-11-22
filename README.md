@@ -1,3 +1,2 @@
 # DPPCC Official Website
-
-Multi-page cricket club website with Firebase Authentication, Cloud Firestore and Cloud Storage integration. Read `README-BN.txt` before deployment.
+15-page responsive cricket club site. See README-BN.txt for Bengali Firebase and GitHub setup. Club established 2026. Preserve existing logo assets.

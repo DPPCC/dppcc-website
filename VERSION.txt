@@ -1,3 +1,1 @@
-DPPCC website package
-Club establishment: 2026
-Build date: 2026-11-22
+DPPCC source package v1.0.0 | 2026-11-22 | 15 HTML pages

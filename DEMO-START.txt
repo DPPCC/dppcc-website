@@ -1,0 +1,1 @@
+Open index.html in browser. Firebase-connected forms require Firebase services and published rules.
