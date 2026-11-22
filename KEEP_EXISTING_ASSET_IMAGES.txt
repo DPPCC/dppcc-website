@@ -1,0 +1,1 @@
+KEEP your current GitHub assets images. Expected names: dppcc-club-logo.jpg and dppcc-sponsor-2003.jpg. Do not replace real images with empty placeholder files.
