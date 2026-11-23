@@ -1,195 +1,183 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Official Admin Dashboard of DPPCC">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DPPCC Admin Dashboard">
   <title>Admin Dashboard | DPPCC</title>
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .dashboard-page {
+      max-width: 1100px;
+      margin: auto;
+      padding: 35px 18px 60px;
+    }
+    .dashboard-heading {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .dashboard-heading h1 {
+      font-size: clamp(28px, 5vw, 42px);
+    }
+    .account-status {
+      margin: 20px 0;
+      padding: 18px;
+      border: 1px solid rgba(212,175,55,.45);
+      border-radius: 12px;
+      background: var(--card-bg, #102b20);
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+    .account-status strong {
+      color: #d4af37;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 25px;
+    }
+    .dashboard-card {
+      display: block;
+      padding: 22px;
+      border: 1px solid rgba(212,175,55,.4);
+      border-radius: 13px;
+      background: var(--card-bg, #102b20);
+      color: inherit;
+      text-decoration: none;
+      transition: transform .2s ease;
+    }
+    .dashboard-card:hover {
+      transform: translateY(-3px);
+    }
+    .dashboard-card h2 {
+      margin-top: 0;
+      color: #d4af37;
+      font-size: 21px;
+    }
+    .dashboard-card p {
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+    .dashboard-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+    .dashboard-actions a,
+    .dashboard-actions button {
+      display: inline-block;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 8px;
+      background: #d4af37;
+      color: #102b20;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    #adminContent[hidden] {
+      display: none !important;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="top">
-  <span>OFFICIAL CLUB WEBSITE · EST. 2026</span>
-  <span>
-    <a href="mailto:dungsreepaschimparacricketclub@gmail.com">CONTACT</a>
-    <a href="login.html">STAFF SIGN IN</a>
-  </span>
-</div>
-
 <header class="header">
-  <div class="head">
+  <div class="container header-inner">
     <a class="brand" href="index.html">
-      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC logo"
-           onerror="this.style.display='none'">
-      <span>
-        <b>DUNGSREE PASCHIM PARA<br>CRICKET CLUB</b>
-        <small>DPPCC · EST. 2026</small>
-      </span>
+      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo">
+      <span>DPPCC</span>
     </a>
-    <button class="toggle" aria-label="Open menu"
-            aria-expanded="false">☰</button>
+
+    <button class="toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+
     <nav class="nav">
-      <a href="index.html">HOME</a>
-      <a href="about.html">ABOUT</a>
-      <a href="players.html">PLAYERS</a>
-      <a href="rankings.html">RANKINGS</a>
-      <a href="matches.html">MATCH CENTRE</a>
-      <a href="news.html">NEWS</a>
-      <a href="videos.html">VIDEOS</a>
-      <a href="gallery.html">GALLERY</a>
+      <a href="index.html">Website</a>
+      <a href="players.html">Players</a>
+      <a href="news.html">News</a>
+      <a href="matches.html">Matches</a>
     </nav>
   </div>
 </header>
 
-<div class="sub">
-  <div class="subin">
-    <a href="match-centre.html">FIXTURES & RESULTS</a>
-    <a href="awards.html">AWARDS</a>
-    <a href="history.html">HISTORY</a>
-    <a href="registration.html">REGISTER</a>
-    <a href="jersey.html">JERSEY</a>
-    <a href="contact.html">CONTACT</a>
-    <a href="login.html">STAFF LOGIN</a>
-  </div>
-</div>
+<main id="adminContent" class="dashboard-page" hidden>
 
-<section class="title">
-  <div class="titlein">
-    <h1>Admin Dashboard</h1>
-    <p>Dungsree Paschim Para Cricket Club · ONE CLUB.
-       ONE TEAM. ONE DREAM.</p>
-  </div>
-</section>
+  <section class="dashboard-heading">
+    <h1>ADMIN DASHBOARD</h1>
+    <p>Dungsree Paschim Para Cricket Club</p>
+    <p><strong>Official Club Administration</strong></p>
+  </section>
 
-<main class="wrap" id="adminContent" style="display:none">
+  <section class="account-status">
+    <h2>Admin Access</h2>
+    <p>Signed in as: <span id="adminEmail">Checking account...</span></p>
+    <p><strong>Authorized administration access only.</strong></p>
+  </section>
 
-  <div class="notice" id="adminStatus" role="status">
-    Verifying Admin access...
-  </div>
+  <section class="dashboard-grid">
 
-  <div class="panel">
-    <h2>Admin Dashboard</h2>
-    <p>Manage approved club content within assigned permissions.</p>
-    <p id="adminEmail"></p>
-  </div>
+    <a class="dashboard-card" href="players.html">
+      <h2>Players Management</h2>
+      <p>Manage official player profiles, roles, jersey numbers and photos.</p>
+    </a>
 
-  <div class="panel">
-    <h3>Club Players</h3>
-    <p>View and manage the club player directory.</p>
-    <a class="btn dark" href="players.html">View Players</a>
-  </div>
+    <a class="dashboard-card" href="news.html">
+      <h2>News & Announcements</h2>
+      <p>Publish and manage official club announcements.</p>
+    </a>
 
-  <div class="panel">
-    <h3>Club News</h3>
-    <p>Access official club news and announcements.</p>
-    <a class="btn dark" href="news.html">View News</a>
-  </div>
+    <a class="dashboard-card" href="matches.html">
+      <h2>Matches</h2>
+      <p>View fixtures, live matches and completed results.</p>
+    </a>
 
-  <div class="panel">
-    <h3>Club Gallery</h3>
-    <p>View official club photographs and media.</p>
-    <a class="btn dark" href="gallery.html">View Gallery</a>
-  </div>
+    <a class="dashboard-card" href="match-centre.html">
+      <h2>Match Centre</h2>
+      <p>Follow live scores and ball-by-ball commentary.</p>
+    </a>
 
-  <div class="panel">
-    <button class="btn dark" id="adminLogout" type="button">
-      Sign Out
-    </button>
+    <a class="dashboard-card" href="registration.html">
+      <h2>Registration</h2>
+      <p>Open the player registration page.</p>
+    </a>
+
+    <a class="dashboard-card" href="jersey.html">
+      <h2>Jersey Orders</h2>
+      <p>Open the official jersey order page.</p>
+    </a>
+
+    <a class="dashboard-card" href="owner.html">
+      <h2>Owner Dashboard</h2>
+      <p>Return to the main Owner Dashboard. Owner permission is required.</p>
+    </a>
+
+  </section>
+
+  <div class="dashboard-actions">
+    <a href="index.html">Visit Official Website</a>
+    <button type="button" id="adminLogout">Sign Out</button>
   </div>
 
 </main>
 
 <footer class="footer">
-  <div class="foot">
-    <div>
-      <h3>DPPCC</h3>
-      <p>Dungsree Paschim Para Cricket Club</p>
-      <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
-      <p>Established 2026</p>
-      <a href="mailto:dungsreepaschimparacricketclub@gmail.com">
-        dungsreepaschimparacricketclub@gmail.com
-      </a>
-    </div>
-    <div>
-      <h3>Explore</h3>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="players.html">Players</a>
-      <a href="rankings.html">Rankings</a>
-      <a href="matches.html">Match Centre</a>
-      <a href="news.html">News</a>
-    </div>
-    <div>
-      <h3>Club</h3>
-      <a href="match-centre.html">Fixtures & Results</a>
-      <a href="awards.html">Awards</a>
-      <a href="history.html">History</a>
-      <a href="registration.html">Register</a>
-      <a href="jersey.html">Jersey</a>
-      <a href="contact.html">Contact</a>
-      <a href="login.html">Staff Login</a>
-      <img class="sponsor" data-sponsor alt="Official sponsor logo">
-    </div>
-  </div>
-  <div class="copy">
-    © <span data-year>2026</span>
-    Dungsree Paschim Para Cricket Club. All rights reserved.
+  <div class="container">
+    <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo" width="75">
+    <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
+    <p>Established 2026</p>
+    <img data-sponsor src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor Logo" width="120">
+    <p>© <span data-year>2026</span> Dungsree Paschim Para Cricket Club. All Rights Reserved.</p>
   </div>
 </footer>
 
 <script src="app.js"></script>
-
-<script type="module">
-  import {
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
-  import { auth } from "./firebase-config.js";
-
-  const allowedEmails = [
-    "dungsreepaschimparacricketclub@gmail.com",
-    "dppccadmin@gmail.com"
-  ];
-
-  const content = document.getElementById("adminContent");
-  const status = document.getElementById("adminStatus");
-  const emailDisplay = document.getElementById("adminEmail");
-  const logoutButton = document.getElementById("adminLogout");
-
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.replace("login.html");
-      return;
-    }
-
-    const email = user.email?.toLowerCase();
-
-    if (!allowedEmails.includes(email)) {
-      await signOut(auth);
-      window.location.replace("login.html");
-      return;
-    }
-
-    emailDisplay.textContent = "Signed in as: " + email;
-    status.textContent = "Admin access verified.";
-    content.style.display = "";
-  });
-
-  logoutButton.addEventListener("click", async () => {
-    logoutButton.disabled = true;
-
-    try {
-      await signOut(auth);
-      window.location.replace("login.html");
-    } catch (error) {
-      status.textContent = "Sign out failed. Please try again.";
-      logoutButton.disabled = false;
-    }
-  });
-</script>
+<script type="module" src="club-data.js"></script>
 
 </body>
 </html>
