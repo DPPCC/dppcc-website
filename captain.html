@@ -1,14 +1,130 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Official Captain Dashboard of DPPCC">
   <title>Captain Dashboard | DPPCC</title>
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .dashboard-wrap {
+      max-width: 1150px;
+      margin: auto;
+      padding: 30px 18px 60px;
+    }
+
+    .dashboard-heading {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .dashboard-heading h1 {
+      color: #d4af37;
+      font-size: clamp(26px, 5vw, 40px);
+    }
+
+    .status {
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 10px;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+      margin: 22px 0;
+    }
+
+    .formbox {
+      border: 1px solid rgba(212,175,55,.4);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 18px 0;
+      overflow-wrap: anywhere;
+    }
+
+    .formbox h3 {
+      color: #d4af37;
+      margin-top: 0;
+    }
+
+    .formbox input,
+    .formbox select,
+    .formbox textarea {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px;
+      margin: 8px 0 15px;
+      border-radius: 7px;
+      border: 1px solid #aaa;
+    }
+
+    .formbox button {
+      padding: 11px 16px;
+      margin: 5px 4px 5px 0;
+      border: 0;
+      border-radius: 7px;
+      background: #d4af37;
+      color: #102b20;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .formbox .danger {
+      background: #b42318;
+      color: white;
+    }
+
+    .formbox .secondary {
+      background: #777;
+      color: white;
+    }
+
+    .item {
+      padding: 13px;
+      margin: 10px 0;
+      border: 1px solid rgba(212,175,55,.3);
+      border-radius: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+
+    .stat {
+      padding: 15px 5px;
+      background: rgba(212,175,55,.1);
+      border-radius: 9px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 25px;
+      color: #d4af37;
+    }
+
+    .notice {
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 8px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
 </head>
-<body>
+
+<body data-role="Captain">
 
 <div class="top">
   <span>OFFICIAL CLUB WEBSITE · EST. 2026</span>
@@ -21,7 +137,8 @@
 <header class="header">
   <div class="head">
     <a class="brand" href="index.html">
-      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC logo"
+      <img src="assets/dppcc-club-logo.jpg"
+           alt="DPPCC logo"
            onerror="this.style.display='none'">
       <span>
         <b>DUNGSREE PASCHIM PARA<br>CRICKET CLUB</b>
@@ -57,58 +174,53 @@
   </div>
 </div>
 
-<section class="title">
-  <div class="titlein">
-    <h1>Captain Dashboard</h1>
-    <p>Dungsree Paschim Para Cricket Club · ONE CLUB.
-       ONE TEAM. ONE DREAM.</p>
-  </div>
-</section>
+<main class="dashboard-wrap">
 
-<main class="wrap" id="captainContent" style="display:none">
+  <section class="dashboard-heading">
+    <h1>CAPTAIN DASHBOARD</h1>
+    <p>Dungsree Paschim Para Cricket Club</p>
+    <p><strong>ONE CLUB. ONE TEAM. ONE DREAM.</strong></p>
+  </section>
 
-  <div class="notice" id="captainStatus" role="status">
-    Verifying Captain access...
+  <div id="accessMessage" class="status">
+    Checking your access...
   </div>
 
-  <div class="panel">
-    <h2>Captain Dashboard</h2>
-    <p>Manage assigned team information and match activities.</p>
-    <p id="captainEmail"></p>
+  <div id="dashboardContent" class="hidden">
+
+    <div id="welcomeText" class="notice"></div>
+
+    <section class="dashboard-grid" id="formsArea"></section>
+
+    <section class="formbox">
+      <h3>Club Statistics</h3>
+
+      <div class="stats">
+        <div class="stat">
+          <b id="statPlayers">—</b>
+          <span>Players</span>
+        </div>
+
+        <div class="stat">
+          <b id="statMatches">—</b>
+          <span>Matches</span>
+        </div>
+
+        <div class="stat">
+          <b id="statNews">—</b>
+          <span>News Posts</span>
+        </div>
+      </div>
+    </section>
+
+    <div id="recordsArea"></div>
+
   </div>
-
-  <div class="grid">
-
-    <div class="panel">
-      <h3>Team Players</h3>
-      <p>View the official club squad.</p>
-      <a class="btn dark" href="players.html">View Players</a>
-    </div>
-
-    <div class="panel">
-      <h3>Match Centre</h3>
-      <p>Follow fixtures and match results.</p>
-      <a class="btn dark" href="match-centre.html">Match Centre</a>
-    </div>
-
-    <div class="panel">
-      <h3>Player Rankings</h3>
-      <p>View player performance rankings.</p>
-      <a class="btn dark" href="rankings.html">View Rankings</a>
-    </div>
-
-  </div>
-
-  <div class="panel">
-    <button class="btn dark" id="captainLogout" type="button">
-      Sign Out
-    </button>
-  </div>
-
 </main>
 
 <footer class="footer">
   <div class="foot">
+
     <div>
       <h3>DPPCC</h3>
       <p>Dungsree Paschim Para Cricket Club</p>
@@ -138,68 +250,47 @@
       <a href="jersey.html">Jersey</a>
       <a href="contact.html">Contact</a>
       <a href="login.html">Staff Login</a>
-      <img class="sponsor" data-sponsor alt="Official sponsor logo">
+
+      <img class="sponsor"
+           src="assets/dppcc-sponsor-2003.jpg"
+           alt="Official sponsor logo">
     </div>
+
   </div>
 
   <div class="copy">
-    © <span data-year>2026</span>
-    Dungsree Paschim Para Cricket Club. All rights reserved.
+    © 2026 Dungsree Paschim Para Cricket Club. All rights reserved.
   </div>
 </footer>
 
 <script src="app.js"></script>
 
-<script type="module">
-  import {
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
-  import { auth } from "./firebase-config.js";
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAd--LMKzEIiPxBHCu-rWZojbKExwe_CAA",
+    authDomain: "dppcc-official.firebaseapp.com",
+    projectId: "dppcc-official",
+    storageBucket: "dppcc-official.firebasestorage.app",
+    messagingSenderId: "476337423288",
+    appId: "1:476337423288:web:a81ff59d9cc742ed5b854d"
+  };
 
-  const allowedEmails = [
-    "dungsreepaschimparacricketclub@gmail.com",
-    "dppccadmin@gmail.com",
-    "dppcaptain@gmail.com"
-  ];
+  const OWNER_EMAIL =
+    "dungsreepaschimparacricketclub@gmail.com";
 
-  const content = document.getElementById("captainContent");
-  const status = document.getElementById("captainStatus");
-  const emailDisplay = document.getElementById("captainEmail");
-  const logoutButton = document.getElementById("captainLogout");
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.replace("login.html");
-      return;
-    }
-
-    const email = user.email?.toLowerCase();
-
-    if (!allowedEmails.includes(email)) {
-      await signOut(auth);
-      window.location.replace("login.html");
-      return;
-    }
-
-    emailDisplay.textContent = "Signed in as: " + email;
-    status.textContent = "Captain access verified.";
-    content.style.display = "";
-  });
-
-  logoutButton.addEventListener("click", async () => {
-    logoutButton.disabled = true;
-
-    try {
-      await signOut(auth);
-      window.location.replace("login.html");
-    } catch (error) {
-      status.textContent = "Sign out failed. Please try again.";
-      logoutButton.disabled = false;
-    }
-  });
+  const dppccAuth = firebase.auth();
+  const dppccDb = firebase.firestore();
 </script>
+
+<script src="dashboard.js"></script>
 
 </body>
 </html>
