@@ -1,12 +1,6 @@
 
 {
-  "functions": [
-    {
-      "source": "functions",
-      "codebase": "default"
-    }
-  ],
-  "firestore": {
-    "rules": "DPPCC_FIRESTORE_RULES_FINAL.txt"
+  "projects": {
+    "default": "dppcc-official"
   }
 }
