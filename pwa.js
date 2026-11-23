@@ -2,21 +2,24 @@
 "use strict";
 
 (() => {
-  // Prevent duplicate initialization.
   if (window.DPPCC_PWA_INITIALIZED) return;
   window.DPPCC_PWA_INITIALIZED = true;
 
-  const APP_NAME = "Dungsree Paschim Para Cricket Club";
   const THEME_COLOR = "#063b2b";
+  const LOGO_PATH = "./assets/dppcc-club-logo.jpg";
 
-  // Add PWA manifest without changing existing HTML pages.
-  const manifest = document.createElement("link");
-  manifest.rel = "manifest";
-  manifest.href = "./manifest.webmanifest";
-  document.head.appendChild(manifest);
+  // Add manifest.
+  if (!document.querySelector('link[rel="manifest"]')) {
+    const manifest = document.createElement("link");
+    manifest.rel = "manifest";
+    manifest.href = "./manifest.webmanifest";
+    document.head.appendChild(manifest);
+  }
 
-  // Set the existing club theme color.
-  let theme = document.querySelector('meta[name="theme-color"]');
+  // Set theme color.
+  let theme = document.querySelector(
+    'meta[name="theme-color"]'
+  );
 
   if (!theme) {
     theme = document.createElement("meta");
@@ -30,31 +33,41 @@
   if (!document.querySelector('link[rel="icon"]')) {
     const icon = document.createElement("link");
     icon.rel = "icon";
-    icon.href = "./assets/dppcc-club-logo.jpg";
+    icon.href = LOGO_PATH;
     icon.type = "image/jpeg";
     document.head.appendChild(icon);
   }
 
-  // Register the service worker.
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./sw.js", {
-        scope: "./"
-      }).then(registration => {
-        console.info(
-          "DPPCC app service worker registered:",
-          registration.scope
-        );
-      }).catch(error => {
-        console.error(
-          "DPPCC service worker registration failed:",
-          error
-        );
-      });
+  // Register service worker.
+  function registerServiceWorker() {
+    if (!("serviceWorker" in navigator)) return;
+
+    navigator.serviceWorker.register("./sw.js", {
+      scope: "./"
+    }).then(registration => {
+      console.info(
+        "DPPCC Service Worker registered:",
+        registration.scope
+      );
+    }).catch(error => {
+      console.error(
+        "DPPCC Service Worker registration failed:",
+        error
+      );
     });
   }
 
-  // Install application button.
+  if (document.readyState === "complete") {
+    registerServiceWorker();
+  } else {
+    window.addEventListener(
+      "load",
+      registerServiceWorker,
+      { once: true }
+    );
+  }
+
+  // Create installation button.
   let installPrompt = null;
 
   const installButton = document.createElement("button");
@@ -67,58 +80,79 @@
   );
 
   installButton.style.cssText = `
-    position:fixed;
-    right:16px;
-    bottom:18px;
-    z-index:99999;
-    display:none;
-    padding:13px 19px;
-    border:2px solid #f4c542;
-    border-radius:30px;
-    background:#063b2b;
-    color:#ffffff;
-    font-size:14px;
-    font-weight:800;
-    cursor:pointer;
-    box-shadow:0 4px 16px rgba(0,0,0,.25);
+    position: fixed;
+    right: 16px;
+    bottom: 18px;
+    z-index: 99999;
+    display: none;
+    padding: 13px 19px;
+    border: 2px solid #f4c542;
+    border-radius: 30px;
+    background: #063b2b;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
   `;
 
-  document.addEventListener("DOMContentLoaded", () => {
-    document.body.appendChild(installButton);
-  });
+  function addInstallButton() {
+    if (
+      document.body &&
+      !document.body.contains(installButton)
+    ) {
+      document.body.appendChild(installButton);
+    }
+  }
 
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      addInstallButton,
+      { once: true }
+    );
+  } else {
+    addInstallButton();
+  }
+
+  // Receive browser installation prompt.
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
-
     installPrompt = event;
+    addInstallButton();
     installButton.style.display = "block";
   });
 
+  // Install when user taps the button.
   installButton.addEventListener("click", async () => {
     if (!installPrompt) {
       alert(
-        "To install DPPCC, open this website in Chrome and select Install app or Add to Home screen from the browser menu."
+        "Open this website in Google Chrome. " +
+        "Then select Install app or Add to Home screen " +
+        "from the browser menu."
       );
       return;
     }
 
-    installPrompt.prompt();
-
     try {
+      await installPrompt.prompt();
       await installPrompt.userChoice;
     } catch (error) {
-      console.error("DPPCC install prompt error:", error);
+      console.error(
+        "DPPCC installation prompt error:",
+        error
+      );
     }
 
     installPrompt = null;
     installButton.style.display = "none";
   });
 
+  // Hide button after installation.
   window.addEventListener("appinstalled", () => {
     installPrompt = null;
     installButton.style.display = "none";
-
-    console.info(APP_NAME + " installed successfully.");
+    console.info("DPPCC app installed.");
   });
 
 })();
