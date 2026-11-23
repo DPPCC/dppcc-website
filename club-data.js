@@ -4,6 +4,7 @@ import {
   addDoc,
   getDocs,
   doc,
+  getDoc,
   updateDoc,
   deleteDoc,
   serverTimestamp
@@ -20,16 +21,10 @@ import { auth, db } from "./firebase-config.js";
 // DPPCC CONFIGURATION
 // ========================================
 
+const OWNER_EMAIL = "dungsreepaschimparacricketclub@gmail.com";
 const CLOUD_NAME = "zkgexaov";
 const UPLOAD_PRESET = "dppcc_player_photos";
 const MAX_PHOTO_SIZE = 5 * 1024 * 1024;
-
-const STAFF = {
-  "dungsreepaschimparacricketclub@gmail.com": "Owner",
-  "dppccadmin@gmail.com": "Admin",
-  "dppccmanager@gmail.com": "Manager",
-  "dppcaptain@gmail.com": "Captain"
-};
 
 let currentUser = null;
 let currentRole = null;
@@ -37,18 +32,59 @@ let editingPlayerId = null;
 
 const $ = (id) => document.getElementById(id);
 
+// ========================================
+// AUTHENTICATION AND STAFF ROLE
+// ========================================
+
 const authReady = new Promise((resolve) => {
-  onAuthStateChanged(auth, (user) => {
+  let resolved = false;
+
+  onAuthStateChanged(auth, async (user) => {
     currentUser = user;
-    currentRole = user
-      ? STAFF[user.email?.toLowerCase()] || null
-      : null;
-    resolve(user);
+    currentRole = null;
+
+    try {
+      if (user?.email) {
+        const email = user.email.trim().toLowerCase();
+
+        if (email === OWNER_EMAIL) {
+          currentRole = "Owner";
+        } else {
+          const staffRef = doc(db, "staff", email);
+          const staffSnapshot = await getDoc(staffRef);
+
+          if (staffSnapshot.exists()) {
+            const staff = staffSnapshot.data();
+
+            if (
+              staff.active === true &&
+              String(staff.email || "").toLowerCase() === email &&
+              ["Admin", "Manager", "Captain"].includes(staff.role)
+            ) {
+              currentRole = staff.role;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Staff role verification failed:", error);
+      currentRole = null;
+    }
+
+    if (!resolved) {
+      resolved = true;
+      resolve(user);
+    }
+
+    // Update role after subsequent authentication changes.
+    if (resolved) {
+      updatePageAccess();
+    }
   });
 });
 
 // ========================================
-// SECURITY HELPERS
+// ROLE PERMISSIONS
 // ========================================
 
 function canManagePlayers() {
@@ -60,7 +96,11 @@ function canDeletePlayers() {
 }
 
 function canManageMatches() {
-  return ["Owner", "Admin", "Manager"].includes(currentRole);
+  return ["Owner", "Manager"].includes(currentRole);
+}
+
+function canDeleteMatches() {
+  return currentRole === "Owner";
 }
 
 function canManageNews() {
@@ -68,19 +108,23 @@ function canManageNews() {
 }
 
 function canScore() {
-  return ["Owner", "Admin", "Captain"].includes(currentRole);
+  return ["Owner", "Captain"].includes(currentRole);
 }
 
 function canReviewApplications() {
-  return ["Owner", "Admin", "Manager"].includes(currentRole);
+  return ["Owner", "Manager"].includes(currentRole);
+}
+
+function canManageJerseyOrders() {
+  return ["Owner", "Manager"].includes(currentRole);
 }
 
 function showMessage(id, message, error = false) {
-  const el = $(id);
-  if (!el) return;
+  const element = $(id);
+  if (!element) return;
 
-  el.textContent = message;
-  el.style.color = error ? "#b42318" : "#176b37";
+  element.textContent = message;
+  element.style.color = error ? "#b42318" : "#176b37";
 }
 
 function escapeHTML(value = "") {
@@ -98,6 +142,7 @@ function requireStaff() {
     alert("Please sign in with an authorized DPPCC staff account.");
     return false;
   }
+
   return true;
 }
 
@@ -171,11 +216,13 @@ async function loadPlayers() {
     );
 
     if (count) {
-      count.textContent = `${players.length} PLAYER${players.length === 1 ? "" : "S"}`;
+      count.textContent =
+        `${players.length} PLAYER${players.length === 1 ? "" : "S"}`;
     }
 
     if (!players.length) {
-      list.innerHTML = '<div class="empty">No players added yet.</div>';
+      list.innerHTML =
+        '<div class="empty">No players added yet.</div>';
       return;
     }
 
@@ -188,19 +235,23 @@ async function loadPlayers() {
             loading="lazy"
           >
         </div>
+
         <div class="player-details">
           <span class="player-entry">
             PLAYER NO. ${escapeHTML(player.entryNo || "—")}
           </span>
+
           <h3>${escapeHTML(player.name)}</h3>
-          <p><strong>Position:</strong> ${escapeHTML(player.role)}</p>
+          <p><strong>Position:</strong> ${escapeHTML(player.role || "—")}</p>
           <p><strong>Batting:</strong> ${escapeHTML(player.battingStyle || "—")}</p>
           <p><strong>Jersey:</strong> ${escapeHTML(player.jerseyNo ?? "—")}</p>
+
           ${
             canManagePlayers()
               ? `<button class="btn dark" data-edit-player="${escapeHTML(player.id)}">Edit</button>`
               : ""
           }
+
           ${
             canDeletePlayers()
               ? `<button class="btn" data-delete-player="${escapeHTML(player.id)}">Delete</button>`
@@ -212,29 +263,45 @@ async function loadPlayers() {
 
     list.querySelectorAll("[data-edit-player]").forEach((button) => {
       button.addEventListener("click", () => {
-        const player = players.find(p => p.id === button.dataset.editPlayer);
+        const player = players.find(
+          item => item.id === button.dataset.editPlayer
+        );
+
         if (!player) return;
 
         editingPlayerId = player.id;
-        $("playerName").value = player.name || "";
-        $("playerRole").value = player.role || "Batsman";
-        $("jerseyNo").value = player.jerseyNo ?? "";
-        $("entryNo").value = player.entryNo || "";
-        $("battingStyle").value = player.battingStyle || "";
-        $("playerFormTitle").textContent = "Edit Player";
-        $("playerSubmit").textContent = "Update Player";
-        $("playerForm").scrollIntoView({ behavior: "smooth" });
+
+        if ($("playerName")) $("playerName").value = player.name || "";
+        if ($("playerRole")) $("playerRole").value = player.role || "Batsman";
+        if ($("jerseyNo")) $("jerseyNo").value = player.jerseyNo ?? "";
+        if ($("entryNo")) $("entryNo").value = player.entryNo || "";
+        if ($("battingStyle")) $("battingStyle").value = player.battingStyle || "";
+        if ($("existingPhotoUrl")) {
+          $("existingPhotoUrl").value = player.photoUrl || "";
+        }
+
+        if ($("playerFormTitle")) {
+          $("playerFormTitle").textContent = "Edit Player";
+        }
+
+        if ($("playerSubmit")) {
+          $("playerSubmit").textContent = "Update Player";
+        }
+
+        $("playerForm")?.scrollIntoView({ behavior: "smooth" });
       });
     });
 
     list.querySelectorAll("[data-delete-player]").forEach((button) => {
       button.addEventListener("click", async () => {
         if (!canDeletePlayers()) return;
-
         if (!confirm("Delete this player permanently?")) return;
 
         try {
-          await deleteDoc(doc(db, "players", button.dataset.deletePlayer));
+          await deleteDoc(
+            doc(db, "players", button.dataset.deletePlayer)
+          );
+
           await loadPlayers();
         } catch (error) {
           alert("Delete failed: " + error.message);
@@ -243,7 +310,9 @@ async function loadPlayers() {
     });
 
   } catch (error) {
-    list.innerHTML = '<div class="empty">Could not load players.</div>';
+    list.innerHTML =
+      '<div class="empty">Could not load players.</div>';
+
     console.error(error);
   }
 }
@@ -254,7 +323,7 @@ async function savePlayer(event) {
   if (!requireStaff() || !canManagePlayers()) return;
 
   const button = $("playerSubmit");
-  button.disabled = true;
+  if (button) button.disabled = true;
 
   try {
     const photoFile = $("playerPhoto")?.files?.[0];
@@ -280,6 +349,14 @@ async function savePlayer(event) {
       throw new Error("Player name and entry number are required.");
     }
 
+    if (
+      !Number.isInteger(playerData.jerseyNo) ||
+      playerData.jerseyNo < 0 ||
+      playerData.jerseyNo > 999
+    ) {
+      throw new Error("Please enter a valid jersey number.");
+    }
+
     if (editingPlayerId) {
       await updateDoc(
         doc(db, "players", editingPlayerId),
@@ -294,9 +371,18 @@ async function savePlayer(event) {
     }
 
     $("playerForm").reset();
+
+    if ($("existingPhotoUrl")) {
+      $("existingPhotoUrl").value = "";
+    }
+
     editingPlayerId = null;
-    $("playerFormTitle").textContent = "Add New Player";
-    button.textContent = "Add Player";
+
+    if ($("playerFormTitle")) {
+      $("playerFormTitle").textContent = "Add New Player";
+    }
+
+    if (button) button.textContent = "Add Player";
 
     showMessage("playerNotice", "Player saved successfully.");
     await loadPlayers();
@@ -304,7 +390,7 @@ async function savePlayer(event) {
   } catch (error) {
     showMessage("playerNotice", error.message, true);
   } finally {
-    button.disabled = false;
+    if (button) button.disabled = false;
   }
 }
 
@@ -349,15 +435,19 @@ async function submitRegistration(event) {
       !application.phone ||
       !application.address ||
       !Number.isInteger(application.age) ||
-      application.age < 8 ||
+      application.age < 10 ||
       application.age > 70
     ) {
-      throw new Error("Please check all registration details.");
+      throw new Error("Please check all registration details. Age must be 10–70.");
     }
 
-    await addDoc(collection(db, "registrations"), application);
+    await addDoc(
+      collection(db, "registrations"),
+      application
+    );
 
     form.reset();
+
     showMessage(
       "registrationNotice",
       "Application submitted successfully. The club will review it."
@@ -378,7 +468,9 @@ async function loadApplications() {
   list.innerHTML = "<p>Loading applications...</p>";
 
   try {
-    const snapshot = await getDocs(collection(db, "registrations"));
+    const snapshot = await getDocs(
+      collection(db, "registrations")
+    );
 
     const applications = snapshot.docs.map(item => ({
       id: item.id,
@@ -386,38 +478,55 @@ async function loadApplications() {
     }));
 
     applications.sort((a, b) =>
-      (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
+      (b.createdAt?.seconds || 0) -
+      (a.createdAt?.seconds || 0)
     );
 
     if (!applications.length) {
-      list.innerHTML = '<div class="empty">No applications yet.</div>';
+      list.innerHTML =
+        '<div class="empty">No applications yet.</div>';
       return;
     }
 
     list.innerHTML = applications.map(item => `
       <article class="panel">
-        ${item.photoUrl ? `
-          <img src="${escapeHTML(item.photoUrl)}"
-               alt="Applicant photo"
-               style="width:120px;height:140px;object-fit:cover;border-radius:8px">
-        ` : ""}
+        ${
+          item.photoUrl
+            ? `<img
+                src="${escapeHTML(item.photoUrl)}"
+                alt="Applicant photo"
+                style="width:120px;height:140px;object-fit:cover;border-radius:8px"
+              >`
+            : ""
+        }
+
         <h3>${escapeHTML(item.name)}</h3>
         <p>Phone: ${escapeHTML(item.phone)}</p>
         <p>Age: ${escapeHTML(item.age)}</p>
         <p>Role: ${escapeHTML(item.role)}</p>
         <p>Address: ${escapeHTML(item.address)}</p>
         <p>Status: ${escapeHTML(item.status || "Pending")}</p>
-        <button class="btn dark" data-application="${item.id}" data-status="Approved">
-          Approve
-        </button>
-        <button class="btn" data-application="${item.id}" data-status="Rejected">
-          Reject
-        </button>
+
+        ${
+          item.status === "Pending"
+            ? `
+              <button class="btn dark"
+                data-application="${escapeHTML(item.id)}"
+                data-status="Approved">Approve</button>
+
+              <button class="btn"
+                data-application="${escapeHTML(item.id)}"
+                data-status="Rejected">Reject</button>
+            `
+            : ""
+        }
       </article>
     `).join("");
 
     list.querySelectorAll("[data-application]").forEach(button => {
       button.addEventListener("click", async () => {
+        if (!canReviewApplications()) return;
+
         const id = button.dataset.application;
         const status = button.dataset.status;
 
@@ -436,7 +545,9 @@ async function loadApplications() {
     });
 
   } catch (error) {
-    list.innerHTML = '<div class="empty">Could not load applications.</div>';
+    list.innerHTML =
+      '<div class="empty">Could not load applications.</div>';
+
     console.error(error);
   }
 }
@@ -452,29 +563,44 @@ async function loadMatches() {
   if (!list && !selector) return;
 
   try {
-    const snapshot = await getDocs(collection(db, "matches"));
+    const snapshot = await getDocs(
+      collection(db, "matches")
+    );
 
     const matches = snapshot.docs.map(item => ({
       id: item.id,
       ...item.data()
     }));
 
-    matches.sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+    matches.sort((a, b) =>
+      String(a.date || "").localeCompare(String(b.date || ""))
+    );
 
     if (list) {
       list.innerHTML = matches.length
         ? matches.map(match => `
           <article class="panel">
-            <span class="tag">${escapeHTML(match.status)}</span>
-            <h3>${escapeHTML(match.teamName || "DPPCC")} vs ${escapeHTML(match.opponent)}</h3>
+            <span class="tag">${escapeHTML(match.status || "Upcoming")}</span>
+
+            <h3>
+              ${escapeHTML(match.teamName || "DPPCC")}
+              vs ${escapeHTML(match.opponent)}
+            </h3>
+
             <p>Date: ${escapeHTML(match.date)}</p>
             <p>Venue: ${escapeHTML(match.venue)}</p>
             <p>Overs: ${escapeHTML(match.overs || "—")}</p>
             <p>${escapeHTML(match.result || "")}</p>
-            <a class="btn dark" href="match-centre.html?match=${encodeURIComponent(match.id)}">View Score</a>
+
+            <a class="btn dark"
+              href="match-centre.html?match=${encodeURIComponent(match.id)}">
+              View Score
+            </a>
+
             ${
-              canManageMatches()
-                ? `<button class="btn" data-delete-match="${escapeHTML(match.id)}">Delete</button>`
+              canDeleteMatches()
+                ? `<button class="btn"
+                    data-delete-match="${escapeHTML(match.id)}">Delete</button>`
                 : ""
             }
           </article>
@@ -483,11 +609,14 @@ async function loadMatches() {
 
       list.querySelectorAll("[data-delete-match]").forEach(button => {
         button.addEventListener("click", async () => {
-          if (!canManageMatches()) return;
+          if (!canDeleteMatches()) return;
           if (!confirm("Delete this match?")) return;
 
           try {
-            await deleteDoc(doc(db, "matches", button.dataset.deleteMatch));
+            await deleteDoc(
+              doc(db, "matches", button.dataset.deleteMatch)
+            );
+
             await loadMatches();
           } catch (error) {
             alert(error.message);
@@ -501,7 +630,8 @@ async function loadMatches() {
         '<option value="">Select match</option>' +
         matches.map(match => `
           <option value="${escapeHTML(match.id)}">
-            ${escapeHTML(match.teamName || "DPPCC")} vs ${escapeHTML(match.opponent)}
+            ${escapeHTML(match.teamName || "DPPCC")}
+            vs ${escapeHTML(match.opponent)}
           </option>
         `).join("");
     }
@@ -541,6 +671,7 @@ async function saveMatch(event) {
     await addDoc(collection(db, "matches"), data);
 
     $("matchForm").reset();
+
     showMessage("matchNotice", "Match published successfully.");
     await loadMatches();
 
@@ -565,23 +696,32 @@ async function submitBall(event) {
 
   try {
     const matchId = $("scoreMatchId").value;
-    if (!matchId) throw new Error("Select a match first.");
 
-    const matchSnapshot = await getDocs(collection(db, "matches"));
-    const matchDoc = matchSnapshot.docs.find(item => item.id === matchId);
+    if (!matchId) {
+      throw new Error("Select a match first.");
+    }
 
-    if (!matchDoc) throw new Error("Selected match was not found.");
+    const matchSnapshot = await getDoc(
+      doc(db, "matches", matchId)
+    );
+
+    if (!matchSnapshot.exists()) {
+      throw new Error("Selected match was not found.");
+    }
+
+    const match = matchSnapshot.data();
 
     const extrasType = $("extrasType").value;
     const extrasRuns = Number($("extrasRuns").value || 0);
     const runs = Number($("ballRuns").value || 0);
-    const wicket = $("ballWicket").value === "yes";
+    const wicket = $("ballWicket").value === "true";
     const over = Number($("ballOver").value);
     const ball = Number($("ballNumber").value);
 
     const data = {
       matchId,
-      matchLabel: `${matchDoc.data().teamName || "DPPCC"} vs ${matchDoc.data().opponent}`,
+      matchLabel:
+        `${match.teamName || "DPPCC"} vs ${match.opponent}`,
       innings: Number($("inningsNumber").value),
       over,
       ball,
@@ -593,32 +733,42 @@ async function submitBall(event) {
       wicket,
       dismissedPlayer: $("dismissedPlayer").value.trim(),
       commentary: $("ballCommentary").value.trim(),
-      legalBall: !["Wide", "No-ball"].includes(extrasType),
+      legalBall: !["Wide", "No Ball"].includes(extrasType),
       createdAt: serverTimestamp(),
       createdBy: currentUser.email
     };
 
     if (
       !Number.isInteger(data.innings) ||
-      data.innings < 1 || data.innings > 2 ||
-      !Number.isInteger(over) || over < 0 ||
-      !Number.isInteger(ball) || ball < 1 || ball > 6 ||
-      runs < 0 || runs > 6 ||
+      data.innings < 1 ||
+      data.innings > 2 ||
+      !Number.isInteger(over) ||
+      over < 0 ||
+      !Number.isInteger(ball) ||
+      ball < 1 ||
+      ball > 6 ||
+      runs < 0 ||
+      runs > 6 ||
       extrasRuns < 0
     ) {
       throw new Error("Please check innings, over, ball and runs.");
     }
 
-    await addDoc(collection(db, "liveScores"), data);
+    await addDoc(
+      collection(db, "liveScores"),
+      data
+    );
 
     await updateDoc(doc(db, "matches", matchId), {
       status: "Live",
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser.email
     });
 
     $("ballCommentary").value = "";
     $("ballRuns").value = "0";
     $("extrasRuns").value = "0";
+
     showMessage("scoreNotice", "Ball added to live score.");
 
     await loadLiveScores(matchId);
@@ -633,12 +783,15 @@ async function submitBall(event) {
 
 async function loadLiveScores(matchId = "") {
   const list = $("liveScoresList");
+
   if (!list) return;
 
   list.innerHTML = "<p>Loading score...</p>";
 
   try {
-    const snapshot = await getDocs(collection(db, "liveScores"));
+    const snapshot = await getDocs(
+      collection(db, "liveScores")
+    );
 
     let balls = snapshot.docs.map(item => ({
       id: item.id,
@@ -650,11 +803,13 @@ async function loadLiveScores(matchId = "") {
     }
 
     balls.sort((a, b) =>
-      (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0)
+      (a.createdAt?.seconds || 0) -
+      (b.createdAt?.seconds || 0)
     );
 
     if (!balls.length) {
-      list.innerHTML = '<div class="empty">No live score available yet.</div>';
+      list.innerHTML =
+        '<div class="empty">No live score available yet.</div>';
       return;
     }
 
@@ -662,44 +817,77 @@ async function loadLiveScores(matchId = "") {
 
     balls.forEach(item => {
       const inning = item.innings || 1;
-      if (!inningsGroups[inning]) inningsGroups[inning] = [];
+
+      if (!inningsGroups[inning]) {
+        inningsGroups[inning] = [];
+      }
+
       inningsGroups[inning].push(item);
     });
 
-    list.innerHTML = Object.keys(inningsGroups).sort().map(inning => {
-      const inningBalls = inningsGroups[inning];
+    list.innerHTML = Object.keys(inningsGroups)
+      .sort((a, b) => Number(a) - Number(b))
+      .map(inning => {
+        const inningBalls = inningsGroups[inning];
 
-      const totalRuns = inningBalls.reduce(
-        (sum, item) => sum + Number(item.runs || 0) + Number(item.extrasRuns || 0), 0
-      );
+        const totalRuns = inningBalls.reduce(
+          (sum, item) =>
+            sum +
+            Number(item.runs || 0) +
+            Number(item.extrasRuns || 0),
+          0
+        );
 
-      const wickets = inningBalls.filter(item => item.wicket).length;
-      const legalBalls = inningBalls.filter(item => item.legalBall !== false).length;
-      const overs = `${Math.floor(legalBalls / 6)}.${legalBalls % 6}`;
+        const wickets = inningBalls.filter(
+          item => item.wicket === true
+        ).length;
 
-      return `
-        <section class="panel">
-          <h3>Innings ${inning}</h3>
-          <div class="jersey-number">${totalRuns}/${wickets}</div>
-          <p>Overs: ${overs}</p>
-          <h4>Ball-by-ball Commentary</h4>
-          ${inningBalls.slice().reverse().map(item => `
-            <p>
-              <strong>${escapeHTML(item.over)}.${escapeHTML(item.ball)}</strong>
-              — ${escapeHTML(item.batter || "")}
-              ${escapeHTML(item.runs)} run(s)
-              ${item.extrasType !== "None" ? ` · ${escapeHTML(item.extrasType)} ${escapeHTML(item.extrasRuns)}` : ""}
-              ${item.wicket ? " · WICKET" : ""}
-              <br>
-              <span>${escapeHTML(item.commentary || "")}</span>
-            </p>
-          `).join("")}
-        </section>
-      `;
-    }).join("");
+        const legalBalls = inningBalls.filter(
+          item => item.legalBall !== false
+        ).length;
+
+        const overs =
+          `${Math.floor(legalBalls / 6)}.${legalBalls % 6}`;
+
+        return `
+          <section class="panel">
+            <h3>Innings ${escapeHTML(inning)}</h3>
+
+            <div class="jersey-number">
+              ${totalRuns}/${wickets}
+            </div>
+
+            <p>Overs: ${overs}</p>
+            <h4>Ball-by-ball Commentary</h4>
+
+            ${inningBalls.slice().reverse().map(item => `
+              <p>
+                <strong>
+                  ${escapeHTML(item.over)}.${escapeHTML(item.ball)}
+                </strong>
+                — ${escapeHTML(item.batter || "")}
+                ${escapeHTML(item.runs)} run(s)
+
+                ${
+                  item.extrasType && item.extrasType !== "None"
+                    ? ` · ${escapeHTML(item.extrasType)} ${escapeHTML(item.extrasRuns)}`
+                    : ""
+                }
+
+                ${item.wicket ? " · WICKET" : ""}
+
+                <br>
+                <span>${escapeHTML(item.commentary || "")}</span>
+              </p>
+            `).join("")}
+          </section>
+        `;
+      }).join("");
 
   } catch (error) {
-    list.innerHTML = '<div class="empty">Could not load live scores.</div>';
+    list.innerHTML =
+      '<div class="empty">Could not load live scores.</div>';
+
     console.error(error);
   }
 }
@@ -710,10 +898,13 @@ async function loadLiveScores(matchId = "") {
 
 async function loadNews() {
   const list = $("newsList");
+
   if (!list) return;
 
   try {
-    const snapshot = await getDocs(collection(db, "news"));
+    const snapshot = await getDocs(
+      collection(db, "news")
+    );
 
     const news = snapshot.docs.map(item => ({
       id: item.id,
@@ -721,7 +912,8 @@ async function loadNews() {
     }));
 
     news.sort((a, b) =>
-      (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
+      (b.createdAt?.seconds || 0) -
+      (a.createdAt?.seconds || 0)
     );
 
     list.innerHTML = news.length
@@ -730,9 +922,11 @@ async function loadNews() {
           <h3>${escapeHTML(item.title)}</h3>
           <p>${escapeHTML(item.body)}</p>
           <small>${escapeHTML(item.createdBy || "DPPCC")}</small>
+
           ${
             canManageNews()
-              ? `<button class="btn" data-delete-news="${escapeHTML(item.id)}">Delete</button>`
+              ? `<button class="btn"
+                  data-delete-news="${escapeHTML(item.id)}">Delete</button>`
               : ""
           }
         </article>
@@ -745,7 +939,10 @@ async function loadNews() {
         if (!confirm("Delete this news post?")) return;
 
         try {
-          await deleteDoc(doc(db, "news", button.dataset.deleteNews));
+          await deleteDoc(
+            doc(db, "news", button.dataset.deleteNews)
+          );
+
           await loadNews();
         } catch (error) {
           alert(error.message);
@@ -765,14 +962,22 @@ async function saveNews(event) {
   if (!requireStaff() || !canManageNews()) return;
 
   try {
+    const title = $("newsTitle").value.trim();
+    const body = $("newsBody").value.trim();
+
+    if (!title || !body) {
+      throw new Error("News title and details are required.");
+    }
+
     await addDoc(collection(db, "news"), {
-      title: $("newsTitle").value.trim(),
-      body: $("newsBody").value.trim(),
+      title,
+      body,
       createdAt: serverTimestamp(),
       createdBy: currentUser.email
     });
 
     $("newsForm").reset();
+
     showMessage("newsNotice", "News published successfully.");
     await loadNews();
 
@@ -789,24 +994,130 @@ async function submitJerseyOrder(event) {
   event.preventDefault();
 
   const button = $("jerseySubmit");
+
+  if (!button) return;
+
   button.disabled = true;
 
   try {
-    await addDoc(collection(db, "jerseyOrders"), {
+    const data = {
       name: $("jerseyName").value.trim(),
       phone: $("jerseyPhone").value.trim(),
       size: $("jerseySize").value,
       number: Number($("jerseyNumber").value),
       createdAt: serverTimestamp()
-    });
+    };
+
+    if (
+      !data.name ||
+      !data.phone ||
+      !["S", "M", "L", "XL", "XXL"].includes(data.size) ||
+      !Number.isInteger(data.number) ||
+      data.number < 0 ||
+      data.number > 999
+    ) {
+      throw new Error("Please check your jersey order details.");
+    }
+
+    await addDoc(
+      collection(db, "jerseyOrders"),
+      data
+    );
 
     $("jerseyOrderForm").reset();
-    showMessage("jerseyNotice", "Jersey order submitted successfully.");
+
+    showMessage(
+      "jerseyNotice",
+      "Jersey order submitted successfully."
+    );
 
   } catch (error) {
     showMessage("jerseyNotice", error.message, true);
   } finally {
     button.disabled = false;
+  }
+}
+
+async function loadJerseyOrders() {
+  const list = $("jerseyOrdersList");
+
+  if (!list || !canManageJerseyOrders()) return;
+
+  list.innerHTML = "<p>Loading jersey orders...</p>";
+
+  try {
+    const snapshot = await getDocs(
+      collection(db, "jerseyOrders")
+    );
+
+    const orders = snapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    orders.sort((a, b) =>
+      (b.createdAt?.seconds || 0) -
+      (a.createdAt?.seconds || 0)
+    );
+
+    if (!orders.length) {
+      list.innerHTML =
+        '<div class="empty">No jersey orders yet.</div>';
+      return;
+    }
+
+    list.innerHTML = orders.map(order => `
+      <article class="panel">
+        <h3>${escapeHTML(order.name)}</h3>
+        <p>Phone: ${escapeHTML(order.phone)}</p>
+        <p>Size: ${escapeHTML(order.size)}</p>
+        <p>Number: ${escapeHTML(order.number)}</p>
+        <p>Status: ${escapeHTML(order.status || "Pending")}</p>
+
+        <select data-jersey-status="${escapeHTML(order.id)}">
+          <option value="Pending" ${order.status === "Pending" || !order.status ? "selected" : ""}>Pending</option>
+          <option value="Processing" ${order.status === "Processing" ? "selected" : ""}>Processing</option>
+          <option value="Completed" ${order.status === "Completed" ? "selected" : ""}>Completed</option>
+          <option value="Rejected" ${order.status === "Rejected" ? "selected" : ""}>Rejected</option>
+        </select>
+
+        <button class="btn dark"
+          data-save-jersey="${escapeHTML(order.id)}">
+          Update Status
+        </button>
+      </article>
+    `).join("");
+
+    list.querySelectorAll("[data-save-jersey]").forEach(button => {
+      button.addEventListener("click", async () => {
+        if (!canManageJerseyOrders()) return;
+
+        const id = button.dataset.saveJersey;
+        const select = list.querySelector(
+          `[data-jersey-status="${id}"]`
+        );
+
+        if (!select) return;
+
+        try {
+          await updateDoc(doc(db, "jerseyOrders", id), {
+            status: select.value,
+            statusUpdatedAt: serverTimestamp(),
+            statusUpdatedBy: currentUser.email
+          });
+
+          await loadJerseyOrders();
+        } catch (error) {
+          alert("Could not update jersey order: " + error.message);
+        }
+      });
+    });
+
+  } catch (error) {
+    list.innerHTML =
+      '<div class="empty">Could not load jersey orders.</div>';
+
+    console.error(error);
   }
 }
 
@@ -816,14 +1127,35 @@ async function submitJerseyOrder(event) {
 
 function setupDashboard() {
   const pages = [
-    { id: "ownerContent", role: "Owner", email: "ownerEmail", logout: "ownerLogout" },
-    { id: "adminContent", role: "Admin", email: "adminEmail", logout: "adminLogout" },
-    { id: "managerContent", role: "Manager", email: "managerEmail", logout: "managerLogout" },
-    { id: "captainContent", role: "Captain", email: "captainEmail", logout: "captainLogout" }
+    {
+      id: "ownerContent",
+      role: "Owner",
+      email: "ownerEmail",
+      logout: "ownerLogout"
+    },
+    {
+      id: "adminContent",
+      role: "Admin",
+      email: "adminEmail",
+      logout: "adminLogout"
+    },
+    {
+      id: "managerContent",
+      role: "Manager",
+      email: "managerEmail",
+      logout: "managerLogout"
+    },
+    {
+      id: "captainContent",
+      role: "Captain",
+      email: "captainEmail",
+      logout: "captainLogout"
+    }
   ];
 
   pages.forEach(page => {
     const content = $(page.id);
+
     if (!content) return;
 
     const allowed =
@@ -839,7 +1171,8 @@ function setupDashboard() {
     content.style.display = "block";
 
     if ($(page.email)) {
-      $(page.email).textContent = `Signed in as: ${currentUser.email}`;
+      $(page.email).textContent =
+        `Signed in as: ${currentUser.email}`;
     }
 
     if ($(page.logout)) {
@@ -849,6 +1182,13 @@ function setupDashboard() {
       });
     }
   });
+}
+
+function updatePageAccess() {
+  // Recheck dashboard visibility when authentication changes.
+  if (currentUser && currentRole) {
+    setupDashboard();
+  }
 }
 
 // ========================================
@@ -872,8 +1212,31 @@ async function initializeDPPCC() {
     }
   }
 
+  if ($("cancelPlayerEdit")) {
+    $("cancelPlayerEdit").addEventListener("click", () => {
+      editingPlayerId = null;
+
+      $("playerForm")?.reset();
+
+      if ($("existingPhotoUrl")) {
+        $("existingPhotoUrl").value = "";
+      }
+
+      if ($("playerFormTitle")) {
+        $("playerFormTitle").textContent = "Add New Player";
+      }
+
+      if ($("playerSubmit")) {
+        $("playerSubmit").textContent = "Add Player";
+      }
+    });
+  }
+
   if ($("playerRegistrationForm")) {
-    $("playerRegistrationForm").addEventListener("submit", submitRegistration);
+    $("playerRegistrationForm").addEventListener(
+      "submit",
+      submitRegistration
+    );
   }
 
   if ($("registrationAdminList")) {
@@ -905,7 +1268,9 @@ async function initializeDPPCC() {
   }
 
   if ($("liveScoresList")) {
-    const selectedMatch = new URLSearchParams(location.search).get("match") || "";
+    const selectedMatch =
+      new URLSearchParams(location.search).get("match") || "";
+
     await loadLiveScores(selectedMatch);
   }
 
@@ -922,7 +1287,18 @@ async function initializeDPPCC() {
   }
 
   if ($("jerseyOrderForm")) {
-    $("jerseyOrderForm").addEventListener("submit", submitJerseyOrder);
+    $("jerseyOrderForm").addEventListener(
+      "submit",
+      submitJerseyOrder
+    );
+  }
+
+  if ($("jerseyOrdersList")) {
+    if (canManageJerseyOrders()) {
+      await loadJerseyOrders();
+    } else {
+      $("jerseyOrdersList").style.display = "none";
+    }
   }
 }
 
