@@ -1,4 +1,3 @@
-
 import {
   collection,
   addDoc,
@@ -1078,7 +1077,7 @@ async function loadJerseyOrders() {
           <option value="Pending" ${order.status === "Pending" || !order.status ? "selected" : ""}>Pending</option>
           <option value="Processing" ${order.status === "Processing" ? "selected" : ""}>Processing</option>
           <option value="Completed" ${order.status === "Completed" ? "selected" : ""}>Completed</option>
-          <option value="Rejected" ${order.status === "Rejected" ? "selected" : ""}>Rejected</option>
+          <option value="Cancelled" ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
         </select>
 
         <button class="btn dark"
@@ -1199,6 +1198,19 @@ async function initializeDPPCC() {
   await authReady;
 
   setupDashboard();
+
+  // Show management panels only to staff roles allowed to use them.
+  const managementPanels = [
+    ["playerManagement", canManagePlayers()],
+    ["matchManagement", canManageMatches()],
+    ["scoreManagement", canScore()],
+    ["newsManagement", canManageNews()]
+  ];
+
+  managementPanels.forEach(([id, allowed]) => {
+    const panel = $(id);
+    if (panel) panel.hidden = !allowed;
+  });
 
   if ($("playersList")) {
     await loadPlayers();
