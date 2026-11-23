@@ -1,14 +1,22 @@
-
 "use strict";
 
 (() => {
   if (window.DPPCC_PWA_INITIALIZED) return;
   window.DPPCC_PWA_INITIALIZED = true;
 
-  const THEME_COLOR = "#063b2b";
-  const LOGO_PATH = "./assets/dppcc-club-logo.jpg";
+  const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
 
-  // Add manifest.
+  const THEME_COLOR = "#063b2b";
+
+  if (isStandalone) {
+    document.documentElement.classList.add(
+      "dppcc-installed-app"
+    );
+  }
+
+  // Manifest
   if (!document.querySelector('link[rel="manifest"]')) {
     const manifest = document.createElement("link");
     manifest.rel = "manifest";
@@ -16,8 +24,8 @@
     document.head.appendChild(manifest);
   }
 
-  // Add mobile app stylesheet.
-  if (!document.querySelector('link[data-dppcc-mobile-style]')) {
+  // Mobile stylesheet
+  if (!document.querySelector("[data-dppcc-mobile-style]")) {
     const style = document.createElement("link");
     style.rel = "stylesheet";
     style.href = "./mobile-app.css";
@@ -25,7 +33,7 @@
     document.head.appendChild(style);
   }
 
-  // Set theme color.
+  // Theme color
   let theme = document.querySelector(
     'meta[name="theme-color"]'
   );
@@ -38,16 +46,7 @@
 
   theme.content = THEME_COLOR;
 
-  // Use the official club logo.
-  if (!document.querySelector('link[rel="icon"]')) {
-    const icon = document.createElement("link");
-    icon.rel = "icon";
-    icon.href = LOGO_PATH;
-    icon.type = "image/jpeg";
-    document.head.appendChild(icon);
-  }
-
-  // Register service worker.
+  // Service worker
   function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
 
@@ -55,15 +54,9 @@
       scope: "./"
     }).then(registration => {
       registration.update().catch(() => {});
-      console.info(
-        "DPPCC Service Worker registered:",
-        registration.scope
-      );
+      console.info("DPPCC service worker registered.");
     }).catch(error => {
-      console.error(
-        "DPPCC Service Worker registration failed:",
-        error
-      );
+      console.error("DPPCC service worker error:", error);
     });
   }
 
@@ -77,22 +70,32 @@
     );
   }
 
-  // Build professional mobile navigation.
-  function createMobileAppNavigation() {
-    if (!document.body) return;
+  // Installed app: use app-home as the home destination.
+  function correctHomeLinks() {
+    if (!isStandalone) return;
 
+    document.querySelectorAll(
+      'a[href="index.html"], a[href="./index.html"]'
+    ).forEach(link => {
+      link.href = "app-home.html";
+    });
+  }
+
+  // Bottom navigation
+  function createAppNavigation() {
+    if (!document.body) return;
     if (document.querySelector(".dppcc-app-nav")) return;
 
     const currentPage = (
       window.location.pathname.split("/").pop() || "index.html"
     ).toLowerCase();
 
-    const mainItems = [
+    const items = [
       {
         label: "Home",
         icon: "⌂",
-        href: "index.html",
-        pages: ["", "index.html"]
+        href: "app-home.html",
+        pages: ["", "index.html", "app-home.html"]
       },
       {
         label: "Players",
@@ -116,7 +119,7 @@
 
     const moreItems = [
       ["🏆", "Rankings", "rankings.html"],
-      ["📅", "Fixtures & Results", "match-centre.html"],
+      ["📅", "Match Centre", "match-centre.html"],
       ["🎬", "Videos", "videos.html"],
       ["🖼️", "Gallery", "gallery.html"],
       ["ℹ️", "About Club", "about.html"],
@@ -130,7 +133,7 @@
     nav.className = "dppcc-app-nav";
     nav.setAttribute("aria-label", "DPPCC app navigation");
 
-    mainItems.forEach(item => {
+    items.forEach(item => {
       const link = document.createElement("a");
       link.href = item.href;
 
@@ -194,14 +197,14 @@
 
     sheet.append(heading, grid);
 
-    function closeMoreMenu() {
+    function closeMenu() {
       backdrop.classList.remove("is-open");
       sheet.classList.remove("is-open");
       moreButton.setAttribute("aria-expanded", "false");
       document.body.style.overflow = "";
     }
 
-    function openMoreMenu() {
+    function openMenu() {
       backdrop.classList.add("is-open");
       sheet.classList.add("is-open");
       moreButton.setAttribute("aria-expanded", "true");
@@ -209,76 +212,76 @@
     }
 
     moreButton.addEventListener("click", () => {
-      const isOpen =
+      const opened =
         moreButton.getAttribute("aria-expanded") === "true";
 
-      if (isOpen) {
-        closeMoreMenu();
+      if (opened) {
+        closeMenu();
       } else {
-        openMoreMenu();
+        openMenu();
       }
     });
 
-    backdrop.addEventListener("click", closeMoreMenu);
+    backdrop.addEventListener("click", closeMenu);
 
     sheet.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", closeMoreMenu);
+      link.addEventListener("click", closeMenu);
     });
 
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        closeMoreMenu();
-      }
+      if (event.key === "Escape") closeMenu();
     });
 
     document.body.append(backdrop, sheet, nav);
   }
 
+  function initializePWAInterface() {
+    correctHomeLinks();
+
+    if (isStandalone) {
+      createAppNavigation();
+    }
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
-      createMobileAppNavigation,
+      initializePWAInterface,
       { once: true }
     );
   } else {
-    createMobileAppNavigation();
+    initializePWAInterface();
   }
 
-  // Create installation button.
+  // Browser install button
   let installPrompt = null;
 
   const installButton = document.createElement("button");
-
   installButton.type = "button";
   installButton.textContent = "Install DPPCC App";
   installButton.className = "dppcc-install-button";
-  installButton.setAttribute(
-    "aria-label",
-    "Install DPPCC application"
-  );
 
   installButton.style.cssText = `
-    position: fixed;
-    right: 16px;
-    bottom: 18px;
-    z-index: 99999;
-    display: none;
-    padding: 13px 19px;
-    border: 2px solid #f4c542;
-    border-radius: 30px;
-    background: #063b2b;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    position:fixed;
+    right:16px;
+    bottom:18px;
+    z-index:99999;
+    display:none;
+    padding:13px 19px;
+    border:2px solid #f4c542;
+    border-radius:30px;
+    background:#063b2b;
+    color:#fff;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 4px 16px rgba(0,0,0,.25);
   `;
 
   function addInstallButton() {
-    if (
-      document.body &&
-      !document.body.contains(installButton)
-    ) {
+    if (!document.body) return;
+
+    if (!document.body.contains(installButton)) {
       document.body.appendChild(installButton);
     }
   }
@@ -293,21 +296,21 @@
     addInstallButton();
   }
 
-  // Receive browser installation prompt.
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
     installPrompt = event;
-    addInstallButton();
-    installButton.style.display = "block";
+
+    if (!isStandalone) {
+      addInstallButton();
+      installButton.style.display = "block";
+    }
   });
 
-  // Install when user taps button.
   installButton.addEventListener("click", async () => {
     if (!installPrompt) {
       alert(
         "Open this website in Google Chrome. " +
-        "Then select Install app or Add to Home screen " +
-        "from the browser menu."
+        "Then select Install app or Add to Home screen."
       );
       return;
     }
@@ -316,21 +319,16 @@
       await installPrompt.prompt();
       await installPrompt.userChoice;
     } catch (error) {
-      console.error(
-        "DPPCC installation prompt error:",
-        error
-      );
+      console.error("DPPCC install error:", error);
     }
 
     installPrompt = null;
     installButton.style.display = "none";
   });
 
-  // Hide button after installation.
   window.addEventListener("appinstalled", () => {
     installPrompt = null;
     installButton.style.display = "none";
-    console.info("DPPCC app installed.");
   });
 
 })();
