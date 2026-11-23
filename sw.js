@@ -1,19 +1,20 @@
 
 "use strict";
 
-const DPPCC_CACHE_NAME = "dppcc-static-v1";
+const DPPCC_CACHE_NAME = "dppcc-static-v2";
 
 const DPPCC_APP_FILES = [
   "./",
   "./index.html",
   "./styles.css",
+  "./mobile-app.css",
   "./app.js",
   "./pwa.js",
   "./manifest.webmanifest",
   "./assets/dppcc-club-logo.jpg"
 ];
 
-// Install: cache only the public app shell and fixed assets.
+// Install: cache the public app shell and fixed assets.
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(DPPCC_CACHE_NAME)
@@ -22,7 +23,7 @@ self.addEventListener("install", event => {
   );
 });
 
-// Activate: remove older DPPCC cache versions.
+// Activate: remove older DPPCC static caches.
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
@@ -40,7 +41,7 @@ self.addEventListener("activate", event => {
   );
 });
 
-// Fetch: never cache external services or private page data.
+// Fetch: never cache Firebase, Cloudinary or private page data.
 self.addEventListener("fetch", event => {
   const request = event.request;
 
@@ -48,11 +49,10 @@ self.addEventListener("fetch", event => {
 
   const requestUrl = new URL(request.url);
 
-  // Ignore Firebase, Cloudinary, YouTube and other external origins.
+  // Ignore external services.
   if (requestUrl.origin !== self.location.origin) return;
 
-  // Navigation: try the network first.
-  // If offline, show the cached public home page.
+  // Navigation: network first, cached home page if offline.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request).catch(async () => {
@@ -75,11 +75,12 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Cache only the explicitly listed static files.
+  // Cache only approved static files.
   const allowedFiles = [
     "./",
     "./index.html",
     "./styles.css",
+    "./mobile-app.css",
     "./app.js",
     "./pwa.js",
     "./manifest.webmanifest",
@@ -87,6 +88,7 @@ self.addEventListener("fetch", event => {
   ];
 
   const appBase = new URL("./", self.location);
+
   const relativePath = "./" +
     requestUrl.pathname.slice(appBase.pathname.length);
 
