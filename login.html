@@ -1,168 +1,186 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Official website of Dungsree Paschim Para Cricket Club">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Official staff login for Dungsree Paschim Para Cricket Club">
   <title>Staff Login | DPPCC</title>
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .login-page {
+      max-width: 480px;
+      margin: auto;
+      padding: 55px 18px 70px;
+    }
+    .login-card {
+      padding: 28px;
+      border: 1px solid rgba(212,175,55,.45);
+      border-radius: 16px;
+      background: var(--card-bg, #102b20);
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+    .login-heading {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .login-logo {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+    .login-heading h1 {
+      font-size: 30px;
+      margin: 5px 0;
+    }
+    .login-form {
+      display: grid;
+      gap: 16px;
+    }
+    .login-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-weight: 700;
+    }
+    .login-form input {
+      width: 100%;
+      min-height: 47px;
+      padding: 12px;
+      border: 1px solid #aaa;
+      border-radius: 7px;
+      box-sizing: border-box;
+      font: inherit;
+    }
+    .login-form button {
+      min-height: 49px;
+      border: 0;
+      border-radius: 8px;
+      background: #d4af37;
+      color: #102b20;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .login-form button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+    .notice {
+      min-height: 22px;
+      text-align: center;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    .login-security {
+      margin-top: 20px;
+      padding: 13px;
+      border-radius: 8px;
+      background: rgba(212,175,55,.12);
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: center;
+    }
+    .login-back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 
 <body>
 
-  <div class="top">
-    <span>OFFICIAL CLUB WEBSITE · EST. 2026</span>
-    <span>
-      <a href="mailto:dungsreepaschimparacricketclub@gmail.com">CONTACT</a>
-      <a href="login.html">STAFF SIGN IN</a>
-    </span>
+<header class="header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo">
+      <span>DPPCC</span>
+    </a>
+
+    <button class="toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="players.html">Players</a>
+      <a href="matches.html">Matches</a>
+      <a href="match-centre.html">Match Centre</a>
+      <a href="news.html">News</a>
+      <a href="jersey.html">Jersey</a>
+      <a href="registration.html">Join Club</a>
+      <a href="login.html" aria-current="page">Staff Login</a>
+    </nav>
   </div>
+</header>
 
-  <header class="header">
-    <div class="head">
-      <a class="brand" href="index.html">
-        <img src="assets/dppcc-club-logo.jpg"
-             alt="DPPCC logo"
-             onerror="this.style.display='none'">
-        <span>
-          <b>DUNGSREE PASCHIM PARA<br>CRICKET CLUB</b>
-          <small>DPPCC · EST. 2026</small>
-        </span>
-      </a>
+<main class="login-page">
 
-      <button class="toggle"
-              aria-label="Open menu"
-              aria-expanded="false">☰</button>
+  <section class="login-card">
 
-      <nav class="nav">
-        <a href="index.html">HOME</a>
-        <a href="about.html">ABOUT</a>
-        <a href="players.html">PLAYERS</a>
-        <a href="rankings.html">RANKINGS</a>
-        <a href="matches.html">MATCH CENTRE</a>
-        <a href="news.html">NEWS</a>
-        <a href="videos.html">VIDEOS</a>
-        <a href="gallery.html">GALLERY</a>
-      </nav>
+    <div class="login-heading">
+      <img
+        class="login-logo"
+        src="assets/dppcc-club-logo.jpg"
+        alt="DPPCC Club Logo">
+
+      <h1>STAFF LOGIN</h1>
+      <p>Official DPPCC Management Portal</p>
+      <p><strong>ONE CLUB. ONE TEAM. ONE DREAM.</strong></p>
     </div>
-  </header>
 
-  <div class="sub">
-    <div class="subin">
-      <a href="match-centre.html">FIXTURES & RESULTS</a>
-      <a href="awards.html">AWARDS</a>
-      <a href="history.html">HISTORY</a>
-      <a href="registration.html">REGISTER</a>
-      <a href="jersey.html">JERSEY</a>
-      <a href="contact.html">CONTACT</a>
-      <a href="login.html">STAFF LOGIN</a>
-    </div>
-  </div>
+    <form class="login-form">
 
-  <section class="title">
-    <div class="titlein">
-      <h1>Staff Login</h1>
-      <p>
-        Dungsree Paschim Para Cricket Club · ONE CLUB.
-        ONE TEAM. ONE DREAM.
-      </p>
+      <label>
+        Official Staff Email
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="username"
+          placeholder="Enter your official email">
+      </label>
+
+      <label>
+        Password
+        <input
+          type="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          placeholder="Enter your password">
+      </label>
+
+      <button type="submit">SECURE LOGIN</button>
+
+      <p class="notice" role="status" aria-live="polite"></p>
+
+    </form>
+
+    <div class="login-security">
+      <strong>Authorized Staff Only</strong>
+      <p>Access is restricted to officially approved DPPCC staff accounts. Unauthorized access is not permitted.</p>
     </div>
+
+    <a class="login-back" href="index.html">← Back to Official Website</a>
+
   </section>
 
-  <main class="wrap">
-    <div class="panel" style="max-width:520px;margin:auto">
+</main>
 
-      <h2>Staff Sign In</h2>
+<footer class="footer">
+  <div class="container">
+    <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo" width="75">
+    <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
+    <p>Established 2026</p>
+    <img data-sponsor src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor Logo" width="120">
+    <p>© <span data-year>2026</span> Dungsree Paschim Para Cricket Club. All Rights Reserved.</p>
+  </div>
+</footer>
 
-      <div class="notice" role="status" aria-live="polite">
-        Sign in using your authorized club staff email.
-      </div>
-
-      <form id="staffLoginForm">
-
-        <label for="staffEmail">Email</label>
-        <input
-          id="staffEmail"
-          name="email"
-          type="email"
-          placeholder="Enter your staff email"
-          autocomplete="username"
-          required
-        >
-
-        <label for="staffPassword">Password</label>
-        <input
-          id="staffPassword"
-          name="password"
-          type="password"
-          placeholder="Enter your password"
-          autocomplete="current-password"
-          required
-        >
-
-        <button type="submit" class="btn dark">
-          Sign In
-        </button>
-
-      </form>
-
-      <p style="margin-top:18px;text-align:center">
-        <a href="index.html">← Back to Home</a>
-      </p>
-
-    </div>
-  </main>
-
-  <footer class="footer">
-    <div class="foot">
-
-      <div>
-        <h3>DPPCC</h3>
-        <p>Dungsree Paschim Para Cricket Club</p>
-        <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
-        <p>Established 2026</p>
-        <a href="mailto:dungsreepaschimparacricketclub@gmail.com">
-          dungsreepaschimparacricketclub@gmail.com
-        </a>
-      </div>
-
-      <div>
-        <h3>Explore</h3>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-        <a href="players.html">Players</a>
-        <a href="rankings.html">Rankings</a>
-        <a href="matches.html">Match Centre</a>
-        <a href="news.html">News</a>
-      </div>
-
-      <div>
-        <h3>Club</h3>
-        <a href="match-centre.html">Fixtures & Results</a>
-        <a href="awards.html">Awards</a>
-        <a href="history.html">History</a>
-        <a href="registration.html">Register</a>
-        <a href="jersey.html">Jersey</a>
-        <a href="contact.html">Contact</a>
-        <a href="login.html">Staff Login</a>
-
-        <img class="sponsor"
-             data-sponsor
-             alt="Official sponsor logo">
-      </div>
-
-    </div>
-
-    <div class="copy">
-      © <span data-year>2026</span>
-      Dungsree Paschim Para Cricket Club.
-      All rights reserved.
-    </div>
-  </footer>
-
-  <script src="app.js"></script>
-  <script type="module" src="auth.js"></script>
+<script src="app.js"></script>
+<script type="module" src="auth.js"></script>
 
 </body>
 </html>
