@@ -1,10 +1,9 @@
-
 {
-  "id": "./",
+  "id": "./app-home.html",
   "name": "Dungsree Paschim Para Cricket Club",
   "short_name": "DPPCC",
   "description": "Official app of Dungsree Paschim Para Cricket Club",
-  "start_url": "./index.html",
+  "start_url": "./app-home.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
