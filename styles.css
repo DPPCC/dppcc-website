@@ -13,11 +13,15 @@
   box-sizing: border-box;
 }
 
+html {
+  color-scheme: light;
+}
+
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 16px/1.55 Arial, sans-serif;
+  font: 16px/1.6 Arial, sans-serif;
 }
 
 a {
@@ -30,24 +34,51 @@ img {
   display: block;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* ========================================
+   TOP BAR
+======================================== */
+
 .top {
   background: #03291e;
-  color: #dce9e2;
-  padding: 8px 5%;
+  color: #ffffff;
+  padding: 9px 5%;
   font-size: 12px;
+  font-weight: 700;
   display: flex;
   justify-content: space-between;
+  gap: 12px;
 }
+
+.top a {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.top a:hover {
+  color: var(--gold);
+}
+
+/* ========================================
+   HEADER AND BRAND
+======================================== */
 
 .header {
   background: var(--g);
-  color: #fff;
+  color: #ffffff;
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.head {
+.head,
+.header-inner {
   max-width: 1200px;
   margin: auto;
   padding: 12px 20px;
@@ -56,18 +87,26 @@ img {
   gap: 18px;
 }
 
+.container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 230px;
+  color: #ffffff;
+  font-weight: 800;
 }
 
 .brand img {
   width: 52px;
   height: 52px;
   object-fit: contain;
-  background: white;
+  background: #ffffff;
   border-radius: 50%;
   padding: 4px;
 }
@@ -75,67 +114,132 @@ img {
 .brand b {
   display: block;
   font-size: 14px;
-  line-height: 1.2;
+  line-height: 1.3;
+  color: #ffffff;
+  font-weight: 900;
 }
 
 .brand small {
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 2px;
-  color: #d4e4da;
+  color: #e6f0e9;
+  font-weight: 700;
 }
+
+/* ========================================
+   MAIN NAVIGATION
+======================================== */
 
 .nav {
   margin-left: auto;
   display: flex;
-  gap: 2px;
+  gap: 4px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .nav a {
-  font-size: 11px;
-  font-weight: bold;
-  padding: 11px 8px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 11px 9px;
   text-transform: uppercase;
+  letter-spacing: .25px;
+  transition: color .2s ease, background .2s ease;
+  border-radius: 5px;
 }
 
 .nav a:hover,
-.sub a:hover {
+.nav a:focus-visible {
   color: var(--gold);
+  background: #ffffff12;
 }
 
-.toggle {
-  display: none;
-  background: none;
-  color: white;
-  border: 1px solid #ffffff66;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 20px;
-}
+/* ========================================
+   SECONDARY NAVIGATION
+======================================== */
 
 .sub {
   background: #0a513a;
-  color: white;
+  color: #ffffff;
 }
 
 .subin {
   max-width: 1200px;
   margin: auto;
-  padding: 9px 20px;
+  padding: 10px 20px;
   display: flex;
   gap: 20px;
   overflow: auto;
   white-space: nowrap;
-  font-size: 11px;
-  font-weight: bold;
+  font-size: 12px;
+  font-weight: 800;
   text-transform: uppercase;
 }
+
+.subin a {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.subin a:hover {
+  color: var(--gold);
+}
+
+/* ========================================
+   MOBILE MENU BUTTON
+======================================== */
+
+.toggle {
+  display: none;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #ffffff80;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* ========================================
+   PAGE LAYOUT
+======================================== */
 
 .wrap {
   max-width: 1200px;
   margin: auto;
-  padding: 28px 20px;
+  padding: 30px 20px;
 }
+
+.title {
+  background: var(--g);
+  color: #ffffff;
+  padding: 40px 20px;
+}
+
+.titlein {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.title h1 {
+  color: #ffffff;
+  font-size: clamp(30px, 5vw, 42px);
+  font-weight: 900;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.title p {
+  color: #e7f1eb;
+  margin: 8px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ========================================
+   HOME HERO
+======================================== */
 
 .hero {
   max-width: 1200px;
@@ -145,7 +249,7 @@ img {
   display: flex;
   align-items: end;
   padding: 42px;
-  color: white;
+  color: #ffffff;
   background:
     linear-gradient(90deg, #03291ef0, #03291e55),
     url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1600&q=80')
@@ -153,63 +257,96 @@ img {
 }
 
 .hero h1 {
+  color: #ffffff;
   font-size: clamp(38px, 6vw, 64px);
-  line-height: 1.02;
+  font-weight: 900;
+  line-height: 1.08;
   margin: 12px 0;
 }
 
 .hero p {
   max-width: 620px;
-  color: #e2eee7;
+  color: #f0f7f2;
+  font-weight: 600;
 }
 
 .eyebrow {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--g2);
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .hero .eyebrow {
   color: var(--gold);
 }
 
+/* ========================================
+   BUTTONS
+======================================== */
+
 .btn {
   display: inline-block;
   background: var(--gold);
   color: #17271e;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 11px 16px;
-  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 12px 17px;
+  border-radius: 5px;
   margin: 8px 7px 0 0;
   text-transform: uppercase;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.btn:hover {
+  background: #ffda61;
+  transform: translateY(-1px);
 }
 
 .btn.dark {
   background: var(--g);
-  color: white;
+  color: #ffffff;
 }
+
+button {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}
+
+/* ========================================
+   SECTION HEADINGS
+======================================== */
 
 .section {
   display: flex;
   justify-content: space-between;
   align-items: end;
-  margin: 30px 0 15px;
+  gap: 12px;
+  margin: 32px 0 17px;
 }
 
 .section h2 {
   margin: 0;
   color: var(--g);
-  font-size: 26px;
+  font-size: 27px;
+  font-weight: 900;
 }
 
 .section a {
-  color: var(--g2);
-  font-size: 11px;
-  font-weight: bold;
+  color: #075c40;
+  font-size: 13px;
+  font-weight: 800;
 }
+
+/* ========================================
+   CARDS AND PANELS
+======================================== */
 
 .grid {
   display: grid;
@@ -225,7 +362,8 @@ img {
 
 .card,
 .panel {
-  background: #fff;
+  background: #ffffff;
+  color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 11px;
   overflow: hidden;
@@ -240,97 +378,119 @@ img {
 }
 
 .body {
-  padding: 17px;
+  padding: 18px;
 }
 
 .body h3 {
   color: var(--g);
   margin: 5px 0;
+  font-size: 19px;
+  font-weight: 900;
 }
 
 .body p,
 .muted {
-  color: var(--muted);
+  color: #435249;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .panel {
-  padding: 20px;
+  padding: 22px;
 }
+
+.panel h1,
+.panel h2,
+.panel h3 {
+  color: var(--g);
+  font-weight: 900;
+}
+
+.panel p,
+.panel li {
+  color: #34463b;
+}
+
+/* ========================================
+   NOTICES AND EMPTY STATES
+======================================== */
 
 .notice {
   background: #fff5d9;
-  border-left: 4px solid var(--gold);
-  padding: 13px 16px;
+  color: #493600;
+  border-left: 4px solid #d49b00;
+  padding: 14px 16px;
   border-radius: 5px;
   margin: 16px 0;
-  font-size: 13px;
+  font-size: 14px;
+}
+
+.notice p,
+.notice span,
+.notice strong {
+  color: #493600;
 }
 
 .empty {
-  background: white;
+  background: #ffffff;
   border: 1px dashed #bdcbc1;
-  padding: 25px;
+  padding: 26px;
   text-align: center;
-  color: var(--muted);
+  color: #435249;
   border-radius: 10px;
+  font-weight: 600;
 }
 
-.title {
-  background: var(--g);
-  color: white;
-  padding: 38px 20px;
-}
-
-.titlein {
-  max-width: 1200px;
-  margin: auto;
-}
-
-.title h1 {
-  font-size: 38px;
-  margin: 0;
-}
-
-.title p {
-  color: #d8e7de;
-  margin: 5px 0;
-}
+/* ========================================
+   SCORE AND VIDEO
+======================================== */
 
 .score {
   background: var(--g);
-  color: white;
+  color: #ffffff;
   border-radius: 10px;
   padding: 22px;
 }
 
 .score strong {
   font-size: 30px;
+  color: #ffffff;
+  font-weight: 900;
 }
 
 .video {
   aspect-ratio: 16/9;
   background: #0b2d21;
-  color: white;
+  color: #ffffff;
   border-radius: 10px;
   display: grid;
   place-items: center;
   text-align: center;
 }
 
+.video p {
+  color: #f0f7f2;
+  font-weight: 700;
+}
+
 .sponsor {
   max-width: 180px;
   max-height: 90px;
   object-fit: contain;
-  background: white;
+  background: #ffffff;
   padding: 8px;
   border-radius: 6px;
 }
 
+/* ========================================
+   TABLES
+======================================== */
+
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: #ffffff;
+  color: #17231c;
 }
 
 th,
@@ -338,14 +498,16 @@ td {
   padding: 12px;
   text-align: left;
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 14px;
+  color: #26372d;
 }
 
 th {
   background: #eaf1ec;
-  color: var(--g);
+  color: #063b2b;
   text-transform: uppercase;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .scroll {
@@ -354,36 +516,736 @@ th {
   border-radius: 9px;
 }
 
+/* ========================================
+   GENERAL FORMS
+======================================== */
+
 form {
   display: grid;
   gap: 12px;
 }
 
 label {
-  font-size: 13px;
-  font-weight: bold;
-  color: var(--g);
+  font-size: 14px;
+  font-weight: 800;
+  color: #063b2b;
 }
 
 input,
 select,
 textarea {
   width: 100%;
-  padding: 11px;
-  border: 1px solid #cbd7ce;
+  padding: 12px;
+  border: 1px solid #aebbb2;
   border-radius: 6px;
+  background: #ffffff;
+  color: #17231c;
   font: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #65736a;
+  opacity: 1;
+}
+
+select option {
+  background: #ffffff;
+  color: #17231c;
+}
+
+input[type="checkbox"] {
+  width: auto;
+  accent-color: #08734f;
+}
+
+input[type="file"] {
+  color: #17231c;
+  background: #ffffff;
 }
 
 textarea {
   min-height: 100px;
 }
 
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #08734f;
+  outline: 2px solid #08734f;
+  outline-offset: 1px;
+}
+
+/* ========================================
+   REGISTRATION PAGE
+======================================== */
+
+.registration-heading h1 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.registration-heading p {
+  color: #435249;
+  font-weight: 600;
+}
+
+.registration-card {
+  background: #102b20 !important;
+  color: #ffffff !important;
+}
+
+.registration-card h1,
+.registration-card h2,
+.registration-card h3,
+.registration-card p,
+.registration-card span,
+.registration-card small,
+.registration-card strong {
+  color: #ffffff !important;
+}
+
+.registration-card h2 {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.registration-form label {
+  color: #ffffff !important;
+  font-size: 15px;
+  font-weight: 800 !important;
+}
+
+.registration-form input,
+.registration-form select,
+.registration-form textarea {
+  background: #ffffff !important;
+  color: #17231c !important;
+  font-weight: 600;
+  border: 1px solid #b7c5bb !important;
+}
+
+.registration-form input::placeholder,
+.registration-form textarea::placeholder {
+  color: #65736a !important;
+  opacity: 1 !important;
+}
+
+.registration-form button {
+  font-weight: 900 !important;
+  font-size: 16px;
+}
+
+.registration-note {
+  color: #e7f1eb !important;
+  font-weight: 600;
+}
+
+.registration-notice {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   JERSEY PAGE
+======================================== */
+
+.jersey-heading h1 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.jersey-card {
+  background: #102b20 !important;
+  color: #ffffff !important;
+}
+
+.jersey-card h1,
+.jersey-card h2,
+.jersey-card h3,
+.jersey-card p,
+.jersey-card span,
+.jersey-card small,
+.jersey-card strong {
+  color: #ffffff !important;
+}
+
+.jersey-card h2 {
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.jersey-form label {
+  color: #ffffff !important;
+  font-size: 15px;
+  font-weight: 800 !important;
+}
+
+.jersey-form input,
+.jersey-form select {
+  background: #ffffff !important;
+  color: #17231c !important;
+  font-weight: 600;
+  border: 1px solid #b7c5bb !important;
+}
+
+.jersey-form button {
+  font-weight: 900 !important;
+  font-size: 16px;
+}
+
+.jersey-note {
+  color: #e7f1eb !important;
+  font-weight: 600;
+}
+
+.jersey-notice {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* ========================================
+   PLAYERS PAGE
+======================================== */
+
+.players-heading h1 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.players-heading p {
+  color: #435249;
+  font-weight: 600;
+}
+
+.player-count {
+  color: #063b2b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 22px;
+}
+
+.player-card {
+  background: #102b20 !important;
+  color: #ffffff !important;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(212,175,55,.4);
+}
+
+.player-details h3 {
+  color: #ffffff !important;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.player-details p,
+.player-details span {
+  color: #f0f7f2 !important;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.player-actions button,
+.player-form button {
+  font-weight: 900;
+}
+
+.player-form-section {
+  background: #ffffff;
+  color: #17231c;
+}
+
+.player-form-section h2 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.player-form label {
+  color: #063b2b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.player-form input,
+.player-form select {
+  background: #ffffff;
+  color: #17231c;
+  font-weight: 600;
+}
+
+.player-form button {
+  background: #d4af37;
+  color: #102b20;
+}
+
+.player-notice {
+  font-weight: 800;
+}
+
+.empty-players {
+  color: #435249;
+  font-weight: 600;
+}
+
+/* ========================================
+   MATCHES PAGE
+======================================== */
+
+.matches-heading h1 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.match-management {
+  background: #ffffff;
+  color: #17231c;
+}
+
+.match-management h2,
+.match-section h2 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.match-form label {
+  color: #063b2b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.match-form input,
+.match-form select {
+  background: #ffffff;
+  color: #17231c;
+  font-weight: 600;
+}
+
+.match-form button {
+  font-weight: 900;
+}
+
+.match-card {
+  background: #102b20 !important;
+  color: #ffffff !important;
+}
+
+.match-card h3 {
+  color: #ffffff !important;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.match-card p,
+.match-card span {
+  color: #f0f7f2 !important;
+  font-weight: 600;
+}
+
+.match-status {
+  background: #f4c542 !important;
+  color: #17231c !important;
+  font-weight: 900;
+}
+
+.match-empty {
+  color: #435249;
+  font-weight: 600;
+}
+
+.match-notice {
+  font-weight: 800;
+}
+
+/* ========================================
+   LIVE MATCH CENTRE
+======================================== */
+
+.centre-heading h1 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.live-badge {
+  font-weight: 900;
+}
+
+.score-management,
+.scoreboard,
+.commentary-section {
+  background: #102b20 !important;
+  color: #ffffff !important;
+}
+
+.score-management h2,
+.scoreboard h2,
+.commentary-section h2 {
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.score-management p,
+.scoreboard p,
+.commentary-section p,
+.score-details,
+.commentary-item {
+  color: #f0f7f2 !important;
+  font-weight: 600;
+}
+
+.score-total {
+  color: #f4c542 !important;
+  font-size: clamp(35px, 8vw, 58px);
+  font-weight: 900;
+}
+
+.score-form label {
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 800 !important;
+}
+
+.score-form input,
+.score-form select {
+  background: #ffffff !important;
+  color: #17231c !important;
+  font-weight: 600;
+}
+
+.score-form button {
+  font-weight: 900;
+}
+
+.commentary-item strong {
+  color: #f4c542 !important;
+  font-weight: 900;
+}
+
+.empty-score {
+  color: #f0f7f2;
+  font-weight: 600;
+}
+
+.score-notice {
+  font-weight: 800;
+}
+
+/* ========================================
+   NEWS PAGE
+======================================== */
+
+.news-heading h1 {
+  color: #063b2b;
+  font-weight: 900;
+}
+
+.news-management,
+.news-card {
+  background: #102b20 !important;
+  color: #ffffff !important;
+}
+
+.news-management h2,
+.news-card h2 {
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.news-management label {
+  color: #ffffff !important;
+  font-size: 14px;
+  font-weight: 800 !important;
+}
+
+.news-management input,
+.news-management textarea {
+  background: #ffffff !important;
+  color: #17231c !important;
+  font-weight: 600;
+}
+
+.news-management button {
+  font-weight: 900;
+}
+
+.news-card p,
+.news-card .news-body {
+  color: #f0f7f2 !important;
+  font-weight: 500;
+}
+
+.news-card .news-date {
+  color: #f4d98b !important;
+  font-weight: 700;
+}
+
+.news-empty {
+  color: #435249;
+  font-weight: 600;
+}
+
+.news-notice {
+  font-weight: 800;
+}
+
+/* ========================================
+   DASHBOARD PAGES
+======================================== */
+
+.dashboard-wrap {
+  max-width: 1150px;
+  margin: auto;
+  padding: 30px 18px 60px;
+  color: #17231c;
+}
+
+.heading,
+.dashboard-heading {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.heading h1,
+.dashboard-heading h1 {
+  color: #063b2b !important;
+  font-size: clamp(27px, 5vw, 40px);
+  font-weight: 900;
+}
+
+.heading p,
+.dashboard-heading p {
+  color: #435249;
+  font-weight: 600;
+}
+
+/* Access verified status */
+.status {
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 10px;
+  text-align: center;
+  background: #e5f7eb;
+  color: #14532d !important;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.status p,
+.status span,
+.status strong {
+  color: #14532d !important;
+}
+
+/* Dashboard content panels */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+  margin: 22px 0;
+}
+
+.formbox {
+  background: #102b20 !important;
+  border: 1px solid rgba(212,175,55,.5);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 18px 0;
+  color: #ffffff !important;
+  overflow-wrap: anywhere;
+}
+
+.formbox h1,
+.formbox h2,
+.formbox h3,
+.formbox h4 {
+  color: #f4c542 !important;
+  font-weight: 900;
+}
+
+.formbox p,
+.formbox span,
+.formbox small,
+.formbox li,
+.formbox b,
+.formbox strong,
+.formbox label {
+  color: #ffffff !important;
+}
+
+.formbox label {
+  font-size: 14px;
+  font-weight: 800 !important;
+}
+
+/* Dashboard inputs */
+.formbox input,
+.formbox select,
+.formbox textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  margin: 8px 0 15px;
+  border-radius: 7px;
+  border: 1px solid #b7c5bb !important;
+  background: #ffffff !important;
+  color: #17231c !important;
+  font-weight: 600;
+}
+
+.formbox input::placeholder,
+.formbox textarea::placeholder {
+  color: #65736a !important;
+  opacity: 1 !important;
+}
+
+.formbox option {
+  background: #ffffff !important;
+  color: #17231c !important;
+}
+
+/* Dashboard buttons */
+.formbox button {
+  padding: 12px 16px;
+  margin: 5px 4px 5px 0;
+  border: 0;
+  border-radius: 7px;
+  background: #f4c542 !important;
+  color: #17231c !important;
+  font-weight: 900 !important;
+  cursor: pointer;
+}
+
+.formbox .danger {
+  background: #b42318 !important;
+  color: #ffffff !important;
+}
+
+.formbox .secondary {
+  background: #555f59 !important;
+  color: #ffffff !important;
+}
+
+/* Dashboard records and staff list */
+.formbox .item {
+  padding: 14px;
+  margin: 10px 0;
+  background: #173b2d;
+  border: 1px solid rgba(244,197,66,.45);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  color: #ffffff !important;
+}
+
+.formbox .item p,
+.formbox .item span,
+.formbox .item small,
+.formbox .item b,
+.formbox .item strong,
+.formbox .item label {
+  color: #ffffff !important;
+}
+
+/* Dashboard statistics */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  text-align: center;
+}
+
+.stat {
+  padding: 15px 5px;
+  background: #173b2d;
+  border-radius: 9px;
+}
+
+.stat b {
+  display: block;
+  font-size: 26px;
+  color: #f4c542 !important;
+  font-weight: 900;
+}
+
+.stat span {
+  color: #ffffff !important;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Welcome notice */
+#welcomeText {
+  background: #fff5d9;
+  color: #493600;
+  font-weight: 700;
+}
+
+#welcomeText,
+#welcomeText p,
+#welcomeText span,
+#welcomeText strong {
+  color: #493600 !important;
+}
+
+/* Dashboard links */
+.formbox a {
+  color: #ffe08a;
+  font-weight: 800;
+}
+
+/* Dashboard hidden elements */
+.hidden {
+  display: none !important;
+}
+
+.smallbtn {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* ========================================
+   LOGIN PAGE
+======================================== */
+
+#loginNotice {
+  color: #493600;
+  font-weight: 700;
+}
+
+#loginNotice p,
+#loginNotice span {
+  color: #493600;
+}
+
+.wrap .panel label {
+  color: #063b2b;
+  font-weight: 800;
+}
+
+.wrap .panel input {
+  background: #ffffff;
+  color: #17231c;
+  font-weight: 600;
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+
 .footer {
   margin-top: 50px;
   background: #03291e;
-  color: #d9e8df;
+  color: #e7f1eb;
   padding: 35px 20px;
+}
+
+.footer p {
+  color: #e7f1eb;
 }
 
 .foot {
@@ -396,191 +1258,63 @@ textarea {
 
 .footer h3 {
   color: var(--gold);
+  font-weight: 900;
 }
 
 .footer a {
   display: block;
-  font-size: 13px;
+  color: #f0f7f2;
+  font-size: 14px;
+  font-weight: 600;
   margin: 7px 0;
+  overflow-wrap: anywhere;
+}
+
+.footer a:hover {
+  color: var(--gold);
 }
 
 .copy {
   max-width: 1200px;
   margin: 22px auto 0;
-  border-top: 1px solid #ffffff2b;
+  border-top: 1px solid #ffffff40;
   padding-top: 15px;
-  color: #a9c0b3;
+  color: #d2e1d8;
   font-size: 12px;
+  font-weight: 600;
 }
 
-/* =========================================
-   DPPCC TEXT CONTRAST AND READABILITY FIX
-   Only visual styling. No system functionality.
-   ========================================= */
+/* ========================================
+   ACCESSIBILITY AND READABILITY
+======================================== */
 
-/* Dark green cards and panels */
-.registration-card,
-.jersey-card,
-.formbox,
-.player-card,
-.match-card,
-.score-management,
-.scoreboard,
-.commentary-section,
-.news-management,
-.news-card {
-  color: #ffffff;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #d49b00;
+  outline-offset: 3px;
 }
 
-/* Headings and paragraphs on dark backgrounds */
-.registration-card h1,
-.registration-card h2,
-.registration-card h3,
-.registration-card p,
-.jersey-card h1,
-.jersey-card h2,
-.jersey-card h3,
-.jersey-card p,
-.formbox h1,
-.formbox h2,
-.formbox h3,
-.formbox p,
-.formbox span,
-.formbox li,
-.player-card h1,
-.player-card h2,
-.player-card h3,
-.player-card p,
-.match-card h1,
-.match-card h2,
-.match-card h3,
-.match-card p,
-.score-management h1,
-.score-management h2,
-.score-management h3,
-.score-management p,
-.scoreboard h1,
-.scoreboard h2,
-.scoreboard h3,
-.scoreboard p,
-.commentary-section h1,
-.commentary-section h2,
-.commentary-section h3,
-.commentary-section p,
-.news-management h1,
-.news-management h2,
-.news-management h3,
-.news-management p,
-.news-card h1,
-.news-card h2,
-.news-card h3,
-.news-card p {
-  color: #ffffff;
-}
-
-/* Labels on dark green backgrounds */
-.registration-card label,
-.jersey-card label,
-.formbox label,
-.player-card label,
-.match-card label,
-.score-management label,
-.scoreboard label,
-.commentary-section label,
-.news-management label,
-.news-card label {
-  color: #ffffff;
-}
-
-/* White form fields with dark readable text */
-.registration-card input,
-.registration-card select,
-.registration-card textarea,
-.jersey-card input,
-.jersey-card select,
-.jersey-card textarea,
-.formbox input,
-.formbox select,
-.formbox textarea,
-.player-form-section input,
-.player-form-section select,
-.match-management input,
-.match-management select,
-.score-management input,
-.score-management select,
-.news-management input,
-.news-management select,
-.news-management textarea {
-  color: #17231c;
-  background-color: #ffffff;
-  border: 1px solid #aebbb2;
-}
-
-/* Clear placeholder text */
-.registration-card input::placeholder,
-.registration-card textarea::placeholder,
-.jersey-card input::placeholder,
-.jersey-card textarea::placeholder,
-.formbox input::placeholder,
-.formbox textarea::placeholder,
-.player-form-section input::placeholder,
-.match-management input::placeholder,
-.score-management input::placeholder,
-.news-management input::placeholder,
-.news-management textarea::placeholder {
-  color: #66736b;
-  opacity: 1;
-}
-
-/* Dropdown option readability */
-.registration-card option,
-.jersey-card option,
-.formbox option,
-.score-management option {
-  color: #17231c;
-  background: #ffffff;
-}
-
-/* Secondary text on dark cards */
-.registration-card .registration-note,
-.jersey-card .jersey-note,
-.news-card .news-date {
-  color: #e3eee7;
-  opacity: 1;
-}
-
-/* Links on dark cards */
-.formbox a,
+.registration-card a,
+.jersey-card a,
 .player-card a,
 .match-card a,
+.score-management a,
+.scoreboard a,
+.commentary-section a,
+.news-management a,
 .news-card a {
   color: #ffe08a;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: 3px;
 }
 
-/* Clear focus outline */
-.registration-card input:focus,
-.registration-card select:focus,
-.registration-card textarea:focus,
-.jersey-card input:focus,
-.jersey-card select:focus,
-.formbox input:focus,
-.formbox select:focus,
-.formbox textarea:focus,
-.player-form-section input:focus,
-.player-form-section select:focus,
-.match-management input:focus,
-.match-management select:focus,
-.score-management input:focus,
-.score-management select:focus,
-.news-management input:focus,
-.news-management textarea:focus {
-  outline: 3px solid #f4c542;
-  outline-offset: 2px;
-}
+/* ========================================
+   RESPONSIVE TABLET
+======================================== */
 
-/* Responsive layout — preserved */
 @media (max-width: 900px) {
   .toggle {
     display: block;
@@ -596,6 +1330,7 @@ textarea {
     background: var(--g);
     padding: 12px 18px;
     flex-direction: column;
+    align-items: stretch;
   }
 
   .nav.open {
@@ -603,17 +1338,26 @@ textarea {
   }
 
   .nav a {
-    border-bottom: 1px solid #ffffff20;
+    border-bottom: 1px solid #ffffff30;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 900;
+    padding: 13px 10px;
   }
 
-  .head {
+  .head,
+  .header-inner {
     padding: 10px 14px;
   }
 
   .subin {
-    gap: 14px;
+    gap: 15px;
   }
 }
+
+/* ========================================
+   RESPONSIVE MOBILE
+======================================== */
 
 @media (max-width: 620px) {
   .top {
@@ -633,10 +1377,18 @@ textarea {
     font-size: 11px;
   }
 
+  .brand small {
+    font-size: 9px;
+  }
+
   .hero {
     margin: 12px;
     min-height: 360px;
     padding: 25px;
+  }
+
+  .hero h1 {
+    font-size: clamp(34px, 10vw, 48px);
   }
 
   .wrap {
@@ -655,5 +1407,53 @@ textarea {
 
   .section h2 {
     font-size: 22px;
+  }
+
+  .registration-card,
+  .jersey-card,
+  .score-management,
+  .scoreboard,
+  .commentary-section,
+  .news-management,
+  .formbox {
+    padding: 16px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .registration-form,
+  .jersey-form,
+  .player-form,
+  .match-form,
+  .score-form {
+    grid-template-columns: 1fr;
+  }
+
+  .registration-form .full-width,
+  .jersey-form .full-width,
+  .player-form .full-width,
+  .match-form .full-width,
+  .score-form .full-width {
+    grid-column: auto;
+  }
+
+  .player-photo {
+    height: 260px;
+  }
+
+  th,
+  td {
+    padding: 9px;
+    font-size: 12px;
+  }
+
+  .nav a {
+    font-size: 14px;
+  }
+
+  .subin {
+    font-size: 12px;
   }
 }
