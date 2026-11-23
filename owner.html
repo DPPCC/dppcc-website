@@ -2,84 +2,247 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DPPCC Owner Panel</title>
-  <link rel="stylesheet" href="css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DPPCC Owner Dashboard">
+  <title>Owner Dashboard | DPPCC</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .dashboard-wrap {
+      max-width: 1150px;
+      margin: auto;
+      padding: 30px 18px 60px;
+    }
+
+    .heading {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .heading h1 {
+      color: #d4af37;
+      font-size: clamp(26px, 5vw, 40px);
+    }
+
+    .status {
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 10px;
+      text-align: center;
+      background: #e5f7eb;
+      color: #14532d;
+      overflow-wrap: anywhere;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+      margin: 22px 0;
+    }
+
+    .formbox {
+      background: var(--card-bg, #102b20);
+      border: 1px solid rgba(212,175,55,.4);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 18px 0;
+      color: inherit;
+      overflow-wrap: anywhere;
+    }
+
+    .formbox h3 {
+      color: #d4af37;
+      margin-top: 0;
+    }
+
+    .formbox input,
+    .formbox select,
+    .formbox textarea {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px;
+      margin: 8px 0 15px;
+      border-radius: 7px;
+      border: 1px solid #aaa;
+    }
+
+    .formbox button {
+      padding: 11px 16px;
+      margin: 5px 4px 5px 0;
+      border: 0;
+      border-radius: 7px;
+      background: #d4af37;
+      color: #102b20;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .formbox .danger {
+      background: #b42318;
+      color: white;
+    }
+
+    .formbox .secondary {
+      background: #777;
+      color: white;
+    }
+
+    .item {
+      padding: 13px;
+      margin: 10px 0;
+      border: 1px solid rgba(212,175,55,.3);
+      border-radius: 8px;
+      overflow-wrap: anywhere;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      text-align: center;
+    }
+
+    .stat {
+      padding: 15px 5px;
+      background: rgba(212,175,55,.1);
+      border-radius: 9px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 25px;
+      color: #d4af37;
+    }
+
+    .stat span {
+      font-size: 13px;
+    }
+
+    .notice {
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: 8px;
+      background: rgba(212,175,55,.12);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .smallbtn {
+      font-size: 12px;
+    }
+  </style>
 </head>
 
 <body data-role="Owner">
 
-  <header>
-    <div class="nav">
-      <a class="brand" href="index.html">
-        <img src="assets/dppcc-club-logo.jpg" alt="DPPCC">
-        <span>
-          DPPCC
-          <small>OWNER PANEL</small>
-        </span>
-      </a>
+<header class="header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo">
+      <span>DPPCC</span>
+    </a>
 
-      <nav>
-        <a href="index.html">PUBLIC WEBSITE</a>
-        <button id="logoutButton" class="danger">LOG OUT</button>
-      </nav>
-    </div>
-  </header>
+    <nav class="nav">
+      <a href="index.html">Website</a>
+      <a href="players.html">Players</a>
+      <a href="matches.html">Matches</a>
+      <a href="news.html">News</a>
+    </nav>
+  </div>
+</header>
 
-  <main class="wrap">
+<main class="dashboard-wrap">
 
-    <div class="heading">
-      <small>AUTHORIZED DASHBOARD</small>
-      <h2>OWNER CONTROL PANEL</h2>
-      <p>Full club administration and staff access control.</p>
-    </div>
+  <section class="heading">
+    <h1>OWNER CONTROL PANEL</h1>
+    <p>Dungsree Paschim Para Cricket Club</p>
+    <p><strong>ONE CLUB. ONE TEAM. ONE DREAM.</strong></p>
+  </section>
 
-    <div id="accessMessage" class="status">
-      Checking your access...
-    </div>
+  <div id="accessMessage" class="status">
+    Checking your access...
+  </div>
 
-    <div id="dashboardContent" class="hidden">
+  <div id="dashboardContent" class="hidden">
 
-      <div class="notice" id="welcomeText"></div>
+    <div id="welcomeText" class="notice"></div>
 
-      <div class="dashboard-grid" id="formsArea"></div>
+    <section class="dashboard-grid" id="formsArea"></section>
 
-      <section class="formbox">
-        <h3>Club Data</h3>
+    <section class="formbox">
+      <h3>Club Statistics</h3>
 
-        <div class="stats">
-          <div class="stat">
-            <b id="statPlayers">—</b>
-            <span>Players</span>
-          </div>
-
-          <div class="stat">
-            <b id="statMatches">—</b>
-            <span>Matches</span>
-          </div>
-
-          <div class="stat">
-            <b id="statNews">—</b>
-            <span>News Posts</span>
-          </div>
+      <div class="stats">
+        <div class="stat">
+          <b id="statPlayers">—</b>
+          <span>Players</span>
         </div>
-      </section>
 
-      <div id="recordsArea"></div>
+        <div class="stat">
+          <b id="statMatches">—</b>
+          <span>Matches</span>
+        </div>
 
-    </div>
-  </main>
+        <div class="stat">
+          <b id="statNews">—</b>
+          <span>News Posts</span>
+        </div>
+      </div>
+    </section>
 
-  <!-- Firebase Compat SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <div id="recordsArea"></div>
 
-  <!-- DPPCC Firebase Compat Configuration -->
-  <script src="js/firebase-config-compat.js"></script>
+  </div>
+</main>
 
-  <!-- Dashboard JavaScript -->
-  <script src="js/dashboard.js"></script>
+<footer class="footer">
+  <div class="container">
+    <img src="assets/dppcc-club-logo.jpg"
+         alt="DPPCC Logo" width="75">
+
+    <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
+    <p>Established 2026</p>
+
+    <img src="assets/dppcc-sponsor-2003.jpg"
+         alt="Sponsor Logo" width="120">
+
+    <p>© 2026 Dungsree Paschim Para Cricket Club. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<!-- Firebase Compatibility SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<!-- Dashboard Firebase Configuration -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAd--LMKzEIiPxBHCu-rWZojbKExwe_CAA",
+    authDomain: "dppcc-official.firebaseapp.com",
+    projectId: "dppcc-official",
+    storageBucket: "dppcc-official.firebasestorage.app",
+    messagingSenderId: "476337423288",
+    appId: "1:476337423288:web:a81ff59d9cc742ed5b854d"
+  };
+
+  const OWNER_EMAIL =
+    "dungsreepaschimparacricketclub@gmail.com";
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
+  const dppccAuth = firebase.auth();
+  const dppccDb = firebase.firestore();
+</script>
+
+<!-- Dashboard JavaScript: Root Folder -->
+<script src="dashboard.js"></script>
 
 </body>
 </html>
