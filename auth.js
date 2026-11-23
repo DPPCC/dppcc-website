@@ -1,88 +1,126 @@
+"use strict";
 
-import {
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+const $ = id => document.getElementById(id);
 
-import { auth } from "./firebase-config.js";
-
-const staffRoles = {
-  "dungsreepaschimparacricketclub@gmail.com": {
-    role: "Owner",
-    page: "owner.html"
-  },
-  "dppccadmin@gmail.com": {
-    role: "Admin",
-    page: "admin.html"
-  },
-  "dppccmanager@gmail.com": {
-    role: "Manager",
-    page: "manager.html"
-  },
-  "dppcaptain@gmail.com": {
-    role: "Captain",
-    page: "captain.html"
-  }
+const dashboardPages = {
+  Owner: "owner.html",
+  Admin: "admin.html",
+  Manager: "manager.html",
+  Captain: "captain.html"
 };
 
-const form = document.querySelector("form");
-const emailInput = document.querySelector('input[type="email"]');
-const passwordInput = document.querySelector('input[type="password"]');
-const button = form?.querySelector("button");
-const notice = document.querySelector(".notice");
+function showLoginMessage(message, isError = true) {
+  const box = $("loginMessage");
 
-function showMessage(message) {
-  if (notice) notice.textContent = message;
+  if (!box) return;
+
+  box.textContent = message;
+  box.classList.remove("hidden");
+
+  box.style.background = isError
+    ? "#ffe5e5"
+    : "#e5f7eb";
+
+  box.style.color = isError
+    ? "#9b1717"
+    : "#14532d";
 }
 
-function redirectStaff(user) {
-  const email = user.email?.toLowerCase();
-  const staff = staffRoles[email];
+async function getDPPCCRole(user) {
+  if (!user || !user.email) return null;
 
-  if (!staff) {
-    signOut(auth);
-    showMessage("Access denied. This email is not an authorized staff account.");
-    return;
+  const email = user.email.trim().toLowerCase();
+
+  if (email === OWNER_EMAIL) {
+    return "Owner";
   }
 
-  window.location.replace(staff.page);
+  const staffDoc = await dppccDb
+    .collection("staff")
+    .doc(email)
+    .get();
+
+  if (!staffDoc.exists) return null;
+
+  const staff = staffDoc.data();
+
+  if (staff.active !== true) return null;
+
+  if (
+    !["Admin", "Manager", "Captain"].includes(staff.role)
+  ) {
+    return null;
+  }
+
+  return staff.role;
 }
 
-if (form && emailInput && passwordInput && button) {
-  button.type = "submit";
+async function routeSignedInUser(user) {
+  try {
+    const role = await getDPPCCRole(user);
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const email = emailInput.value.trim().toLowerCase();
-    const password = passwordInput.value;
-
-    if (!staffRoles[email]) {
-      showMessage("This email is not authorized for staff login.");
+    if (role && dashboardPages[role]) {
+      location.replace(dashboardPages[role]);
       return;
     }
 
-    button.disabled = true;
-    showMessage("Signing in...");
+    await dppccAuth.signOut();
+
+    showLoginMessage(
+      "This account has no active DPPCC staff role. Please contact the Owner."
+    );
+
+  } catch (error) {
+    console.error("DPPCC role check failed:", error);
+
+    showLoginMessage(
+      "Could not verify your staff access. Please try again."
+    );
+  }
+}
+
+if ($("loginForm")) {
+
+  dppccAuth.onAuthStateChanged(user => {
+    if (user) {
+      routeSignedInUser(user);
+    }
+  });
+
+  $("loginForm").addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const button = $("loginButton");
+
+    if (button) button.disabled = true;
 
     try {
-      const result = await signInWithEmailAndPassword(
-        auth,
+      const email = form.elements.email.value
+        .trim()
+        .toLowerCase();
+
+      const password = form.elements.password.value;
+
+      await dppccAuth.signInWithEmailAndPassword(
         email,
         password
       );
 
-      redirectStaff(result.user);
+      showLoginMessage(
+        "Login successful. Checking your dashboard access...",
+        false
+      );
 
     } catch (error) {
-      showMessage(
-        error.code === "auth/invalid-credential"
-          ? "Incorrect email or password."
-          : "Login failed: " + error.message
+      console.error("DPPCC login failed:", error);
+
+      showLoginMessage(
+        "Login failed. Check your email and password, then try again."
       );
+
     } finally {
-      button.disabled = false;
+      if (button) button.disabled = false;
     }
   });
 }
