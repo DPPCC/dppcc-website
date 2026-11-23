@@ -1,1301 +1,688 @@
+
 "use strict";
 
 const $ = id => document.getElementById(id);
 
-const escapeHTML = value =>
-  String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-  }[char]));
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+}[c]));
 
-const valueOf = (form, name) =>
-  form.elements.namedItem(name)?.value ?? "";
+const role = document.body.dataset.role;
+let activeUser = null;
 
-const pageRole = document.body.dataset.role;
-
-let role = pageRole;
-let currentUser = null;
-
-/* Logout button */
-if (!$("logoutButton") && $("welcomeText")) {
-  const logout = document.createElement("button");
-
-  logout.id = "logoutButton";
-  logout.type = "button";
-  logout.textContent = "LOG OUT";
-  logout.style.margin = "0 0 16px";
-
-  $("welcomeText").insertAdjacentElement(
-    "afterend",
-    logout
-  );
-}
-
-/* Role permissions */
-const permissions = {
+const caps = {
   Owner: [
-    "players",
-    "matches",
-    "live",
-    "news",
-    "submissions",
-    "owner"
+    "players", "matches", "liveScores", "news",
+    "registrations", "jerseyOrders", "staff",
+    "delete", "backup"
   ],
-
-  Admin: [
-    "players",
-    "news"
-  ],
-
-  Manager: [
-    "matches",
-    "submissions"
-  ],
-
-  Captain: [
-    "players",
-    "live"
-  ]
+  Admin: ["players", "news"],
+  Manager: ["matches", "registrations", "jerseyOrders"],
+  Captain: ["players", "liveScores"]
 };
 
-const can = permission =>
-  (permissions[role] || []).includes(permission);
+const can = permission => caps[role]?.includes(permission);
 
-function applyPermissions() {
-  document.querySelectorAll("[data-permission]").forEach(element => {
-    element.classList.toggle(
-      "hidden",
-      !can(element.dataset.permission)
-    );
-  });
+function status(message, bad = false) {
+  const e = $("accessMessage");
+  e.textContent = message;
+  e.classList.remove("hidden");
+  e.style.background = bad ? "#ffe5e5" : "#e5f7eb";
+  e.style.color = bad ? "#9b1717" : "#14532d";
 }
 
-applyPermissions();
-
-/* Dashboard message */
-function setNotice(message, isError = false) {
-  const box = $("accessMessage");
-
-  if (!box) return;
-
-  box.textContent = message;
-
-  box.style.background = isError
-    ? "#ffe5e5"
-    : "#e5f7eb";
-
-  box.style.color = isError
-    ? "#9b1717"
-    : "#14532d";
+function field(label, name, type = "text", extra = "") {
+  return `<label>${label}</label>
+  <input name="${name}" type="${type}" ${extra} required>`;
 }
 
-/* Add Entry Number, Batting Style and Photo Upload fields */
-function addPlayerExtraFields(form) {
-  if (!form || form.dataset.extraFieldsReady === "true") {
-    return;
-  }
+function buildForms() {
+  let h = "";
 
-  const photoUrl = form.elements.namedItem("photoUrl");
-  const photoLabel = photoUrl?.previousElementSibling;
-
-  if (!photoUrl || !photoLabel) return;
-
-  const fields = [
-    {
-      name: "entryNo",
-      label: "Entry Number (e.g. 07 or 9th)",
-      max: 20
-    },
-    {
-      name: "battingStyle",
-      label: "Batting Style (e.g. Right-hand / Left-hand)",
-      max: 40
-    }
-  ];
-
-  fields.forEach(field => {
-    if (form.elements.namedItem(field.name)) return;
-
-    const label = document.createElement("label");
-    label.textContent = field.label;
-
-    const input = document.createElement("input");
-    input.name = field.name;
-    input.type = "text";
-    input.maxLength = field.max;
-
-    form.insertBefore(label, photoLabel);
-    form.insertBefore(input, photoLabel);
-  });
-
-  if (!form.elements.namedItem("playerPhotoFile")) {
-    const label = document.createElement("label");
-
-    label.textContent =
-      "Upload Player Photo (JPG, PNG or WEBP · max 5 MB)";
-
-    const input = document.createElement("input");
-
-    input.type = "file";
-    input.name = "playerPhotoFile";
-    input.accept = "image/jpeg,image/png,image/webp";
-    input.style.width = "100%";
-
-    form.insertBefore(label, photoLabel);
-    form.insertBefore(input, photoLabel);
-  }
-
-  form.dataset.extraFieldsReady = "true";
-}
-
-const playerForm = $("playerForm");
-const matchForm = $("matchForm");
-
-if (playerForm) {
-  addPlayerExtraFields(playerForm);
-}
-
-/* Verify Dashboard Access */
-async function verifyDashboardUser(user) {
-  if (!user?.email) return false;
-
-  const email = user.email.trim().toLowerCase();
-
-  if (email === OWNER_EMAIL) {
-    role = "Owner";
-    applyPermissions();
-    return true;
-  }
-
-  const staffDoc = await dppccDb
-    .collection("staff")
-    .doc(email)
-    .get();
-
-  return (
-    staffDoc.exists &&
-    staffDoc.data().active === true &&
-    staffDoc.data().role === pageRole
-  );
-}
-
-/* Dashboard record display */
-function renderItem(title, details, actions = "") {
-  return `
-    <div class="item">
-      <b>${escapeHTML(title)}</b>
-      <br>
-      ${details}
-      ${actions}
-    </div>
-  `;
-}
-
-/* Load Staff Accounts */
-async function loadStaff() {
-  if (role !== "Owner" || !$("staffList")) return;
-
-  try {
-    const snapshot = await dppccDb
-      .collection("staff")
-      .get();
-
-    if (snapshot.empty) {
-      $("staffList").innerHTML =
-        "No staff accounts assigned yet.";
-
-      return;
-    }
-
-    $("staffList").innerHTML = snapshot.docs.map(doc => {
-      const staff = doc.data();
-      const active = staff.active === true;
-
-      return renderItem(
-        staff.email || doc.id,
-
-        `${escapeHTML(staff.role)} · ${
-          active ? "Active" : "Disabled"
-        }<br>`,
-
-        `
-          <button
-            type="button"
-            class="smallbtn staffToggle"
-            data-email="${escapeHTML(doc.id)}"
-            data-active="${active}"
-          >
-            ${active ? "DISABLE ACCESS" : "ENABLE ACCESS"}
-          </button>
-        `
-      );
-
-    }).join("");
-
-  } catch (error) {
-    console.error(error);
-
-    $("staffList").textContent =
-      `Unable to load staff list: ${error.message}`;
-  }
-}
-
-/* Load Dashboard Records */
-async function loadRecords() {
-  const records = $("recordsArea");
-
-  if (!records) return;
-
-  let output = "";
-
-  const matchesSnapshot = await dppccDb
-    .collection("matches")
-    .get();
-
-  /* Match selector for Captain and Owner */
-  const ballMatch = $("ballMatch");
-
-  if (ballMatch && can("live")) {
-    ballMatch.innerHTML =
-      '<option value="">Select match</option>' +
-
-      matchesSnapshot.docs.map(doc => {
-        const match = doc.data();
-
-        return `
-          <option value="${escapeHTML(doc.id)}">
-            DPPCC vs ${escapeHTML(match.opponent)}
-          </option>
-        `;
-      }).join("");
-  }
-
-  /* Player Records */
   if (can("players")) {
-    const snapshot = await dppccDb
-      .collection("players")
-      .get();
-
-    output += `
-      <section class="formbox">
-        <h3>Player Records</h3>
-
-        ${
-          snapshot.empty
-            ? "No players yet."
-            : snapshot.docs.map(doc => {
-                const player = doc.data();
-
-                const edit = `
-                  <button
-                    type="button"
-                    class="smallbtn edit-player"
-                    data-id="${escapeHTML(doc.id)}"
-                  >
-                    EDIT
-                  </button>
-                `;
-
-                const remove = role === "Owner"
-                  ? `
-                    <button
-                      type="button"
-                      class="smallbtn danger delete"
-                      data-col="players"
-                      data-id="${escapeHTML(doc.id)}"
-                    >
-                      DELETE
-                    </button>
-                  `
-                  : "";
-
-                return renderItem(
-                  player.name,
-
-                  `
-                    ${escapeHTML(player.role)}
-                    · Jersey ${escapeHTML(player.jerseyNo ?? "—")}
-                    · Entry ${escapeHTML(player.entryNo || "—")}
-                    <br>
-                  `,
-
-                  edit + remove
-                );
-
-              }).join("")
-        }
-      </section>
-    `;
+    h += `
+    <div class="formbox">
+      <h3>Add / Edit Player</h3>
+      <form id="playerForm">
+        <input type="hidden" name="docId">
+        ${field("Player Name", "name", "text", 'maxlength="70"')}
+        <label>Playing Role</label>
+        <select name="role">
+          <option>Batsman</option>
+          <option>Bowler</option>
+          <option>All-Rounder</option>
+          <option>Wicket Keeper</option>
+        </select>
+        ${field("Jersey Number", "jerseyNo", "number", 'min="0" max="999"')}
+        <label>Player Photo URL</label>
+        <input name="photoUrl" type="url" placeholder="https://...">
+        <button id="playerSubmit">ADD PLAYER</button>
+        <button type="button" id="cancelPlayer" class="secondary hidden">CANCEL EDIT</button>
+      </form>
+    </div>`;
   }
 
-  /* Match Records */
   if (can("matches")) {
-    output += `
-      <section class="formbox">
-        <h3>Match Records</h3>
-
-        ${
-          matchesSnapshot.empty
-            ? "No matches yet."
-            : matchesSnapshot.docs.map(doc => {
-                const match = doc.data();
-
-                const edit = `
-                  <button
-                    type="button"
-                    class="smallbtn edit-match"
-                    data-id="${escapeHTML(doc.id)}"
-                  >
-                    EDIT
-                  </button>
-                `;
-
-                const remove = role === "Owner"
-                  ? `
-                    <button
-                      type="button"
-                      class="smallbtn danger delete"
-                      data-col="matches"
-                      data-id="${escapeHTML(doc.id)}"
-                    >
-                      DELETE
-                    </button>
-                  `
-                  : "";
-
-                return renderItem(
-                  `DPPCC vs ${match.opponent}`,
-
-                  `
-                    ${escapeHTML(match.status)}
-                    · ${escapeHTML(match.date)}
-                    · ${escapeHTML(match.result || "")}
-                  `,
-
-                  edit + remove
-                );
-
-              }).join("")
-        }
-      </section>
-    `;
+    h += `
+    <div class="formbox">
+      <h3>Add / Edit Match</h3>
+      <form id="matchForm">
+        <input type="hidden" name="docId">
+        ${field("Opponent Team", "opponent", "text", 'maxlength="70"')}
+        ${field("Match Date", "date", "date")}
+        ${field("Venue", "venue", "text", 'maxlength="100"')}
+        <label>Match Status</label>
+        <select name="status">
+          <option>Upcoming</option>
+          <option>Live</option>
+          <option>Completed</option>
+        </select>
+        <label>Score / Result</label>
+        <input name="result" maxlength="150">
+        <button id="matchSubmit">ADD MATCH</button>
+        <button type="button" id="cancelMatch" class="secondary hidden">CANCEL EDIT</button>
+      </form>
+    </div>`;
   }
 
-  /* Registration and Jersey Orders */
-  if (can("submissions")) {
-    const [registrations, orders] = await Promise.all([
-      dppccDb.collection("registrations").get(),
-      dppccDb.collection("jerseyOrders").get()
-    ]);
-
-    const registrationHTML = registrations.empty
-      ? "No registrations."
-      : registrations.docs.map(doc => {
-          const item = doc.data();
-
-          const image =
-            /^https:\/\//i.test(item.photoUrl || "")
-              ? `
-                <br>
-                <a
-                  href="${escapeHTML(item.photoUrl)}"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  View applicant photo
-                </a>
-              `
-              : "";
-
-          const actions = `
-            <button
-              type="button"
-              class="smallbtn review"
-              data-id="${escapeHTML(doc.id)}"
-              data-status="Approved"
-            >
-              APPROVE
-            </button>
-
-            <button
-              type="button"
-              class="smallbtn danger review"
-              data-id="${escapeHTML(doc.id)}"
-              data-status="Rejected"
-            >
-              REJECT
-            </button>
-
-            ${
-              role === "Owner"
-                ? `
-                  <button
-                    type="button"
-                    class="smallbtn danger delete"
-                    data-col="registrations"
-                    data-id="${escapeHTML(doc.id)}"
-                  >
-                    DELETE
-                  </button>
-                `
-                : ""
-            }
-          `;
-
-          return renderItem(
-            item.name,
-
-            `
-              ${escapeHTML(item.status || "Pending")}
-              · ${escapeHTML(item.phone)}
-              · Age ${escapeHTML(item.age)}
-              · ${escapeHTML(item.role)}
-              <br>
-              ${escapeHTML(item.address || "")}
-              ${image}
-              <br>
-            `,
-
-            actions
-          );
-
-        }).join("");
-
-    const ordersHTML = orders.empty
-      ? "No jersey orders."
-      : orders.docs.map(doc => {
-          const item = doc.data();
-          const status = item.status || "Pending";
-
-          const select = `
-            <label>Order Status</label>
-
-            <select
-              class="orderStatus"
-              data-id="${escapeHTML(doc.id)}"
-            >
-              <option ${status === "Pending" ? "selected" : ""}>
-                Pending
-              </option>
-
-              <option ${status === "Processing" ? "selected" : ""}>
-                Processing
-              </option>
-
-              <option ${status === "Completed" ? "selected" : ""}>
-                Completed
-              </option>
-
-              <option ${status === "Cancelled" ? "selected" : ""}>
-                Cancelled
-              </option>
-            </select>
-          `;
-
-          const remove = role === "Owner"
-            ? `
-              <button
-                type="button"
-                class="smallbtn danger delete"
-                data-col="jerseyOrders"
-                data-id="${escapeHTML(doc.id)}"
-              >
-                DELETE
-              </button>
-            `
-            : "";
-
-          return renderItem(
-            item.name,
-
-            `
-              ${escapeHTML(item.phone)}
-              · ${escapeHTML(item.size)}
-              · #${escapeHTML(item.number)}
-              <br>
-              ${select}
-            `,
-
-            remove
-          );
-
-        }).join("");
-
-    if ($("registrationsList")) {
-      $("registrationsList").innerHTML = registrationHTML;
-    }
-
-    if ($("ordersList")) {
-      $("ordersList").innerHTML = ordersHTML;
-    }
+  if (can("liveScores")) {
+    h += `
+    <div class="formbox">
+      <h3>Add Ball-by-Ball Update</h3>
+      <form id="ballForm">
+        <label>Match</label>
+        <select name="matchId" id="ballMatch" required>
+          <option value="">Select match</option>
+        </select>
+        ${field("Over", "over", "number", 'min="0" max="99"')}
+        ${field("Ball (1–6)", "ball", "number", 'min="1" max="6"')}
+        ${field("Runs", "runs", "number", 'min="0" max="6"')}
+        <label>Wicket?</label>
+        <select name="wicket">
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+        <label>Commentary</label>
+        <input name="commentary" maxlength="180">
+        <button>POST BALL UPDATE</button>
+      </form>
+    </div>`;
   }
 
-  /* News Records */
   if (can("news")) {
-    const snapshot = await dppccDb
-      .collection("news")
-      .get();
-
-    output += `
-      <section class="formbox">
-        <h3>News Records</h3>
-
-        ${
-          snapshot.empty
-            ? "No news yet."
-            : snapshot.docs.map(doc => {
-                const item = doc.data();
-
-                const remove = role === "Owner"
-                  ? `
-                    <button
-                      type="button"
-                      class="smallbtn danger delete"
-                      data-col="news"
-                      data-id="${escapeHTML(doc.id)}"
-                    >
-                      DELETE
-                    </button>
-                  `
-                  : "";
-
-                return renderItem(
-                  item.title,
-                  escapeHTML(item.body),
-                  remove
-                );
-
-              }).join("")
-        }
-      </section>
-    `;
+    h += `
+    <div class="formbox">
+      <h3>Publish News</h3>
+      <form id="newsForm">
+        ${field("Headline", "title", "text", 'maxlength="100"')}
+        <label>Details</label>
+        <textarea name="body" maxlength="1000" required></textarea>
+        <button>PUBLISH NEWS</button>
+      </form>
+    </div>`;
   }
 
-  /* Live Score History */
-  if (can("live")) {
-    const snapshot = await dppccDb
-      .collection("liveScores")
-      .get();
-
-    output += `
-      <section class="formbox">
-        <h3>Live Score History</h3>
-
-        ${
-          snapshot.empty
-            ? "No live updates yet."
-            : snapshot.docs.map(doc => {
-                const item = doc.data();
-
-                const remove = role === "Owner"
-                  ? `
-                    <button
-                      type="button"
-                      class="smallbtn danger delete"
-                      data-col="liveScores"
-                      data-id="${escapeHTML(doc.id)}"
-                    >
-                      DELETE
-                    </button>
-                  `
-                  : "";
-
-                return renderItem(
-                  item.matchLabel || "DPPCC Match",
-
-                  `
-                    Over ${escapeHTML(item.over)}.${escapeHTML(item.ball)}
-                    · ${escapeHTML(item.runs)} run(s)
-                    ${item.wicket ? "· WICKET" : ""}
-                    <br>
-                    ${escapeHTML(item.commentary || "")}
-                  `,
-
-                  remove
-                );
-
-              }).join("")
-        }
-      </section>
-    `;
+  if (can("staff")) {
+    h += `
+    <div class="formbox">
+      <h3>Staff Role Management</h3>
+      <div class="notice">
+        Create staff accounts first in Firebase Authentication.
+        Then enter their UID and email.
+      </div>
+      <form id="staffForm">
+        ${field("Firebase Authentication UID", "uid", "text", 'maxlength="128"')}
+        ${field("Staff Email", "email", "email")}
+        <label>Role</label>
+        <select name="role">
+          <option>Admin</option>
+          <option>Captain</option>
+          <option>Manager</option>
+        </select>
+        <label>Account Status</label>
+        <select name="active">
+          <option value="true">Active</option>
+          <option value="false">Inactive</option>
+        </select>
+        <button>SAVE STAFF ACCESS</button>
+      </form>
+      <div id="staffList">Loading staff...</div>
+    </div>`;
   }
 
-  records.innerHTML = output;
-
-  if (role === "Owner") {
-    await loadStaff();
+  if (can("backup")) {
+    h += `
+    <div class="formbox">
+      <h3>Owner Data Backup</h3>
+      <p>Download JSON backup of club data.</p>
+      <button id="backupButton">DOWNLOAD BACKUP</button>
+    </div>`;
   }
+
+  $("formsArea").innerHTML = h;
 }
 
-/* Owner: Add or Update Staff Role */
-if ($("staffForm")) {
-  $("staffForm").addEventListener("submit", async event => {
-    event.preventDefault();
+async function getRole(user) {
+  if ((user.email || "").toLowerCase() === OWNER_EMAIL.toLowerCase()) {
+    return "Owner";
+  }
 
-    if (role !== "Owner") return;
+  const d = await dppccDb.collection("staff").doc(user.uid).get();
 
-    const form = event.currentTarget;
+  if (!d.exists || d.data().active !== true) return null;
 
-    const email = valueOf(form, "email")
-      .trim()
-      .toLowerCase();
-
-    const staffRole = valueOf(form, "role");
-    const active = form.elements.active.checked;
-
-    try {
-      const ref = dppccDb
-        .collection("staff")
-        .doc(email);
-
-      const previous = await ref.get();
-
-      const data = {
-        email,
-        role: staffRole,
-        active,
-        updatedAt:
-          firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      if (!previous.exists) {
-        data.createdAt =
-          firebase.firestore.FieldValue.serverTimestamp();
-      }
-
-      await ref.set(data, { merge: true });
-
-      if ($("staffMessage")) {
-        $("staffMessage").textContent =
-          "Staff role saved. The account must already exist in Firebase Authentication.";
-
-        $("staffMessage").classList.remove("hidden");
-      }
-
-      form.reset();
-      form.elements.active.checked = true;
-
-      await loadStaff();
-
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        `Could not save staff access: ${error.message}`
-      );
-    }
-  });
+  return d.data().role;
 }
 
-/* Player Add and Edit */
-if (playerForm) {
-  playerForm.addEventListener("submit", async event => {
-    event.preventDefault();
+async function countAndLoad() {
+  const [ps, ms, ns] = await Promise.all([
+    can("players") ? dppccDb.collection("players").get() : null,
+    can("matches") ? dppccDb.collection("matches").get() : null,
+    can("news") ? dppccDb.collection("news").get() : null
+  ]);
 
-    if (!can("players")) return;
+  $("statPlayers").textContent = ps ? ps.size : "—";
+  $("statMatches").textContent = ms ? ms.size : "—";
+  $("statNews").textContent = ns ? ns.size : "—";
 
-    const form = event.currentTarget;
-    const submit = $("playerSubmit");
+  let out = "";
 
-    if (submit) submit.disabled = true;
+  if (can("players")) {
+    out += `
+    <section class="formbox">
+      <h3>Players</h3>
+      ${ps.empty ? "No players yet." : ps.docs.map(d => {
+        const p = d.data();
+        return `
+        <div class="item">
+          <b>${esc(p.name)}</b> · ${esc(p.role)}
+          · Jersey ${esc(p.jerseyNo ?? p.jerseyNumber ?? "")}
+          <br>
+          <button class="smallbtn edit-player" data-id="${esc(d.id)}">EDIT</button>
+          ${can("delete") ? `
+          <button class="smallbtn danger delete-record"
+            data-col="players" data-id="${esc(d.id)}">DELETE</button>` : ""}
+        </div>`;
+      }).join("")}
+    </section>`;
+  }
 
-    try {
-      const id = valueOf(form, "docId");
+  if (can("matches")) {
+    out += `
+    <section class="formbox">
+      <h3>Matches</h3>
+      ${ms.empty ? "No matches yet." : ms.docs.map(d => {
+        const m = d.data();
+        return `
+        <div class="item">
+          <b>DPPCC vs ${esc(m.opponent)}</b>
+          · ${esc(m.status)} · ${esc(m.date)}
+          <br>
+          <button class="smallbtn edit-match" data-id="${esc(d.id)}">EDIT</button>
+          ${can("delete") ? `
+          <button class="smallbtn danger delete-record"
+            data-col="matches" data-id="${esc(d.id)}">DELETE</button>` : ""}
+        </div>`;
+      }).join("")}
+    </section>`;
+  }
 
-      const file =
-        form.elements.playerPhotoFile?.files?.[0];
+  if (can("registrations")) {
+    const rs = await dppccDb.collection("registrations").get();
 
-      let photoUrl = valueOf(form, "photoUrl").trim();
+    out += `
+    <section class="formbox">
+      <h3>Player Registrations</h3>
+      ${rs.empty ? "No registrations yet." : rs.docs.map(d => {
+        const r = d.data();
+        return `
+        <div class="item">
+          <b>${esc(r.name)}</b> · ${esc(r.status || "Pending")}
+          <br>
+          Phone: ${esc(r.phone)} · Age: ${esc(r.age)} · ${esc(r.role)}
+          <br>
+          Address: ${esc(r.address)}
+          <br>
+          <button class="smallbtn review-reg" data-id="${esc(d.id)}"
+            data-status="Approved">APPROVE</button>
+          <button class="smallbtn danger review-reg" data-id="${esc(d.id)}"
+            data-status="Rejected">REJECT</button>
+        </div>`;
+      }).join("")}
+    </section>`;
+  }
 
-      if (file) {
-        photoUrl = await uploadDPPCCPhoto(
-          file,
-          "dppcc/player-photos"
-        );
-      }
+  if (can("jerseyOrders")) {
+    const os = await dppccDb.collection("jerseyOrders").get();
 
-      if (
-        photoUrl &&
-        !/^https:\/\//i.test(photoUrl)
-      ) {
-        throw new Error("Photo URL must start with https://");
-      }
+    out += `
+    <section class="formbox">
+      <h3>Jersey Orders</h3>
+      ${os.empty ? "No jersey orders yet." : os.docs.map(d => {
+        const o = d.data();
+        return `
+        <div class="item">
+          <b>${esc(o.name)}</b> · ${esc(o.status || "Pending")}
+          <br>
+          Phone: ${esc(o.phone)} · Size: ${esc(o.size)} · No: ${esc(o.number)}
+          <label>Order Status</label>
+          <select class="order-status" data-id="${esc(d.id)}">
+            <option ${o.status === "Pending" ? "selected" : ""}>Pending</option>
+            <option ${o.status === "Processing" ? "selected" : ""}>Processing</option>
+            <option ${o.status === "Completed" ? "selected" : ""}>Completed</option>
+            <option ${o.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+          </select>
+        </div>`;
+      }).join("")}
+    </section>`;
+  }
 
-      const data = {
-        name: valueOf(form, "name").trim(),
-        role: valueOf(form, "role"),
-        jerseyNo: Number(valueOf(form, "jerseyNo")),
-        entryNo: valueOf(form, "entryNo").trim(),
-        battingStyle: valueOf(form, "battingStyle").trim(),
-        photoUrl,
+  if (can("news")) {
+    out += `
+    <section class="formbox">
+      <h3>Published News</h3>
+      ${ns.empty ? "No news yet." : ns.docs.map(d => `
+        <div class="item">
+          <b>${esc(d.data().title)}</b><br>
+          ${esc(d.data().body)}
+          ${can("delete") ? `
+          <br><button class="smallbtn danger delete-record"
+            data-col="news" data-id="${esc(d.id)}">DELETE</button>` : ""}
+        </div>`).join("")}
+    </section>`;
+  }
 
-        updatedAt:
-          firebase.firestore.FieldValue.serverTimestamp(),
+  if (can("liveScores")) {
+    const ls = await dppccDb.collection("liveScores").get();
 
-        updatedBy: currentUser.email
-      };
+    out += `
+    <section class="formbox">
+      <h3>Live Score Updates</h3>
+      ${ls.empty ? "No live updates yet." : ls.docs.map(d => {
+        const x = d.data();
+        return `
+        <div class="item">
+          ${esc(x.matchLabel)} · Over ${esc(x.over)}.${esc(x.ball)}
+          · ${esc(x.runs)} runs ${x.wicket ? "· WICKET" : ""}
+          ${can("delete") ? `
+          <br><button class="smallbtn danger delete-record"
+            data-col="liveScores" data-id="${esc(d.id)}">DELETE</button>` : ""}
+        </div>`;
+      }).join("")}
+    </section>`;
+  }
 
-      if (
-        !Number.isInteger(data.jerseyNo) ||
-        data.jerseyNo < 0 ||
-        data.jerseyNo > 999
-      ) {
-        throw new Error(
-          "Jersey number must be between 0 and 999."
-        );
-      }
+  $("recordsArea").innerHTML = out;
 
-      const collection = dppccDb.collection("players");
+  const matchSel = $("ballMatch");
+  if (matchSel && ms) {
+    matchSel.innerHTML =
+      '<option value="">Select match</option>' +
+      ms.docs.map(d => `
+        <option value="${esc(d.id)}">DPPCC vs ${esc(d.data().opponent)}</option>
+      `).join("");
+  }
 
-      if (id) {
-        await collection.doc(id).update(data);
-      } else {
-        data.createdAt =
-          firebase.firestore.FieldValue.serverTimestamp();
-
-        data.createdBy = currentUser.email;
-
-        await collection.add(data);
-      }
-
-      form.reset();
-      form.elements.docId.value = "";
-
-      if ($("playerSubmit")) {
-        $("playerSubmit").textContent = "ADD PLAYER";
-      }
-
-      if ($("cancelPlayerEdit")) {
-        $("cancelPlayerEdit").classList.add("hidden");
-      }
-
-      await loadRecords();
-
-    } catch (error) {
-      console.error(error);
-
-      alert(`Player save failed: ${error.message}`);
-
-    } finally {
-      if (submit) submit.disabled = false;
-    }
-  });
+  if (can("staff")) await loadStaff();
 }
 
-/* Match Add and Edit */
-if (matchForm) {
-  matchForm.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (!can("matches")) return;
-
-    const form = event.currentTarget;
-    const submit = $("matchSubmit");
-
-    if (submit) submit.disabled = true;
-
-    try {
-      const id = valueOf(form, "docId");
-
-      const data = {
-        opponent: valueOf(form, "opponent").trim(),
-        date: valueOf(form, "date"),
-        venue: valueOf(form, "venue").trim(),
-        status: valueOf(form, "status"),
-        result: valueOf(form, "result").trim()
-      };
-
-      if (id) {
-        await dppccDb
-          .collection("matches")
-          .doc(id)
-          .update(data);
-      } else {
-        await dppccDb
-          .collection("matches")
-          .add(data);
-      }
-
-      form.reset();
-      form.elements.docId.value = "";
-
-      if ($("matchSubmit")) {
-        $("matchSubmit").textContent = "ADD MATCH";
-      }
-
-      if ($("cancelMatchEdit")) {
-        $("cancelMatchEdit").classList.add("hidden");
-      }
-
-      await loadRecords();
-
-    } catch (error) {
-      console.error(error);
-
-      alert(`Match save failed: ${error.message}`);
-
-    } finally {
-      if (submit) submit.disabled = false;
-    }
-  });
-}
-
-/* Captain and Owner: Live Scoring */
-if ($("ballForm")) {
-  $("ballForm").addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (!can("live")) return;
-
-    const form = event.currentTarget;
-
-    try {
-      const matchId = valueOf(form, "matchId");
-      const selected = $("ballMatch")?.selectedOptions?.[0];
-
-      if (!matchId || !selected) {
-        throw new Error("Please select a match first.");
-      }
-
-      const data = {
-        matchId,
-
-        matchLabel: selected.textContent,
-
-        over: Number(valueOf(form, "over")),
-        ball: Number(valueOf(form, "ball")),
-        runs: Number(valueOf(form, "runs")),
-
-        wicket: valueOf(form, "wicket") === "true",
-
-        commentary: valueOf(form, "commentary").trim(),
-
-        createdAt:
-          firebase.firestore.FieldValue.serverTimestamp(),
-
-        createdBy: currentUser.email
-      };
-
-      if (
-        ![data.over, data.ball, data.runs]
-          .every(Number.isInteger)
-      ) {
-        throw new Error(
-          "Over, ball and runs must be whole numbers."
-        );
-      }
-
-      await dppccDb
-        .collection("liveScores")
-        .add(data);
-
-      form.reset();
-
-      alert("Live score update posted successfully.");
-
-      await loadRecords();
-
-    } catch (error) {
-      console.error(error);
-
-      alert(`Live score failed: ${error.message}`);
-    }
-  });
-}
-
-/* Admin and Owner: Publish News */
-if ($("newsForm")) {
-  $("newsForm").addEventListener("submit", async event => {
-    event.preventDefault();
-
-    if (!can("news")) return;
-
-    const form = event.currentTarget;
-
-    try {
-      await dppccDb
-        .collection("news")
-        .add({
-          title: valueOf(form, "title").trim(),
-          body: valueOf(form, "body").trim(),
-
-          createdAt:
-            firebase.firestore.FieldValue.serverTimestamp(),
-
-          createdBy: currentUser.email
-        });
-
-      form.reset();
-
-      alert("News published successfully.");
-
-      await loadRecords();
-
-    } catch (error) {
-      console.error(error);
-
-      alert(`News publish failed: ${error.message}`);
-    }
-  });
-}
-
-/* Dashboard Buttons */
-document.addEventListener("click", async event => {
-  const target = event.target;
-
-  /* Cancel Player Edit */
-  const cancelPlayer = target.closest("#cancelPlayerEdit");
-
-  if (cancelPlayer && playerForm) {
-    playerForm.reset();
-    playerForm.elements.docId.value = "";
-
-    if ($("playerSubmit")) {
-      $("playerSubmit").textContent = "ADD PLAYER";
-    }
-
-    cancelPlayer.classList.add("hidden");
-    return;
-  }
-
-  /* Cancel Match Edit */
-  const cancelMatch = target.closest("#cancelMatchEdit");
-
-  if (cancelMatch && matchForm) {
-    matchForm.reset();
-    matchForm.elements.docId.value = "";
-
-    if ($("matchSubmit")) {
-      $("matchSubmit").textContent = "ADD MATCH";
-    }
-
-    cancelMatch.classList.add("hidden");
-    return;
-  }
-
-  /* Edit Player */
-  const editPlayer = target.closest(".edit-player");
-
-  if (editPlayer && can("players")) {
-    try {
-      const doc = await dppccDb
-        .collection("players")
-        .doc(editPlayer.dataset.id)
-        .get();
-
-      if (!doc.exists) {
-        throw new Error("Player record not found.");
-      }
-
-      const player = doc.data();
-
-      playerForm.elements.docId.value = doc.id;
-      playerForm.elements.name.value = player.name || "";
-      playerForm.elements.role.value =
-        player.role || "Batsman";
-
-      playerForm.elements.jerseyNo.value =
-        player.jerseyNo ?? "";
-
-      playerForm.elements.entryNo.value =
-        player.entryNo || "";
-
-      playerForm.elements.battingStyle.value =
-        player.battingStyle || "";
-
-      playerForm.elements.photoUrl.value =
-        player.photoUrl || "";
-
-      playerForm.elements.playerPhotoFile.value = "";
-
-      if ($("playerSubmit")) {
-        $("playerSubmit").textContent = "SAVE PLAYER";
-      }
-
-      if ($("cancelPlayerEdit")) {
-        $("cancelPlayerEdit").classList.remove("hidden");
-      }
-
-      playerForm.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    } catch (error) {
-      alert(error.message);
-    }
-
-    return;
-  }
-
-  /* Edit Match */
-  const editMatch = target.closest(".edit-match");
-
-  if (editMatch && can("matches")) {
-    try {
-      const doc = await dppccDb
-        .collection("matches")
-        .doc(editMatch.dataset.id)
-        .get();
-
-      if (!doc.exists) {
-        throw new Error("Match record not found.");
-      }
-
-      const match = doc.data();
-
-      matchForm.elements.docId.value = doc.id;
-      matchForm.elements.opponent.value =
-        match.opponent || "";
-
-      matchForm.elements.date.value =
-        match.date || "";
-
-      matchForm.elements.venue.value =
-        match.venue || "";
-
-      matchForm.elements.status.value =
-        match.status || "Upcoming";
-
-      matchForm.elements.result.value =
-        match.result || "";
-
-      if ($("matchSubmit")) {
-        $("matchSubmit").textContent = "SAVE MATCH";
-      }
-
-      if ($("cancelMatchEdit")) {
-        $("cancelMatchEdit").classList.remove("hidden");
-      }
-
-      matchForm.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    } catch (error) {
-      alert(error.message);
-    }
-
-    return;
-  }
-
-  /* Approve or Reject Registration */
-  const review = target.closest(".review");
-
-  if (review && can("submissions")) {
-    try {
-      await dppccDb
-        .collection("registrations")
-        .doc(review.dataset.id)
-        .update({
-          status: review.dataset.status,
-
-          reviewedAt:
-            firebase.firestore.FieldValue.serverTimestamp(),
-
-          reviewedBy: currentUser.email
-        });
-
-      await loadRecords();
-
-    } catch (error) {
-      alert(
-        `Registration update failed: ${error.message}`
-      );
-    }
-
-    return;
-  }
-
-  /* Delete: Owner Only */
-  const remove = target.closest(".delete");
-
-  if (
-    remove &&
-    role === "Owner" &&
-    confirm("Permanently delete this record?")
-  ) {
-    try {
-      await dppccDb
-        .collection(remove.dataset.col)
-        .doc(remove.dataset.id)
-        .delete();
-
-      await loadRecords();
-
-    } catch (error) {
-      alert(`Delete failed: ${error.message}`);
-    }
-
-    return;
-  }
-
-  /* Enable / Disable Staff */
-  const toggle = target.closest(".staffToggle");
-
-  if (
-    toggle &&
-    role === "Owner" &&
-    confirm("Change this staff member's access?")
-  ) {
-    try {
-      await dppccDb
-        .collection("staff")
-        .doc(toggle.dataset.email)
-        .update({
-          active: toggle.dataset.active !== "true",
-
-          updatedAt:
-            firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-      await loadStaff();
-
-    } catch (error) {
-      alert(
-        `Staff access update failed: ${error.message}`
-      );
-    }
-  }
-});
-
-/* Manager and Owner: Jersey Order Status */
-document.addEventListener("change", async event => {
-  const select = event.target;
-
-  if (
-    !select.matches(".orderStatus") ||
-    !can("submissions")
-  ) {
-    return;
-  }
+async function loadStaff() {
+  const box = $("staffList");
 
   try {
-    await dppccDb
-      .collection("jerseyOrders")
-      .doc(select.dataset.id)
-      .update({
-        status: select.value,
+    const s = await dppccDb.collection("staff").get();
 
-        statusUpdatedAt:
-          firebase.firestore.FieldValue.serverTimestamp(),
+    box.innerHTML = s.empty ? "No staff roles assigned yet." :
+      s.docs.map(d => {
+        const x = d.data();
+        return `
+        <div class="item">
+          <b>${esc(x.email || d.id)}</b> · ${esc(x.role)}
+          · ${x.active ? "Active" : "Inactive"}
+          <br><small>UID: ${esc(d.id)}</small>
+        </div>`;
+      }).join("");
+  } catch (e) {
+    box.textContent = "Could not load staff list: " + e.message;
+  }
+}
 
-        statusUpdatedBy: currentUser.email
+function resetForm(id, submitId, label) {
+  const f = $(id);
+  f.reset();
+  f.elements.docId.value = "";
+  $(submitId).textContent = label;
+
+  const c = id === "playerForm" ? "cancelPlayer" : "cancelMatch";
+  $(c).classList.add("hidden");
+}
+
+function bindForms() {
+  const pf = $("playerForm");
+
+  if (pf) pf.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const f = e.target;
+    const id = f.elements.docId.value;
+
+    const data = {
+      name: f.elements.name.value.trim(),
+      role: f.elements.role.value,
+      jerseyNo: Number(f.elements.jerseyNo.value),
+      photoUrl: /^https:\/\//i.test(f.elements.photoUrl.value)
+        ? f.elements.photoUrl.value : ""
+    };
+
+    try {
+      if (id) {
+        await dppccDb.collection("players").doc(id).update(data);
+      } else {
+        await dppccDb.collection("players").add(data);
+      }
+      location.reload();
+    } catch (x) {
+      alert("Player save failed: " + x.message);
+    }
+  });
+
+  const mf = $("matchForm");
+
+  if (mf) mf.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const f = e.target;
+    const id = f.elements.docId.value;
+
+    const data = {
+      opponent: f.elements.opponent.value.trim(),
+      date: f.elements.date.value,
+      venue: f.elements.venue.value.trim(),
+      status: f.elements.status.value,
+      result: f.elements.result.value.trim()
+    };
+
+    try {
+      if (id) {
+        await dppccDb.collection("matches").doc(id).update(data);
+      } else {
+        await dppccDb.collection("matches").add(data);
+      }
+      location.reload();
+    } catch (x) {
+      alert("Match save failed: " + x.message);
+    }
+  });
+
+  const bf = $("ballForm");
+
+  if (bf) bf.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const f = e.target;
+
+    try {
+      await dppccDb.collection("liveScores").add({
+        matchId: f.elements.matchId.value,
+        matchLabel: $("ballMatch").selectedOptions[0].text,
+        over: Number(f.elements.over.value),
+        ball: Number(f.elements.ball.value),
+        runs: Number(f.elements.runs.value),
+        wicket: f.elements.wicket.value === "true",
+        commentary: f.elements.commentary.value.trim(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: activeUser.email
       });
 
-  } catch (error) {
-    alert(
-      `Order status update failed: ${error.message}`
-    );
-  }
-});
+      alert("Ball update published.");
+      f.reset();
+    } catch (x) {
+      alert("Live score update failed: " + x.message);
+    }
+  });
 
-/* Owner: Download Data Backup */
-if ($("backupButton")) {
-  $("backupButton").addEventListener("click", async () => {
-    if (role !== "Owner") return;
+  const nf = $("newsForm");
 
-    const collections = [
-      "players",
-      "matches",
-      "registrations",
-      "jerseyOrders",
-      "news",
-      "liveScores",
-      "staff"
+  if (nf) nf.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const f = e.target;
+
+    try {
+      await dppccDb.collection("news").add({
+        title: f.elements.title.value.trim(),
+        body: f.elements.body.value.trim(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: activeUser.email
+      });
+
+      alert("News published.");
+      location.reload();
+    } catch (x) {
+      alert("News publish failed: " + x.message);
+    }
+  });
+
+  const sf = $("staffForm");
+
+  if (sf) sf.addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const f = e.target;
+    const uid = f.elements.uid.value.trim();
+    const email = f.elements.email.value.trim().toLowerCase();
+
+    if (!uid || !email) return;
+
+    try {
+      await dppccDb.collection("staff").doc(uid).set({
+        email,
+        role: f.elements.role.value,
+        active: f.elements.active.value === "true",
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      alert("Staff access saved.");
+      await loadStaff();
+      f.reset();
+    } catch (x) {
+      alert("Staff role save failed: " + x.message);
+    }
+  });
+
+  const backup = $("backupButton");
+
+  if (backup) backup.addEventListener("click", async () => {
+    const cols = [
+      "players", "matches", "registrations",
+      "jerseyOrders", "news", "liveScores", "staff"
     ];
 
-    const backup = {
+    const data = {
       project: "dppcc-official",
       createdAt: new Date().toISOString(),
       collections: {}
     };
 
     try {
-      for (const name of collections) {
-        const snapshot = await dppccDb
-          .collection(name)
-          .get();
-
-        backup.collections[name] =
-          snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
+      for (const c of cols) {
+        const s = await dppccDb.collection(c).get();
+        data.collections[c] = s.docs.map(d => ({
+          id: d.id,
+          ...d.data()
+        }));
       }
 
       const blob = new Blob(
-        [JSON.stringify(backup, null, 2)],
+        [JSON.stringify(data, null, 2)],
         { type: "application/json" }
       );
 
       const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
 
-      const link = document.createElement("a");
+      a.href = url;
+      a.download = "DPPCC-backup-" +
+        new Date().toISOString().slice(0, 10) + ".json";
 
-      link.href = url;
-
-      link.download =
-        `DPPCC-backup-${new Date().toISOString().slice(0, 10)}.json`;
-
-      link.click();
-
+      a.click();
       URL.revokeObjectURL(url);
-
-    } catch (error) {
-      alert(`Backup failed: ${error.message}`);
+    } catch (x) {
+      alert("Backup failed: " + x.message);
     }
   });
+
+  $("cancelPlayer")?.addEventListener("click", () =>
+    resetForm("playerForm", "playerSubmit", "ADD PLAYER")
+  );
+
+  $("cancelMatch")?.addEventListener("click", () =>
+    resetForm("matchForm", "matchSubmit", "ADD MATCH")
+  );
 }
 
-/* Logout */
-if ($("logoutButton")) {
-  $("logoutButton").addEventListener("click", async () => {
-    await dppccAuth.signOut();
-    location.replace("login.html");
-  });
-}
+document.addEventListener("click", async e => {
+  const del = e.target.closest(".delete-record");
 
-/* Start Dashboard */
+  if (del && can("delete")) {
+    const col = del.dataset.col;
+
+    if (![
+      "players", "matches", "registrations",
+      "jerseyOrders", "news", "liveScores"
+    ].includes(col)) return;
+
+    if (confirm("Permanently delete this record?")) {
+      try {
+        await dppccDb.collection(col).doc(del.dataset.id).delete();
+        location.reload();
+      } catch (x) {
+        alert(x.message);
+      }
+    }
+  }
+
+  const rev = e.target.closest(".review-reg");
+
+  if (rev && can("registrations")) {
+    try {
+      await dppccDb.collection("registrations")
+        .doc(rev.dataset.id)
+        .update({
+          status: rev.dataset.status,
+          reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          reviewedBy: activeUser.email
+        });
+
+      location.reload();
+    } catch (x) {
+      alert(x.message);
+    }
+  }
+
+  const ep = e.target.closest(".edit-player");
+
+  if (ep && can("players")) {
+    const d = await dppccDb.collection("players").doc(ep.dataset.id).get();
+    if (!d.exists) return;
+
+    const f = $("playerForm");
+    const p = d.data();
+
+    f.elements.docId.value = d.id;
+    f.elements.name.value = p.name || "";
+    f.elements.role.value = p.role || "Batsman";
+    f.elements.jerseyNo.value = p.jerseyNo ?? p.jerseyNumber ?? "";
+    f.elements.photoUrl.value = p.photoUrl || "";
+
+    $("playerSubmit").textContent = "SAVE PLAYER";
+    $("cancelPlayer").classList.remove("hidden");
+    f.scrollIntoView({ behavior: "smooth" });
+  }
+
+  const em = e.target.closest(".edit-match");
+
+  if (em && can("matches")) {
+    const d = await dppccDb.collection("matches").doc(em.dataset.id).get();
+    if (!d.exists) return;
+
+    const f = $("matchForm");
+    const m = d.data();
+
+    f.elements.docId.value = d.id;
+    f.elements.opponent.value = m.opponent || "";
+    f.elements.date.value = m.date || m.matchDate || "";
+    f.elements.venue.value = m.venue || "";
+    f.elements.status.value = m.status || "Upcoming";
+    f.elements.result.value = m.result || m.score || "";
+
+    $("matchSubmit").textContent = "SAVE MATCH";
+    $("cancelMatch").classList.remove("hidden");
+    f.scrollIntoView({ behavior: "smooth" });
+  }
+});
+
+document.addEventListener("change", async e => {
+  if (e.target.matches(".order-status") && can("jerseyOrders")) {
+    try {
+      await dppccDb.collection("jerseyOrders")
+        .doc(e.target.dataset.id)
+        .update({
+          status: e.target.value,
+          statusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          statusUpdatedBy: activeUser.email
+        });
+
+      alert("Order status updated.");
+    } catch (x) {
+      alert(x.message);
+    }
+  }
+});
+
+$("logoutButton").addEventListener("click", () => {
+  dppccAuth.signOut().then(() => location.replace("login.html"));
+});
+
 dppccAuth.onAuthStateChanged(async user => {
   if (!user) {
     location.replace("login.html");
     return;
   }
 
-  try {
-    const allowed = await verifyDashboardUser(user);
+  activeUser = user;
 
-    if (!allowed) {
+  try {
+    const actual = await getRole(user);
+
+    if (actual !== role) {
       await dppccAuth.signOut();
       location.replace("login.html");
       return;
     }
 
-    currentUser = user;
+    status("Access verified. You are signed in as " + role + ".");
 
-    setNotice(`Access verified · ${role}`);
+    $("dashboardContent").classList.remove("hidden");
 
-    if ($("dashboardContent")) {
-      $("dashboardContent").classList.remove("hidden");
-    }
+    $("welcomeText").textContent =
+      "Welcome, " + (user.email || "staff member") +
+      ". Your access level: " + role + ".";
 
-    if ($("welcomeText")) {
-      $("welcomeText").textContent =
-        `Signed in as ${user.email} · ${role} access`;
-    }
+    buildForms();
+    bindForms();
 
-    await loadRecords();
+    await countAndLoad();
 
-  } catch (error) {
-    console.error("Dashboard initialization failed:", error);
-
-    setNotice(
-      `Dashboard data could not be loaded: ${error.message}`,
+  } catch (e) {
+    console.error(e);
+    status(
+      "Could not verify access. Check Firestore Rules and staff assignment.",
       true
     );
   }
