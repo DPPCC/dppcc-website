@@ -1,29 +1,43 @@
-
 "use strict";
 
-const DPPCC_CACHE_NAME = "dppcc-static-v2";
+const DPPCC_CACHE_NAME = "dppcc-shell-v5";
 
-const DPPCC_APP_FILES = [
+const DPPCC_CORE_FILES = [
   "./",
   "./index.html",
+  "./app-home.html",
   "./styles.css",
+  "./website-home.css",
+  "./app-home.css",
   "./mobile-app.css",
   "./app.js",
   "./pwa.js",
   "./manifest.webmanifest",
-  "./assets/dppcc-club-logo.jpg"
+  "./assets/dppcc-club-logo.jpg",
+  "./assets/dppcc-sponsor-2003.jpg",
+  "./images/dppcc-team-photo.png"
 ];
 
-// Install: cache the public app shell and fixed assets.
+// Install
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(DPPCC_CACHE_NAME)
-      .then(cache => cache.addAll(DPPCC_APP_FILES))
+      .then(async cache => {
+        await Promise.all(
+          DPPCC_CORE_FILES.map(async file => {
+            try {
+              await cache.add(file);
+            } catch (error) {
+              console.warn("DPPCC cache skipped:", file);
+            }
+          })
+        );
+      })
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate: remove older DPPCC static caches.
+// Activate
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys()
@@ -31,7 +45,7 @@ self.addEventListener("activate", event => {
         return Promise.all(
           cacheNames
             .filter(name =>
-              name.startsWith("dppcc-static-") &&
+              name.startsWith("dppcc-") &&
               name !== DPPCC_CACHE_NAME
             )
             .map(name => caches.delete(name))
@@ -41,7 +55,7 @@ self.addEventListener("activate", event => {
   );
 });
 
-// Fetch: never cache Firebase, Cloudinary or private page data.
+// Fetch
 self.addEventListener("fetch", event => {
   const request = event.request;
 
@@ -52,13 +66,27 @@ self.addEventListener("fetch", event => {
   // Ignore external services.
   if (requestUrl.origin !== self.location.origin) return;
 
-  // Navigation: network first, cached home page if offline.
+  // Navigation: network first.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request).catch(async () => {
-        const cachedHome = await caches.match("./index.html");
+        const requestedPath = new URL(
+          request.url
+        ).pathname;
 
-        if (cachedHome) return cachedHome;
+        const appHomePath = new URL(
+          "./app-home.html",
+          self.location
+        ).pathname;
+
+        const fallbackPath =
+          requestedPath === appHomePath
+            ? "./app-home.html"
+            : "./index.html";
+
+        const cachedPage = await caches.match(fallbackPath);
+
+        if (cachedPage) return cachedPage;
 
         return new Response(
           "DPPCC is offline. Please reconnect to the internet.",
@@ -75,29 +103,33 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  // Cache only approved static files.
-  const allowedFiles = [
-    "./",
-    "./index.html",
-    "./styles.css",
-    "./mobile-app.css",
-    "./app.js",
-    "./pwa.js",
-    "./manifest.webmanifest",
-    "./assets/dppcc-club-logo.jpg"
-  ];
-
+  // Only cache same-origin static assets.
   const appBase = new URL("./", self.location);
 
   const relativePath = "./" +
     requestUrl.pathname.slice(appBase.pathname.length);
+
+  const allowedFiles = [
+    "./",
+    "./index.html",
+    "./app-home.html",
+    "./styles.css",
+    "./website-home.css",
+    "./app-home.css",
+    "./mobile-app.css",
+    "./app.js",
+    "./pwa.js",
+    "./manifest.webmanifest",
+    "./assets/dppcc-club-logo.jpg",
+    "./assets/dppcc-sponsor-2003.jpg",
+    "./images/dppcc-team-photo.png"
+  ];
 
   if (!allowedFiles.includes(relativePath)) return;
 
   event.respondWith(
     caches.match(request).then(cachedResponse => {
       if (cachedResponse) return cachedResponse;
-
       return fetch(request);
     })
   );
