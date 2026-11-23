@@ -1,61 +1,364 @@
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    function signedIn() { return request.auth != null && request.auth.token.email != null; }
-    function owner() { return signedIn() && request.auth.token.email == 'mdshiponahmed0455@gmail.com'; }
-    function staffRole(role) { return signedIn() && exists(/databases/$(database)/documents/staff/$(request.auth.token.email)) && get(/databases/$(database)/documents/staff/$(request.auth.token.email)).data.active == true && get(/databases/$(database)/documents/staff/$(request.auth.token.email)).data.role == role; }
-    function admin() { return owner() || staffRole('Admin'); }
-    function playersAccess() { return admin() || staffRole('Captain'); }
-    function matchesAccess() { return admin() || staffRole('Captain') || staffRole('Manager'); }
-    function liveAccess() { return admin() || staffRole('Captain'); }
-    function submissionsAccess() { return admin() || staffRole('Manager'); }
-    function validPlayerRole(role) { return role in ['Batsman', 'Bowler', 'All-Rounder', 'Wicket Keeper']; }
 
-    match /staff/{email} {
-      allow get: if owner() || (signedIn() && request.auth.token.email == email);
-      allow list: if owner();
-      allow create, update: if owner() && request.resource.data.keys().hasAll(['email', 'role', 'active', 'updatedAt']) && request.resource.data.keys().hasOnly(['email', 'role', 'active', 'updatedAt', 'createdAt']) && request.resource.data.email == email && request.resource.data.role in ['Admin', 'Captain', 'Manager'] && request.resource.data.active is bool && request.resource.data.updatedAt == request.time;
-      allow delete: if owner();
+    // ========================================
+    // DPPCC STAFF ACCESS
+    // ========================================
+
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.email != null;
     }
+
+    function owner() {
+      return signedIn()
+        && request.auth.token.email
+          == 'dungsreepaschimparacricketclub@gmail.com';
+    }
+
+    function admin() {
+      return owner()
+        || (signedIn()
+          && request.auth.token.email == 'dppccadmin@gmail.com');
+    }
+
+    function manager() {
+      return admin()
+        || (signedIn()
+          && request.auth.token.email == 'dppccmanager@gmail.com');
+    }
+
+    function captain() {
+      return admin()
+        || (signedIn()
+          && request.auth.token.email == 'dppcaptain@gmail.com');
+    }
+
+    function validPlayerRole(role) {
+      return role in [
+        'Batsman',
+        'Bowler',
+        'All-Rounder',
+        'Wicket Keeper'
+      ];
+    }
+
+    function validPhoto(url) {
+      return url is string
+        && url.size() <= 500
+        && (
+          url == ''
+          || url.matches('https://res.cloudinary.com/.*')
+        );
+    }
+
+    // ========================================
+    // PLAYERS
+    // ========================================
 
     match /players/{id} {
+
       allow read: if true;
-      allow create, update: if playersAccess() && request.resource.data.keys().hasAll(['name', 'role', 'jerseyNo']) && request.resource.data.keys().hasOnly(['name', 'role', 'jerseyNo', 'photoUrl']) && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 70 && validPlayerRole(request.resource.data.role) && request.resource.data.jerseyNo is int && request.resource.data.jerseyNo >= 0 && request.resource.data.jerseyNo <= 999 && (!('photoUrl' in request.resource.data) || (request.resource.data.photoUrl is string && request.resource.data.photoUrl.size() <= 500 && (request.resource.data.photoUrl == '' || request.resource.data.photoUrl.matches('https://.*'))));
+
+      allow create: if captain()
+        && request.resource.data.keys().hasAll([
+          'name', 'role', 'jerseyNo',
+          'entryNo', 'battingStyle', 'photoUrl',
+          'createdAt', 'createdBy',
+          'updatedAt', 'updatedBy'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'name', 'role', 'jerseyNo',
+          'entryNo', 'battingStyle', 'photoUrl',
+          'createdAt', 'createdBy',
+          'updatedAt', 'updatedBy'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 70
+        && validPlayerRole(request.resource.data.role)
+        && request.resource.data.jerseyNo is int
+        && request.resource.data.jerseyNo >= 0
+        && request.resource.data.jerseyNo <= 999
+        && request.resource.data.entryNo is string
+        && request.resource.data.battingStyle is string
+        && validPhoto(request.resource.data.photoUrl)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.createdBy == request.auth.token.email
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.token.email;
+
+      allow update: if captain()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly([
+            'name', 'role', 'jerseyNo',
+            'entryNo', 'battingStyle', 'photoUrl',
+            'updatedAt', 'updatedBy'
+          ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && validPlayerRole(request.resource.data.role)
+        && request.resource.data.jerseyNo is int
+        && request.resource.data.jerseyNo >= 0
+        && request.resource.data.jerseyNo <= 999
+        && request.resource.data.entryNo is string
+        && request.resource.data.battingStyle is string
+        && validPhoto(request.resource.data.photoUrl)
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.token.email;
+
       allow delete: if owner();
     }
+
+    // ========================================
+    // MATCHES
+    // ========================================
 
     match /matches/{id} {
+
       allow read: if true;
-      allow create, update: if matchesAccess() && request.resource.data.keys().hasAll(['opponent', 'date', 'venue', 'status', 'result']) && request.resource.data.keys().hasOnly(['opponent', 'date', 'venue', 'status', 'result']) && request.resource.data.opponent is string && request.resource.data.opponent.size() > 0 && request.resource.data.opponent.size() <= 70 && request.resource.data.date is string && request.resource.data.venue is string && request.resource.data.venue.size() <= 100 && request.resource.data.status in ['Upcoming', 'Live', 'Completed'] && request.resource.data.result is string && request.resource.data.result.size() <= 150;
+
+      allow create: if manager()
+        && request.resource.data.keys().hasAll([
+          'teamName', 'opponent', 'date',
+          'venue', 'status', 'result',
+          'overs', 'matchType',
+          'createdAt', 'createdBy'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'teamName', 'opponent', 'date',
+          'venue', 'status', 'result',
+          'overs', 'matchType',
+          'createdAt', 'createdBy'
+        ])
+        && request.resource.data.teamName is string
+        && request.resource.data.opponent is string
+        && request.resource.data.opponent.size() > 0
+        && request.resource.data.date is string
+        && request.resource.data.venue is string
+        && request.resource.data.status in [
+          'Upcoming', 'Live', 'Completed'
+        ]
+        && request.resource.data.result is string
+        && request.resource.data.overs is int
+        && request.resource.data.overs >= 1
+        && request.resource.data.overs <= 100
+        && request.resource.data.matchType is string
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.createdBy == request.auth.token.email;
+
+      // Captain may only change match status to Live.
+      allow update: if (
+        manager()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly([
+            'teamName', 'opponent', 'date',
+            'venue', 'status', 'result',
+            'overs', 'matchType'
+          ])
+      ) || (
+        captain()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly(['status', 'updatedAt'])
+        && request.resource.data.status == 'Live'
+        && request.resource.data.updatedAt == request.time
+      );
+
       allow delete: if owner();
     }
+
+    // ========================================
+    // PLAYER REGISTRATIONS
+    // ========================================
 
     match /registrations/{id} {
-      allow create: if request.resource.data.keys().hasAll(['name', 'phone', 'age', 'role', 'address', 'createdAt']) && request.resource.data.keys().hasOnly(['name', 'phone', 'age', 'role', 'address', 'createdAt']) && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 70 && request.resource.data.phone is string && request.resource.data.phone.size() > 0 && request.resource.data.phone.size() <= 20 && request.resource.data.age is int && request.resource.data.age >= 8 && request.resource.data.age <= 70 && validPlayerRole(request.resource.data.role) && request.resource.data.address is string && request.resource.data.address.size() <= 120 && request.resource.data.createdAt == request.time;
-      allow read: if submissionsAccess();
-      allow update: if submissionsAccess() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reviewedAt', 'reviewedBy']) && request.resource.data.status in ['Approved', 'Rejected'] && request.resource.data.reviewedAt == request.time && request.resource.data.reviewedBy == request.auth.token.email;
+
+      allow create: if request.resource.data.keys().hasAll([
+        'name', 'phone', 'age', 'role',
+        'address', 'photoUrl', 'status', 'createdAt'
+      ])
+      && request.resource.data.keys().hasOnly([
+        'name', 'phone', 'age', 'role',
+        'address', 'photoUrl', 'status', 'createdAt'
+      ])
+      && request.resource.data.name is string
+      && request.resource.data.name.size() > 0
+      && request.resource.data.name.size() <= 70
+      && request.resource.data.phone is string
+      && request.resource.data.phone.size() > 0
+      && request.resource.data.phone.size() <= 20
+      && request.resource.data.age is int
+      && request.resource.data.age >= 8
+      && request.resource.data.age <= 70
+      && validPlayerRole(request.resource.data.role)
+      && request.resource.data.address is string
+      && request.resource.data.address.size() <= 120
+      && validPhoto(request.resource.data.photoUrl)
+      && request.resource.data.status == 'Pending'
+      && request.resource.data.createdAt == request.time;
+
+      allow read: if manager();
+
+      allow update: if manager()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly([
+            'status', 'reviewedAt', 'reviewedBy'
+          ])
+        && request.resource.data.status in [
+          'Approved', 'Rejected'
+        ]
+        && request.resource.data.reviewedAt == request.time
+        && request.resource.data.reviewedBy == request.auth.token.email;
+
       allow delete: if owner();
     }
+
+    // ========================================
+    // JERSEY ORDERS
+    // ========================================
 
     match /jerseyOrders/{id} {
-      allow create: if request.resource.data.keys().hasAll(['name', 'phone', 'size', 'number', 'createdAt']) && request.resource.data.keys().hasOnly(['name', 'phone', 'size', 'number', 'createdAt']) && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 70 && request.resource.data.phone is string && request.resource.data.phone.size() > 0 && request.resource.data.phone.size() <= 20 && request.resource.data.size in ['S', 'M', 'L', 'XL', 'XXL'] && request.resource.data.number is int && request.resource.data.number >= 0 && request.resource.data.number <= 99 && request.resource.data.createdAt == request.time;
-      allow read: if submissionsAccess();
-      allow update: if submissionsAccess() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'statusUpdatedAt', 'statusUpdatedBy']) && request.resource.data.status in ['Pending', 'Processing', 'Completed', 'Cancelled'] && request.resource.data.statusUpdatedAt == request.time && request.resource.data.statusUpdatedBy == request.auth.token.email;
+
+      allow create: if request.resource.data.keys().hasAll([
+        'name', 'phone', 'size',
+        'number', 'createdAt'
+      ])
+      && request.resource.data.keys().hasOnly([
+        'name', 'phone', 'size',
+        'number', 'createdAt'
+      ])
+      && request.resource.data.name is string
+      && request.resource.data.name.size() > 0
+      && request.resource.data.name.size() <= 70
+      && request.resource.data.phone is string
+      && request.resource.data.phone.size() > 0
+      && request.resource.data.phone.size() <= 20
+      && request.resource.data.size in [
+        'S', 'M', 'L', 'XL', 'XXL'
+      ]
+      && request.resource.data.number is int
+      && request.resource.data.number >= 0
+      && request.resource.data.number <= 99
+      && request.resource.data.createdAt == request.time;
+
+      allow read: if manager();
+
+      allow update: if manager()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly([
+            'status', 'statusUpdatedAt', 'statusUpdatedBy'
+          ])
+        && request.resource.data.status in [
+          'Pending', 'Processing', 'Completed', 'Cancelled'
+        ]
+        && request.resource.data.statusUpdatedAt == request.time
+        && request.resource.data.statusUpdatedBy == request.auth.token.email;
+
       allow delete: if owner();
     }
 
+    // ========================================
+    // LIVE SCORES
+    // ========================================
+
     match /liveScores/{id} {
+
       allow read: if true;
-      allow create: if liveAccess() && request.resource.data.keys().hasAll(['matchId', 'matchLabel', 'over', 'ball', 'runs', 'wicket', 'commentary', 'createdAt', 'createdBy']) && request.resource.data.keys().hasOnly(['matchId', 'matchLabel', 'over', 'ball', 'runs', 'wicket', 'commentary', 'createdAt', 'createdBy']) && request.resource.data.matchId is string && request.resource.data.matchLabel is string && request.resource.data.over is int && request.resource.data.over >= 0 && request.resource.data.over <= 99 && request.resource.data.ball is int && request.resource.data.ball >= 1 && request.resource.data.ball <= 6 && request.resource.data.runs is int && request.resource.data.runs >= 0 && request.resource.data.runs <= 6 && request.resource.data.wicket is bool && request.resource.data.commentary is string && request.resource.data.commentary.size() <= 180 && request.resource.data.createdAt == request.time && request.resource.data.createdBy == request.auth.token.email;
+
+      allow create: if captain()
+        && request.resource.data.keys().hasAll([
+          'matchId', 'matchLabel', 'innings',
+          'over', 'ball', 'batter', 'bowler',
+          'runs', 'extrasType', 'extrasRuns',
+          'wicket', 'dismissedPlayer',
+          'commentary', 'legalBall',
+          'createdAt', 'createdBy'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'matchId', 'matchLabel', 'innings',
+          'over', 'ball', 'batter', 'bowler',
+          'runs', 'extrasType', 'extrasRuns',
+          'wicket', 'dismissedPlayer',
+          'commentary', 'legalBall',
+          'createdAt', 'createdBy'
+        ])
+        && request.resource.data.matchId is string
+        && request.resource.data.matchLabel is string
+        && request.resource.data.innings is int
+        && request.resource.data.innings >= 1
+        && request.resource.data.innings <= 2
+        && request.resource.data.over is int
+        && request.resource.data.over >= 0
+        && request.resource.data.over <= 99
+        && request.resource.data.ball is int
+        && request.resource.data.ball >= 1
+        && request.resource.data.ball <= 6
+        && request.resource.data.batter is string
+        && request.resource.data.bowler is string
+        && request.resource.data.runs is int
+        && request.resource.data.runs >= 0
+        && request.resource.data.runs <= 6
+        && request.resource.data.extrasType is string
+        && request.resource.data.extrasRuns is int
+        && request.resource.data.extrasRuns >= 0
+        && request.resource.data.wicket is bool
+        && request.resource.data.dismissedPlayer is string
+        && request.resource.data.commentary is string
+        && request.resource.data.commentary.size() <= 180
+        && request.resource.data.legalBall is bool
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.createdBy == request.auth.token.email;
+
       allow update: if false;
       allow delete: if owner();
     }
 
+    // ========================================
+    // CLUB NEWS
+    // ========================================
+
     match /news/{id} {
+
       allow read: if true;
-      allow create: if admin() && request.resource.data.keys().hasAll(['title', 'body', 'createdAt', 'createdBy']) && request.resource.data.keys().hasOnly(['title', 'body', 'createdAt', 'createdBy']) && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 100 && request.resource.data.body is string && request.resource.data.body.size() > 0 && request.resource.data.body.size() <= 1000 && request.resource.data.createdAt == request.time && request.resource.data.createdBy == request.auth.token.email;
-      allow update: if admin() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'body']) && request.resource.data.title is string && request.resource.data.title.size() > 0 && request.resource.data.title.size() <= 100 && request.resource.data.body is string && request.resource.data.body.size() > 0 && request.resource.data.body.size() <= 1000;
+
+      allow create: if admin()
+        && request.resource.data.keys().hasAll([
+          'title', 'body', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'title', 'body', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0
+        && request.resource.data.body.size() <= 1000
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.createdBy == request.auth.token.email;
+
+      allow update: if admin()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly(['title', 'body'])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0
+        && request.resource.data.body.size() <= 1000;
+
       allow delete: if owner();
+    }
+
+    // ========================================
+    // DENY ALL OTHER COLLECTIONS
+    // ========================================
+
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
