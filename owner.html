@@ -1,194 +1,85 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="DPPCC Owner Administration Dashboard">
-  <title>Owner Dashboard | DPPCC</title>
-  <link rel="stylesheet" href="styles.css">
-
-  <style>
-    .dashboard-page {
-      max-width: 1150px;
-      margin: auto;
-      padding: 35px 18px 60px;
-    }
-    .dashboard-heading {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    .dashboard-heading h1 {
-      font-size: clamp(28px, 5vw, 42px);
-    }
-    .owner-status {
-      margin: 20px 0;
-      padding: 18px;
-      border: 1px solid rgba(212,175,55,.45);
-      border-radius: 12px;
-      background: var(--card-bg, #102b20);
-      text-align: center;
-      overflow-wrap: anywhere;
-    }
-    .owner-status strong {
-      color: #d4af37;
-    }
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-      margin-top: 25px;
-    }
-    .dashboard-card {
-      display: block;
-      padding: 22px;
-      border: 1px solid rgba(212,175,55,.4);
-      border-radius: 13px;
-      background: var(--card-bg, #102b20);
-      color: inherit;
-      text-decoration: none;
-      transition: transform .2s ease;
-    }
-    .dashboard-card:hover {
-      transform: translateY(-3px);
-    }
-    .dashboard-card h2 {
-      margin-top: 0;
-      color: #d4af37;
-      font-size: 21px;
-    }
-    .dashboard-card p {
-      line-height: 1.6;
-      margin-bottom: 0;
-    }
-    .dashboard-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 30px;
-    }
-    .dashboard-actions a,
-    .dashboard-actions button {
-      display: inline-block;
-      padding: 12px 18px;
-      border: 0;
-      border-radius: 8px;
-      background: #d4af37;
-      color: #102b20;
-      font-weight: 800;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    #ownerContent[hidden] {
-      display: none !important;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DPPCC Owner Panel</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body>
+<body data-role="Owner">
 
-<header class="header">
-  <div class="container header-inner">
-    <a class="brand" href="index.html">
-      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo">
-      <span>DPPCC</span>
-    </a>
+  <header>
+    <div class="nav">
+      <a class="brand" href="index.html">
+        <img src="assets/dppcc-club-logo.jpg" alt="DPPCC">
+        <span>
+          DPPCC
+          <small>OWNER PANEL</small>
+        </span>
+      </a>
 
-    <button class="toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+      <nav>
+        <a href="index.html">PUBLIC WEBSITE</a>
+        <button id="logoutButton" class="danger">LOG OUT</button>
+      </nav>
+    </div>
+  </header>
 
-    <nav class="nav">
-      <a href="index.html">Website</a>
-      <a href="players.html">Players</a>
-      <a href="matches.html">Matches</a>
-      <a href="news.html">News</a>
-      <a href="match-centre.html">Match Centre</a>
-    </nav>
-  </div>
-</header>
+  <main class="wrap">
 
-<main id="ownerContent" class="dashboard-page" hidden>
+    <div class="heading">
+      <small>AUTHORIZED DASHBOARD</small>
+      <h2>OWNER CONTROL PANEL</h2>
+      <p>Full club administration and staff access control.</p>
+    </div>
 
-  <section class="dashboard-heading">
-    <h1>OWNER DASHBOARD</h1>
-    <p>Dungsree Paschim Para Cricket Club</p>
-    <p><strong>Complete Club Administration</strong></p>
-  </section>
+    <div id="accessMessage" class="status">
+      Checking your access...
+    </div>
 
-  <section class="owner-status">
-    <h2>Owner Access</h2>
-    <p><strong>Owner access verification is managed through Firebase Authentication.</strong></p>
-    <p>Signed in as: <span id="ownerEmail">Checking account...</span></p>
-  </section>
+    <div id="dashboardContent" class="hidden">
 
-  <section class="dashboard-grid">
+      <div class="notice" id="welcomeText"></div>
 
-    <a class="dashboard-card" href="players.html">
-      <h2>Players Management</h2>
-      <p>Add, edit and manage official club player profiles and photos.</p>
-    </a>
+      <div class="dashboard-grid" id="formsArea"></div>
 
-    <a class="dashboard-card" href="matches.html">
-      <h2>Matches Management</h2>
-      <p>Create fixtures and manage match information and results.</p>
-    </a>
+      <section class="formbox">
+        <h3>Club Data</h3>
 
-    <a class="dashboard-card" href="match-centre.html">
-      <h2>Live Match Centre</h2>
-      <p>View live scores, innings and ball-by-ball commentary.</p>
-    </a>
+        <div class="stats">
+          <div class="stat">
+            <b id="statPlayers">—</b>
+            <span>Players</span>
+          </div>
 
-    <a class="dashboard-card" href="news.html">
-      <h2>News & Announcements</h2>
-      <p>Publish official club news and announcements.</p>
-    </a>
+          <div class="stat">
+            <b id="statMatches">—</b>
+            <span>Matches</span>
+          </div>
 
-    <a class="dashboard-card" href="registration.html">
-      <h2>Player Registration</h2>
-      <p>Review applications submitted by new players.</p>
-    </a>
+          <div class="stat">
+            <b id="statNews">—</b>
+            <span>News Posts</span>
+          </div>
+        </div>
+      </section>
 
-    <a class="dashboard-card" href="jersey.html">
-      <h2>Jersey Orders</h2>
-      <p>Manage jersey order requests from club members.</p>
-    </a>
+      <div id="recordsArea"></div>
 
-    <a class="dashboard-card" href="admin.html">
-      <h2>Admin Dashboard</h2>
-      <p>Open the administration dashboard.</p>
-    </a>
+    </div>
+  </main>
 
-    <a class="dashboard-card" href="manager.html">
-      <h2>Manager Dashboard</h2>
-      <p>Open the match and team management dashboard.</p>
-    </a>
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
-    <a class="dashboard-card" href="captain.html">
-      <h2>Captain Dashboard</h2>
-      <p>Open the team and scoring dashboard.</p>
-    </a>
+  <!-- DPPCC Firebase Compat Configuration -->
+  <script src="js/firebase-config-compat.js"></script>
 
-  </section>
-
-  <div class="dashboard-actions">
-    <a href="index.html">Visit Official Website</a>
-    <button type="button" id="ownerLogout">Sign Out</button>
-  </div>
-
-</main>
-
-<footer class="footer">
-  <div class="container">
-    <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo" width="75">
-    <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
-    <p>Established 2026</p>
-    <img data-sponsor src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor Logo" width="120">
-    <p>© <span data-year>2026</span> Dungsree Paschim Para Cricket Club. All Rights Reserved.</p>
-  </div>
-</footer>
-
-<script src="app.js"></script>
-<script type="module" src="club-data.js"></script>
+  <!-- Dashboard JavaScript -->
+  <script src="js/dashboard.js"></script>
 
 </body>
 </html>
