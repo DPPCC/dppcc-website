@@ -1,4 +1,14 @@
-"use strict";
+
+import { auth, db, OWNER_EMAIL } from "./firebase-config.js";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const $ = id => document.getElementById(id);
 
@@ -9,114 +19,93 @@ const dashboardPages = {
   Captain: "captain.html"
 };
 
-function showLoginMessage(message, isError = true) {
-  const box = $("loginMessage");
-
+function showMessage(message, error = false) {
+  const box = $("loginNotice");
   if (!box) return;
 
   box.textContent = message;
-  box.classList.remove("hidden");
-
-  box.style.background = isError
-    ? "#ffe5e5"
-    : "#e5f7eb";
-
-  box.style.color = isError
-    ? "#9b1717"
-    : "#14532d";
+  box.style.background = error ? "#ffe5e5" : "#e5f7eb";
+  box.style.color = error ? "#9b1717" : "#14532d";
 }
 
 async function getDPPCCRole(user) {
-  if (!user || !user.email) return null;
+  if (!user?.email) return null;
 
   const email = user.email.trim().toLowerCase();
 
-  if (email === OWNER_EMAIL) {
+  if (email === OWNER_EMAIL.toLowerCase()) {
     return "Owner";
   }
 
-  const staffDoc = await dppccDb
-    .collection("staff")
-    .doc(email)
-    .get();
+  const snapshot = await getDoc(doc(db, "staff", email));
 
-  if (!staffDoc.exists) return null;
+  if (!snapshot.exists()) return null;
 
-  const staff = staffDoc.data();
+  const staff = snapshot.data();
 
   if (staff.active !== true) return null;
 
-  if (
-    !["Admin", "Manager", "Captain"].includes(staff.role)
-  ) {
+  if (!["Admin", "Manager", "Captain"].includes(staff.role)) {
+    return null;
+  }
+
+  if ((staff.email || "").toLowerCase() !== email) {
     return null;
   }
 
   return staff.role;
 }
 
-async function routeSignedInUser(user) {
+async function routeUser(user) {
   try {
     const role = await getDPPCCRole(user);
 
-    if (role && dashboardPages[role]) {
-      location.replace(dashboardPages[role]);
+    if (!role || !dashboardPages[role]) {
+      await signOut(auth);
+      showMessage(
+        "This account has no active DPPCC staff role. Contact the Owner.",
+        true
+      );
       return;
     }
 
-    await dppccAuth.signOut();
-
-    showLoginMessage(
-      "This account has no active DPPCC staff role. Please contact the Owner."
-    );
+    location.replace(dashboardPages[role]);
 
   } catch (error) {
-    console.error("DPPCC role check failed:", error);
-
-    showLoginMessage(
-      "Could not verify your staff access. Please try again."
+    console.error("Role verification error:", error);
+    showMessage(
+      "Could not verify staff access. Please try again.",
+      true
     );
   }
 }
 
-if ($("loginForm")) {
+const loginForm = $("staffLoginForm");
 
-  dppccAuth.onAuthStateChanged(user => {
-    if (user) {
-      routeSignedInUser(user);
-    }
+if (loginForm) {
+  onAuthStateChanged(auth, user => {
+    if (user) routeUser(user);
   });
 
-  $("loginForm").addEventListener("submit", async event => {
+  loginForm.addEventListener("submit", async event => {
     event.preventDefault();
 
-    const form = event.currentTarget;
-    const button = $("loginButton");
+    const button = loginForm.querySelector('button[type="submit"]');
+    const email = $("staffEmail").value.trim().toLowerCase();
+    const password = $("staffPassword").value;
 
     if (button) button.disabled = true;
 
     try {
-      const email = form.elements.email.value
-        .trim()
-        .toLowerCase();
-
-      const password = form.elements.password.value;
-
-      await dppccAuth.signInWithEmailAndPassword(
-        email,
-        password
-      );
-
-      showLoginMessage(
-        "Login successful. Checking your dashboard access...",
-        false
-      );
+      await signInWithEmailAndPassword(auth, email, password);
+      showMessage("Login successful. Verifying your access...");
 
     } catch (error) {
-      console.error("DPPCC login failed:", error);
+      console.error("Login error:", error);
 
-      showLoginMessage(
-        "Login failed. Check your email and password, then try again."
+      showMessage(
+        "Login failed. Check your email and password.",
+        true
       );
 
     } finally {
