@@ -1,1 +1,290 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Official website of Dungsree Paschim Para Cricket Club"><title>Match Centre | DPPCC</title><link rel="stylesheet" href="styles.css"></head><body><div class="top"><span>OFFICIAL CLUB WEBSITE · EST. 2026</span><span><a href="mailto:dungsreepaschimparacricketclub@gmail.com">CONTACT</a>　<a href="login.html">STAFF SIGN IN</a></span></div><header class="header"><div class="head"><a class="brand" href="index.html"><img src="assets/dppcc-club-logo.jpg" alt="DPPCC logo" onerror="this.style.display='none'"><span><b>DUNGSREE PASCHIM PARA<br>CRICKET CLUB</b><small>DPPCC · EST. 2026</small></span></a><button class="toggle" aria-label="Open menu" aria-expanded="false">☰</button><nav class="nav"><a href="index.html">HOME</a><a href="about.html">ABOUT</a><a href="players.html">PLAYERS</a><a href="rankings.html">RANKINGS</a><a href="matches.html">MATCH CENTRE</a><a href="news.html">NEWS</a><a href="videos.html">VIDEOS</a><a href="gallery.html">GALLERY</a></nav></div></header><div class="sub"><div class="subin"><a href="match-centre.html">FIXTURES & RESULTS</a><a href="awards.html">AWARDS</a><a href="history.html">HISTORY</a><a href="registration.html">REGISTER</a><a href="jersey.html">JERSEY</a><a href="contact.html">CONTACT</a><a href="login.html">STAFF LOGIN</a></div></div><section class="title"><div class="titlein"><h1>Match Centre</h1><p>Dungsree Paschim Para Cricket Club · ONE CLUB. ONE TEAM. ONE DREAM.</p></div></section><main class="wrap"><div class="panel"><h2>Match Centre</h2><p>Live scores, fixtures, results and scorecards.</p><a class="btn dark" href="matches.html">Open Fixtures & Results</a></div></main><footer class="footer"><div class="foot"><div><h3>DPPCC</h3><p>Dungsree Paschim Para Cricket Club</p><p>ONE CLUB. ONE TEAM. ONE DREAM.</p><p>Established 2026</p><a href="mailto:dungsreepaschimparacricketclub@gmail.com">dungsreepaschimparacricketclub@gmail.com</a></div><div><h3>Explore</h3><a href="index.html">Home</a><a href="about.html">About</a><a href="players.html">Players</a><a href="rankings.html">Rankings</a><a href="matches.html">Match Centre</a><a href="news.html">News</a></div><div><h3>Club</h3><a href="match-centre.html">Fixtures & Results</a><a href="awards.html">Awards</a><a href="history.html">History</a><a href="registration.html">Register</a><a href="jersey.html">Jersey</a><a href="contact.html">Contact</a><a href="login.html">Staff Login</a><img class="sponsor" data-sponsor alt="Official sponsor logo"></div></div><div class="copy">© <span data-year>2026</span> Dungsree Paschim Para Cricket Club. All rights reserved.</div></footer><script src="app.js"></script></body></html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DPPCC live cricket scores and ball-by-ball commentary">
+  <title>Live Match Centre | DPPCC</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .centre-page {
+      max-width: 1150px;
+      margin: auto;
+      padding: 35px 18px 55px;
+    }
+    .centre-heading {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .centre-heading h1 {
+      font-size: clamp(30px, 5vw, 44px);
+    }
+    .live-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #c62828;
+      color: white;
+      font-weight: 800;
+      font-size: 12px;
+    }
+    .score-management,
+    .scoreboard,
+    .commentary-section {
+      margin-top: 25px;
+      padding: 22px;
+      border: 1px solid rgba(212,175,55,.4);
+      border-radius: 14px;
+      background: var(--card-bg, #102b20);
+    }
+    .score-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .score-form label {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-weight: 600;
+    }
+    .score-form input,
+    .score-form select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 7px;
+      box-sizing: border-box;
+    }
+    .score-form .full-width {
+      grid-column: 1 / -1;
+    }
+    .score-form button {
+      min-height: 46px;
+      border: 0;
+      border-radius: 7px;
+      padding: 10px 15px;
+      background: #d4af37;
+      color: #102b20;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .scoreboard {
+      text-align: center;
+    }
+    .scoreboard h2 {
+      margin-bottom: 8px;
+    }
+    .score-total {
+      font-size: clamp(35px, 8vw, 58px);
+      font-weight: 900;
+      margin: 12px 0;
+    }
+    .score-details {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-weight: 700;
+    }
+    .score-notice {
+      font-weight: 700;
+      margin-top: 12px;
+    }
+    .commentary-item {
+      padding: 13px 0;
+      border-bottom: 1px solid rgba(212,175,55,.25);
+    }
+    .commentary-item:last-child {
+      border-bottom: 0;
+    }
+    .commentary-item strong {
+      color: #d4af37;
+    }
+    .empty-score {
+      text-align: center;
+      padding: 20px;
+      border: 1px dashed rgba(212,175,55,.5);
+      border-radius: 10px;
+    }
+    @media(max-width:600px) {
+      .score-form {
+        grid-template-columns: 1fr;
+      }
+      .score-form .full-width {
+        grid-column: auto;
+      }
+      .score-management,
+      .scoreboard,
+      .commentary-section {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Club Logo">
+      <span>DPPCC</span>
+    </a>
+
+    <button class="toggle" aria-label="Open menu" aria-expanded="false">☰</button>
+
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="players.html">Players</a>
+      <a href="matches.html">Matches</a>
+      <a href="match-centre.html" aria-current="page">Match Centre</a>
+      <a href="news.html">News</a>
+      <a href="jersey.html">Jersey</a>
+      <a href="registration.html">Join Club</a>
+      <a href="login.html">Staff Login</a>
+    </nav>
+  </div>
+</header>
+
+<main class="centre-page">
+
+  <section class="centre-heading">
+    <span class="live-badge">DPPCC MATCH CENTRE</span>
+    <h1>LIVE SCORE & COMMENTARY</h1>
+    <p>Follow every run, wicket and delivery.</p>
+    <p><strong>ONE CLUB. ONE TEAM. ONE DREAM.</strong></p>
+  </section>
+
+  <section class="scoreboard">
+    <h2 id="liveMatchTitle">DPPCC Live Score</h2>
+    <div class="score-total" id="liveScoreTotal">0/0</div>
+    <div class="score-details">
+      <span>Overs: <strong id="liveOvers">0.0</strong></span>
+      <span>Innings: <strong id="liveInnings">1</strong></span>
+    </div>
+    <p id="liveScoreSummary">Select a match to view its score.</p>
+  </section>
+
+  <section id="scoreManagement" class="score-management" hidden>
+    <h2>Ball-by-Ball Scoring</h2>
+
+    <form id="liveBallForm" class="score-form">
+
+      <label class="full-width">
+        Select Match *
+        <select id="scoreMatchId" required>
+          <option value="">Select a match</option>
+        </select>
+      </label>
+
+      <label>
+        Innings *
+        <select id="inningsNumber" required>
+          <option value="1">1st Innings</option>
+          <option value="2">2nd Innings</option>
+        </select>
+      </label>
+
+      <label>
+        Over Number *
+        <input type="number" id="ballOver" required min="0" max="99" value="0">
+      </label>
+
+      <label>
+        Ball Number *
+        <input type="number" id="ballNumber" required min="1" max="6" value="1">
+      </label>
+
+      <label>
+        Batter Name *
+        <input type="text" id="batterName" required maxlength="80" placeholder="Striker name">
+      </label>
+
+      <label>
+        Bowler Name *
+        <input type="text" id="bowlerName" required maxlength="80" placeholder="Bowler name">
+      </label>
+
+      <label>
+        Runs *
+        <select id="ballRuns" required>
+          <option value="0">0 Runs</option>
+          <option value="1">1 Run</option>
+          <option value="2">2 Runs</option>
+          <option value="3">3 Runs</option>
+          <option value="4">4 Runs</option>
+          <option value="5">5 Runs</option>
+          <option value="6">6 Runs</option>
+        </select>
+      </label>
+
+      <label>
+        Extra Type
+        <select id="extrasType">
+          <option value="None">None</option>
+          <option value="Wide">Wide</option>
+          <option value="No Ball">No Ball</option>
+          <option value="Bye">Bye</option>
+          <option value="Leg Bye">Leg Bye</option>
+        </select>
+      </label>
+
+      <label>
+        Extra Runs
+        <input type="number" id="extrasRuns" min="0" max="10" value="0">
+      </label>
+
+      <label>
+        Wicket?
+        <select id="ballWicket">
+          <option value="false">No Wicket</option>
+          <option value="true">Wicket</option>
+        </select>
+      </label>
+
+      <label>
+        Dismissed Player
+        <input type="text" id="dismissedPlayer" maxlength="80" placeholder="If wicket falls">
+      </label>
+
+      <label class="full-width">
+        Ball Commentary
+        <input type="text" id="ballCommentary" maxlength="250" placeholder="Example: FOUR! Beautiful cover drive.">
+      </label>
+
+      <div class="full-width">
+        <button type="submit" id="ballSubmit">SUBMIT BALL</button>
+        <p id="scoreNotice" class="score-notice" aria-live="polite"></p>
+      </div>
+
+    </form>
+  </section>
+
+  <section class="commentary-section">
+    <h2>Ball-by-Ball Commentary</h2>
+    <div id="liveScoresList">
+      <div class="empty-score">No ball updates available yet.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <img src="assets/dppcc-club-logo.jpg" alt="DPPCC Logo" width="75">
+    <p>ONE CLUB. ONE TEAM. ONE DREAM.</p>
+    <p>Established 2026</p>
+    <img data-sponsor src="assets/dppcc-sponsor-2003.jpg" alt="DPPCC Sponsor Logo" width="120">
+    <p>© <span data-year>2026</span> Dungsree Paschim Para Cricket Club. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script type="module" src="club-data.js"></script>
+
+</body>
+</html>
