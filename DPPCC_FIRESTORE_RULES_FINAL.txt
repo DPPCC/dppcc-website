@@ -4,9 +4,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ========================================
-    // DPPCC STAFF ACCESS
-    // ========================================
+    // =====================================
+    // AUTHENTICATION AND STAFF ROLES
+    // =====================================
 
     function signedIn() {
       return request.auth != null
@@ -15,26 +15,41 @@ service cloud.firestore {
 
     function owner() {
       return signedIn()
-        && request.auth.token.email
+        && request.auth.token.email.lower()
           == 'dungsreepaschimparacricketclub@gmail.com';
     }
 
-    function admin() {
-      return owner()
-        || (signedIn()
-          && request.auth.token.email == 'dppccadmin@gmail.com');
+    function staffRole(roleName) {
+      return signedIn()
+        && exists(
+          /databases/$(database)/documents/staff/$(request.auth.token.email.lower())
+        )
+        && get(
+          /databases/$(database)/documents/staff/$(request.auth.token.email.lower())
+        ).data.active == true
+        && get(
+          /databases/$(database)/documents/staff/$(request.auth.token.email.lower())
+        ).data.role == roleName;
     }
 
-    function manager() {
-      return admin()
-        || (signedIn()
-          && request.auth.token.email == 'dppccmanager@gmail.com');
+    function adminAccess() {
+      return owner() || staffRole('Admin');
     }
 
-    function captain() {
-      return admin()
-        || (signedIn()
-          && request.auth.token.email == 'dppcaptain@gmail.com');
+    function playerAccess() {
+      return owner() || staffRole('Admin') || staffRole('Captain');
+    }
+
+    function matchAccess() {
+      return owner() || staffRole('Manager');
+    }
+
+    function liveAccess() {
+      return owner() || staffRole('Captain');
+    }
+
+    function submissionAccess() {
+      return owner() || staffRole('Manager');
     }
 
     function validPlayerRole(role) {
@@ -48,27 +63,72 @@ service cloud.firestore {
 
     function validPhoto(url) {
       return url is string
-        && url.size() <= 500
+        && url.size() <= 1000
         && (
           url == ''
           || url.matches('https://res.cloudinary.com/.*')
         );
     }
 
-    // ========================================
+    // =====================================
+    // STAFF
+    // Document ID = lowercase email
+    // =====================================
+
+    match /staff/{email} {
+
+      allow get: if owner()
+        || (signedIn()
+          && request.auth.token.email.lower() == email);
+
+      allow list: if owner();
+
+      allow create: if owner()
+        && request.resource.data.keys().hasAll([
+          'email', 'role', 'active', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'email', 'role', 'active', 'updatedAt', 'createdAt'
+        ])
+        && request.resource.data.email == email
+        && request.resource.data.role in [
+          'Admin', 'Manager', 'Captain'
+        ]
+        && request.resource.data.active is bool
+        && request.resource.data.updatedAt == request.time
+        && (
+          !('createdAt' in request.resource.data)
+          || request.resource.data.createdAt == request.time
+        );
+
+      allow update: if owner()
+        && request.resource.data.keys().hasAll([
+          'email', 'role', 'active', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'email', 'role', 'active', 'updatedAt', 'createdAt'
+        ])
+        && request.resource.data.email == email
+        && request.resource.data.role in [
+          'Admin', 'Manager', 'Captain'
+        ]
+        && request.resource.data.active is bool
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if owner();
+    }
+
+    // =====================================
     // PLAYERS
-    // ========================================
+    // =====================================
 
     match /players/{id} {
 
       allow read: if true;
 
-      allow create: if captain()
+      allow create: if playerAccess()
         && request.resource.data.keys().hasAll([
-          'name', 'role', 'jerseyNo',
-          'entryNo', 'battingStyle', 'photoUrl',
-          'createdAt', 'createdBy',
-          'updatedAt', 'updatedBy'
+          'name', 'role', 'jerseyNo'
         ])
         && request.resource.data.keys().hasOnly([
           'name', 'role', 'jerseyNo',
@@ -83,15 +143,38 @@ service cloud.firestore {
         && request.resource.data.jerseyNo is int
         && request.resource.data.jerseyNo >= 0
         && request.resource.data.jerseyNo <= 999
-        && request.resource.data.entryNo is string
-        && request.resource.data.battingStyle is string
-        && validPhoto(request.resource.data.photoUrl)
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.createdBy == request.auth.token.email
-        && request.resource.data.updatedAt == request.time
-        && request.resource.data.updatedBy == request.auth.token.email;
+        && (
+          !('entryNo' in request.resource.data)
+          || request.resource.data.entryNo is string
+        )
+        && (
+          !('battingStyle' in request.resource.data)
+          || request.resource.data.battingStyle in [
+            'Right-hand', 'Left-hand', ''
+          ]
+        )
+        && (
+          !('photoUrl' in request.resource.data)
+          || validPhoto(request.resource.data.photoUrl)
+        )
+        && (
+          !('createdAt' in request.resource.data)
+          || request.resource.data.createdAt == request.time
+        )
+        && (
+          !('createdBy' in request.resource.data)
+          || request.resource.data.createdBy == request.auth.token.email
+        )
+        && (
+          !('updatedAt' in request.resource.data)
+          || request.resource.data.updatedAt == request.time
+        )
+        && (
+          !('updatedBy' in request.resource.data)
+          || request.resource.data.updatedBy == request.auth.token.email
+        );
 
-      allow update: if captain()
+      allow update: if playerAccess()
         && request.resource.data.diff(resource.data)
           .affectedKeys().hasOnly([
             'name', 'role', 'jerseyNo',
@@ -100,79 +183,104 @@ service cloud.firestore {
           ])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 70
         && validPlayerRole(request.resource.data.role)
         && request.resource.data.jerseyNo is int
         && request.resource.data.jerseyNo >= 0
         && request.resource.data.jerseyNo <= 999
-        && request.resource.data.entryNo is string
-        && request.resource.data.battingStyle is string
-        && validPhoto(request.resource.data.photoUrl)
+        && (
+          !('photoUrl' in request.resource.data)
+          || validPhoto(request.resource.data.photoUrl)
+        )
         && request.resource.data.updatedAt == request.time
         && request.resource.data.updatedBy == request.auth.token.email;
 
       allow delete: if owner();
     }
 
-    // ========================================
+    // =====================================
     // MATCHES
-    // ========================================
+    // =====================================
 
     match /matches/{id} {
 
       allow read: if true;
 
-      allow create: if manager()
+      allow create: if matchAccess()
         && request.resource.data.keys().hasAll([
-          'teamName', 'opponent', 'date',
-          'venue', 'status', 'result',
-          'overs', 'matchType',
-          'createdAt', 'createdBy'
+          'opponent', 'date', 'venue', 'status', 'result'
         ])
         && request.resource.data.keys().hasOnly([
-          'teamName', 'opponent', 'date',
-          'venue', 'status', 'result',
-          'overs', 'matchType',
-          'createdAt', 'createdBy'
+          'teamName', 'opponent', 'date', 'venue',
+          'status', 'result', 'overs', 'matchType',
+          'createdAt', 'createdBy', 'updatedAt', 'updatedBy'
         ])
-        && request.resource.data.teamName is string
         && request.resource.data.opponent is string
         && request.resource.data.opponent.size() > 0
+        && request.resource.data.opponent.size() <= 70
         && request.resource.data.date is string
         && request.resource.data.venue is string
+        && request.resource.data.venue.size() <= 100
         && request.resource.data.status in [
           'Upcoming', 'Live', 'Completed'
         ]
         && request.resource.data.result is string
-        && request.resource.data.overs is int
-        && request.resource.data.overs >= 1
-        && request.resource.data.overs <= 100
-        && request.resource.data.matchType is string
-        && request.resource.data.createdAt == request.time
-        && request.resource.data.createdBy == request.auth.token.email;
+        && request.resource.data.result.size() <= 250
+        && (
+          !('teamName' in request.resource.data)
+          || request.resource.data.teamName is string
+        )
+        && (
+          !('overs' in request.resource.data)
+          || (
+            request.resource.data.overs is int
+            && request.resource.data.overs >= 1
+            && request.resource.data.overs <= 100
+          )
+        )
+        && (
+          !('matchType' in request.resource.data)
+          || request.resource.data.matchType is string
+        )
+        && (
+          !('createdAt' in request.resource.data)
+          || request.resource.data.createdAt == request.time
+        )
+        && (
+          !('createdBy' in request.resource.data)
+          || request.resource.data.createdBy == request.auth.token.email
+        );
 
-      // Captain may only change match status to Live.
       allow update: if (
-        manager()
+        matchAccess()
         && request.resource.data.diff(resource.data)
           .affectedKeys().hasOnly([
-            'teamName', 'opponent', 'date',
-            'venue', 'status', 'result',
-            'overs', 'matchType'
+            'teamName', 'opponent', 'date', 'venue',
+            'status', 'result', 'overs', 'matchType',
+            'updatedAt', 'updatedBy'
           ])
+        && request.resource.data.status in [
+          'Upcoming', 'Live', 'Completed'
+        ]
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.token.email
       ) || (
-        captain()
+        liveAccess()
         && request.resource.data.diff(resource.data)
-          .affectedKeys().hasOnly(['status', 'updatedAt'])
+          .affectedKeys().hasOnly([
+            'status', 'updatedAt', 'updatedBy'
+          ])
         && request.resource.data.status == 'Live'
         && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy == request.auth.token.email
       );
 
       allow delete: if owner();
     }
 
-    // ========================================
+    // =====================================
     // PLAYER REGISTRATIONS
-    // ========================================
+    // =====================================
 
     match /registrations/{id} {
 
@@ -186,23 +294,23 @@ service cloud.firestore {
       ])
       && request.resource.data.name is string
       && request.resource.data.name.size() > 0
-      && request.resource.data.name.size() <= 70
+      && request.resource.data.name.size() <= 80
       && request.resource.data.phone is string
       && request.resource.data.phone.size() > 0
-      && request.resource.data.phone.size() <= 20
+      && request.resource.data.phone.size() <= 25
       && request.resource.data.age is int
-      && request.resource.data.age >= 8
+      && request.resource.data.age >= 10
       && request.resource.data.age <= 70
       && validPlayerRole(request.resource.data.role)
       && request.resource.data.address is string
-      && request.resource.data.address.size() <= 120
+      && request.resource.data.address.size() <= 300
       && validPhoto(request.resource.data.photoUrl)
       && request.resource.data.status == 'Pending'
       && request.resource.data.createdAt == request.time;
 
-      allow read: if manager();
+      allow read: if submissionAccess();
 
-      allow update: if manager()
+      allow update: if submissionAccess()
         && request.resource.data.diff(resource.data)
           .affectedKeys().hasOnly([
             'status', 'reviewedAt', 'reviewedBy'
@@ -216,37 +324,40 @@ service cloud.firestore {
       allow delete: if owner();
     }
 
-    // ========================================
+    // =====================================
     // JERSEY ORDERS
-    // ========================================
+    // =====================================
 
     match /jerseyOrders/{id} {
 
       allow create: if request.resource.data.keys().hasAll([
-        'name', 'phone', 'size',
-        'number', 'createdAt'
+        'name', 'phone', 'size', 'number', 'createdAt'
       ])
       && request.resource.data.keys().hasOnly([
-        'name', 'phone', 'size',
-        'number', 'createdAt'
+        'name', 'phone', 'size', 'number',
+        'status', 'createdAt'
       ])
       && request.resource.data.name is string
       && request.resource.data.name.size() > 0
-      && request.resource.data.name.size() <= 70
+      && request.resource.data.name.size() <= 80
       && request.resource.data.phone is string
       && request.resource.data.phone.size() > 0
-      && request.resource.data.phone.size() <= 20
+      && request.resource.data.phone.size() <= 25
       && request.resource.data.size in [
         'S', 'M', 'L', 'XL', 'XXL'
       ]
       && request.resource.data.number is int
       && request.resource.data.number >= 0
-      && request.resource.data.number <= 99
+      && request.resource.data.number <= 999
+      && (
+        !('status' in request.resource.data)
+        || request.resource.data.status == 'Pending'
+      )
       && request.resource.data.createdAt == request.time;
 
-      allow read: if manager();
+      allow read: if submissionAccess();
 
-      allow update: if manager()
+      allow update: if submissionAccess()
         && request.resource.data.diff(resource.data)
           .affectedKeys().hasOnly([
             'status', 'statusUpdatedAt', 'statusUpdatedBy'
@@ -260,21 +371,18 @@ service cloud.firestore {
       allow delete: if owner();
     }
 
-    // ========================================
+    // =====================================
     // LIVE SCORES
-    // ========================================
+    // =====================================
 
     match /liveScores/{id} {
 
       allow read: if true;
 
-      allow create: if captain()
+      allow create: if liveAccess()
         && request.resource.data.keys().hasAll([
-          'matchId', 'matchLabel', 'innings',
-          'over', 'ball', 'batter', 'bowler',
-          'runs', 'extrasType', 'extrasRuns',
-          'wicket', 'dismissedPlayer',
-          'commentary', 'legalBall',
+          'matchId', 'matchLabel', 'over', 'ball',
+          'runs', 'wicket', 'commentary',
           'createdAt', 'createdBy'
         ])
         && request.resource.data.keys().hasOnly([
@@ -287,28 +395,56 @@ service cloud.firestore {
         ])
         && request.resource.data.matchId is string
         && request.resource.data.matchLabel is string
-        && request.resource.data.innings is int
-        && request.resource.data.innings >= 1
-        && request.resource.data.innings <= 2
         && request.resource.data.over is int
         && request.resource.data.over >= 0
         && request.resource.data.over <= 99
         && request.resource.data.ball is int
         && request.resource.data.ball >= 1
         && request.resource.data.ball <= 6
-        && request.resource.data.batter is string
-        && request.resource.data.bowler is string
         && request.resource.data.runs is int
         && request.resource.data.runs >= 0
         && request.resource.data.runs <= 6
-        && request.resource.data.extrasType is string
-        && request.resource.data.extrasRuns is int
-        && request.resource.data.extrasRuns >= 0
         && request.resource.data.wicket is bool
-        && request.resource.data.dismissedPlayer is string
         && request.resource.data.commentary is string
-        && request.resource.data.commentary.size() <= 180
-        && request.resource.data.legalBall is bool
+        && request.resource.data.commentary.size() <= 250
+        && (
+          !('innings' in request.resource.data)
+          || (
+            request.resource.data.innings is int
+            && request.resource.data.innings >= 1
+            && request.resource.data.innings <= 2
+          )
+        )
+        && (
+          !('batter' in request.resource.data)
+          || request.resource.data.batter is string
+        )
+        && (
+          !('bowler' in request.resource.data)
+          || request.resource.data.bowler is string
+        )
+        && (
+          !('extrasType' in request.resource.data)
+          || request.resource.data.extrasType in [
+            'None', 'Wide', 'No Ball', 'Bye', 'Leg Bye'
+          ]
+        )
+        && (
+          !('extrasRuns' in request.resource.data)
+          || (
+            request.resource.data.extrasRuns is int
+            && request.resource.data.extrasRuns >= 0
+            && request.resource.data.extrasRuns <= 10
+          )
+        )
+        && (
+          !('dismissedPlayer' in request.resource.data)
+          || request.resource.data.dismissedPlayer is string
+        )
+        && (
+          !('legalBall' in request.resource.data)
+          || request.resource.data.legalBall is bool
+        )
         && request.resource.data.createdAt == request.time
         && request.resource.data.createdBy == request.auth.token.email;
 
@@ -316,15 +452,15 @@ service cloud.firestore {
       allow delete: if owner();
     }
 
-    // ========================================
-    // CLUB NEWS
-    // ========================================
+    // =====================================
+    // NEWS
+    // =====================================
 
     match /news/{id} {
 
       allow read: if true;
 
-      allow create: if admin()
+      allow create: if adminAccess()
         && request.resource.data.keys().hasAll([
           'title', 'body', 'createdAt', 'createdBy'
         ])
@@ -333,29 +469,29 @@ service cloud.firestore {
         ])
         && request.resource.data.title is string
         && request.resource.data.title.size() > 0
-        && request.resource.data.title.size() <= 100
+        && request.resource.data.title.size() <= 150
         && request.resource.data.body is string
         && request.resource.data.body.size() > 0
-        && request.resource.data.body.size() <= 1000
+        && request.resource.data.body.size() <= 5000
         && request.resource.data.createdAt == request.time
         && request.resource.data.createdBy == request.auth.token.email;
 
-      allow update: if admin()
+      allow update: if adminAccess()
         && request.resource.data.diff(resource.data)
           .affectedKeys().hasOnly(['title', 'body'])
         && request.resource.data.title is string
         && request.resource.data.title.size() > 0
-        && request.resource.data.title.size() <= 100
+        && request.resource.data.title.size() <= 150
         && request.resource.data.body is string
         && request.resource.data.body.size() > 0
-        && request.resource.data.body.size() <= 1000;
+        && request.resource.data.body.size() <= 5000;
 
       allow delete: if owner();
     }
 
-    // ========================================
-    // DENY ALL OTHER COLLECTIONS
-    // ========================================
+    // =====================================
+    // DENY UNKNOWN COLLECTIONS
+    // =====================================
 
     match /{document=**} {
       allow read, write: if false;
