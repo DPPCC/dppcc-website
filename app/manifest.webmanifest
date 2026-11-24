@@ -1,0 +1,22 @@
+
+{
+  "id": "./",
+  "name": "Dungsree Paschim Para Cricket Club",
+  "short_name": "DPPCC",
+  "description": "Official Dungsree Paschim Para Cricket Club App",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06291f",
+  "theme_color": "#06291f",
+  "categories": ["sports", "social"],
+  "icons": [
+    {
+      "src": "../assets/dppcc-club-logo.jpg",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}
