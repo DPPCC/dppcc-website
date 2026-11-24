@@ -4,26 +4,34 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // =========================================
+    // AUTHENTICATION AND STAFF PERMISSIONS
+    // =========================================
+
     function signedIn() {
       return request.auth != null;
     }
 
     function owner() {
       return signedIn()
-        && request.auth.token.email == 'dungsreepaschimparacricketclub@gmail.com';
+        && request.auth.token.email ==
+          'dungsreepaschimparacricketclub@gmail.com';
+    }
+
+    function staffPath() {
+      return /databases/$(database)/documents/staff/$(request.auth.token.email);
+    }
+
+    function staffExists() {
+      return signedIn() && exists(staffPath());
     }
 
     function staffData() {
-      return get(
-        /databases/$(database)/documents/staff/$(request.auth.token.email)
-      ).data;
+      return get(staffPath()).data;
     }
 
     function activeStaff() {
-      return signedIn()
-        && exists(
-          /databases/$(database)/documents/staff/$(request.auth.token.email)
-        )
+      return staffExists()
         && staffData().active == true
         && staffData().email == request.auth.token.email;
     }
@@ -64,107 +72,248 @@ service cloud.firestore {
       return manager();
     }
 
+    // =========================================
+    // PLAYER DATA VALIDATION
+    // =========================================
+
     function validPlayer(data) {
       return data.keys().hasAll([
-          'name', 'role', 'jerseyNo', 'entryNo',
-          'battingStyle', 'photoUrl'
+          'name',
+          'role',
+          'jerseyNo',
+          'entryNo',
+          'battingStyle',
+          'photoUrl',
+          'createdAt',
+          'createdBy',
+          'updatedAt',
+          'updatedBy'
+        ])
+        && data.keys().hasOnly([
+          'name',
+          'role',
+          'jerseyNo',
+          'entryNo',
+          'battingStyle',
+          'photoUrl',
+          'createdAt',
+          'createdBy',
+          'updatedAt',
+          'updatedBy'
         ])
         && data.name is string
         && data.name.size() > 0
         && data.name.size() <= 80
         && data.role in [
-          'Batsman', 'Bowler', 'All-Rounder', 'Wicket Keeper'
+          'Batsman',
+          'Bowler',
+          'All-Rounder',
+          'Wicket Keeper'
         ]
         && data.jerseyNo is int
         && data.jerseyNo >= 0
         && data.jerseyNo <= 999
         && data.entryNo is string
         && data.entryNo.size() <= 30
-        && data.battingStyle in ['Right-hand', 'Left-hand']
-        && data.photoUrl is string;
+        && data.battingStyle in [
+          'Right-hand',
+          'Left-hand'
+        ]
+        && data.photoUrl is string
+        && data.createdAt is timestamp
+        && data.createdBy is string
+        && data.updatedAt is timestamp
+        && data.updatedBy is string;
     }
 
-    // OWNER-MANAGED STAFF PERMISSIONS
+    // =========================================
+    // STAFF MANAGEMENT
+    // =========================================
+
     match /staff/{email} {
+
       allow get: if owner()
-        || (signedIn() && request.auth.token.email == email);
+        || (
+          signedIn()
+          && request.auth.token.email == email
+        );
 
       allow list: if owner();
 
       allow create, update: if owner()
         && request.resource.data.keys().hasAll([
-          'email', 'role', 'active', 'updatedAt'
+          'email',
+          'role',
+          'active',
+          'updatedAt',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'email',
+          'role',
+          'active',
+          'updatedAt',
+          'createdAt'
         ])
         && request.resource.data.email == email
-        && request.resource.data.role in ['Admin', 'Manager', 'Captain']
+        && request.resource.data.role in [
+          'Admin',
+          'Manager',
+          'Captain'
+        ]
         && request.resource.data.active is bool
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.createdAt is timestamp;
 
       allow delete: if owner();
     }
 
+    // =========================================
     // PLAYER DIRECTORY
+    // Public information only
+    // =========================================
+
     match /players/{playerId} {
+
       allow read: if true;
 
       allow create: if playerManager()
         && validPlayer(request.resource.data)
         && request.resource.data.createdAt == request.time
-        && request.resource.data.createdBy == request.auth.token.email;
+        && request.resource.data.createdBy ==
+          request.auth.token.email
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy ==
+          request.auth.token.email;
 
       allow update: if playerManager()
         && validPlayer(request.resource.data)
+        && request.resource.data.createdAt ==
+          resource.data.createdAt
+        && request.resource.data.createdBy ==
+          resource.data.createdBy
         && request.resource.data.updatedAt == request.time
-        && request.resource.data.updatedBy == request.auth.token.email;
+        && request.resource.data.updatedBy ==
+          request.auth.token.email;
 
       allow delete: if owner();
     }
 
+    // =========================================
     // MATCHES
+    // =========================================
+
     match /matches/{matchId} {
+
       allow read: if true;
 
       allow create: if matchManager()
         && request.resource.data.keys().hasAll([
-          'teamName', 'opponent', 'date', 'venue',
-          'status', 'result', 'overs', 'matchType',
-          'createdAt', 'createdBy'
+          'teamName',
+          'opponent',
+          'date',
+          'venue',
+          'status',
+          'result',
+          'overs',
+          'matchType',
+          'createdAt',
+          'createdBy'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'teamName',
+          'opponent',
+          'date',
+          'venue',
+          'status',
+          'result',
+          'overs',
+          'matchType',
+          'createdAt',
+          'createdBy'
         ])
         && request.resource.data.teamName is string
         && request.resource.data.opponent is string
         && request.resource.data.date is string
         && request.resource.data.venue is string
-        && request.resource.data.status in ['Upcoming', 'Live', 'Completed']
+        && request.resource.data.status in [
+          'Upcoming',
+          'Live',
+          'Completed'
+        ]
         && request.resource.data.result is string
         && request.resource.data.overs is number
         && request.resource.data.matchType is string
         && request.resource.data.createdAt == request.time
-        && request.resource.data.createdBy == request.auth.token.email;
+        && request.resource.data.createdBy ==
+          request.auth.token.email;
 
       allow update: if matchManager()
-        && request.resource.data.diff(resource.data).affectedKeys()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
           .hasOnly([
-            'teamName', 'opponent', 'date', 'venue',
-            'status', 'result', 'overs', 'matchType',
-            'updatedAt', 'updatedBy'
+            'teamName',
+            'opponent',
+            'date',
+            'venue',
+            'status',
+            'result',
+            'overs',
+            'matchType',
+            'updatedAt',
+            'updatedBy'
           ])
         && request.resource.data.updatedAt == request.time
-        && request.resource.data.updatedBy == request.auth.token.email;
+        && request.resource.data.updatedBy ==
+          request.auth.token.email;
 
       allow delete: if owner();
     }
 
+    // =========================================
     // BALL-BY-BALL LIVE SCORES
+    // =========================================
+
     match /liveScores/{scoreId} {
+
       allow read: if true;
 
       allow create: if scoreManager()
         && request.resource.data.keys().hasAll([
-          'matchId', 'matchLabel', 'innings', 'over',
-          'ball', 'batter', 'bowler', 'runs',
-          'extrasType', 'extrasRuns', 'wicket',
-          'dismissedPlayer', 'commentary', 'legalBall',
-          'createdAt', 'createdBy'
+          'matchId',
+          'matchLabel',
+          'innings',
+          'over',
+          'ball',
+          'batter',
+          'bowler',
+          'runs',
+          'extrasType',
+          'extrasRuns',
+          'wicket',
+          'dismissedPlayer',
+          'commentary',
+          'legalBall',
+          'createdAt',
+          'createdBy'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'matchId',
+          'matchLabel',
+          'innings',
+          'over',
+          'ball',
+          'batter',
+          'bowler',
+          'runs',
+          'extrasType',
+          'extrasRuns',
+          'wicket',
+          'dismissedPlayer',
+          'commentary',
+          'legalBall',
+          'createdAt',
+          'createdBy'
         ])
         && request.resource.data.matchId is string
         && request.resource.data.matchLabel is string
@@ -180,7 +329,11 @@ service cloud.firestore {
         && request.resource.data.runs >= 0
         && request.resource.data.runs <= 6
         && request.resource.data.extrasType in [
-          'None', 'Wide', 'No Ball', 'Bye', 'Leg Bye'
+          'None',
+          'Wide',
+          'No Ball',
+          'Bye',
+          'Leg Bye'
         ]
         && request.resource.data.extrasRuns is int
         && request.resource.data.extrasRuns >= 0
@@ -189,45 +342,91 @@ service cloud.firestore {
         && request.resource.data.commentary is string
         && request.resource.data.legalBall is bool
         && request.resource.data.createdAt == request.time
-        && request.resource.data.createdBy == request.auth.token.email;
+        && request.resource.data.createdBy ==
+          request.auth.token.email;
 
       allow update, delete: if owner();
     }
 
+    // =========================================
     // CLUB NEWS
+    // =========================================
+
     match /news/{newsId} {
+
       allow read: if true;
 
       allow create: if newsManager()
         && request.resource.data.keys().hasAll([
-          'title', 'body', 'createdAt', 'createdBy'
+          'title',
+          'body',
+          'createdAt',
+          'createdBy'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'title',
+          'body',
+          'createdAt',
+          'createdBy'
         ])
         && request.resource.data.title is string
         && request.resource.data.body is string
         && request.resource.data.createdAt == request.time
-        && request.resource.data.createdBy == request.auth.token.email;
+        && request.resource.data.createdBy ==
+          request.auth.token.email;
 
       allow update: if newsManager()
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['title', 'body']);
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'title',
+            'body'
+          ])
+        && request.resource.data.title is string
+        && request.resource.data.body is string;
 
       allow delete: if newsManager();
     }
 
-    // PUBLIC PLAYER APPLICATIONS
+    // =========================================
+    // PLAYER REGISTRATIONS
+    // Private information
+    // =========================================
+
     match /registrations/{applicationId} {
+
       allow create: if request.resource.data.keys().hasAll([
-          'name', 'phone', 'age', 'role',
-          'address', 'photoUrl', 'status', 'createdAt'
+          'name',
+          'phone',
+          'age',
+          'role',
+          'address',
+          'photoUrl',
+          'status',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'name',
+          'phone',
+          'age',
+          'role',
+          'address',
+          'photoUrl',
+          'status',
+          'createdAt'
         ])
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
         && request.resource.data.phone is string
         && request.resource.data.age is int
-        && request.resource.data.age >= 10
+        && request.resource.data.age >= 8
         && request.resource.data.age <= 70
         && request.resource.data.role in [
-          'Batsman', 'Bowler', 'All-Rounder', 'Wicket Keeper'
+          'Batsman',
+          'Bowler',
+          'All-Rounder',
+          'Wicket Keeper'
         ]
         && request.resource.data.address is string
         && request.resource.data.photoUrl is string
@@ -237,42 +436,163 @@ service cloud.firestore {
       allow read: if submissionManager();
 
       allow update: if submissionManager()
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'reviewedAt', 'reviewedBy'])
-        && request.resource.data.status in ['Approved', 'Rejected']
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'status',
+            'reviewedAt',
+            'reviewedBy'
+          ])
+        && request.resource.data.status in [
+          'Approved',
+          'Rejected'
+        ]
         && request.resource.data.reviewedAt == request.time
-        && request.resource.data.reviewedBy == request.auth.token.email;
+        && request.resource.data.reviewedBy ==
+          request.auth.token.email;
 
       allow delete: if owner();
     }
 
-    // PUBLIC JERSEY ORDERS
+    // =========================================
+    // JERSEY ORDERS
+    // Private customer information
+    // =========================================
+
     match /jerseyOrders/{orderId} {
+
       allow create: if request.resource.data.keys().hasAll([
-          'name', 'phone', 'size', 'number', 'createdAt'
+          'name',
+          'phone',
+          'size',
+          'number',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'name',
+          'phone',
+          'size',
+          'number',
+          'status',
+          'createdAt'
         ])
         && request.resource.data.name is string
         && request.resource.data.phone is string
-        && request.resource.data.size in ['S', 'M', 'L', 'XL', 'XXL']
+        && request.resource.data.size in [
+          'S',
+          'M',
+          'L',
+          'XL',
+          'XXL'
+        ]
         && request.resource.data.number is int
         && request.resource.data.number >= 0
         && request.resource.data.number <= 999
+        && (
+          !('status' in request.resource.data)
+          || request.resource.data.status == 'Pending'
+        )
         && request.resource.data.createdAt == request.time;
 
       allow read: if submissionManager();
 
       allow update: if submissionManager()
-        && request.resource.data.diff(resource.data).affectedKeys()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
           .hasOnly([
-            'status', 'statusUpdatedAt', 'statusUpdatedBy'
+            'status',
+            'statusUpdatedAt',
+            'statusUpdatedBy'
           ])
         && request.resource.data.status in [
-          'Pending', 'Processing', 'Completed', 'Cancelled'
+          'Pending',
+          'Processing',
+          'Completed',
+          'Cancelled'
         ]
         && request.resource.data.statusUpdatedAt == request.time
-        && request.resource.data.statusUpdatedBy == request.auth.token.email;
+        && request.resource.data.statusUpdatedBy ==
+          request.auth.token.email;
 
       allow delete: if owner();
+    }
+
+    // =========================================
+    // PLAYER QR PUBLIC VERIFICATION
+    // Public can read a token document only.
+    // No public listing or public writing.
+    // =========================================
+
+    match /playerQrPublic/{token} {
+
+      allow get: if token.matches('^[a-f0-9]{64}$');
+
+      allow list: if false;
+
+      allow create: if playerManager()
+        && token.matches('^[a-f0-9]{64}$')
+        && request.resource.data.keys().hasAll([
+          'playerId',
+          'name',
+          'role',
+          'jerseyNo',
+          'entryNo',
+          'photoUrl',
+          'active',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'playerId',
+          'name',
+          'role',
+          'jerseyNo',
+          'entryNo',
+          'photoUrl',
+          'active',
+          'createdAt'
+        ])
+        && request.resource.data.playerId is string
+        && request.resource.data.name is string
+        && request.resource.data.role is string
+        && request.resource.data.jerseyNo is int
+        && request.resource.data.entryNo is string
+        && request.resource.data.photoUrl is string
+        && request.resource.data.active == true
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if playerManager()
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'active',
+            'revokedAt'
+          ])
+        && request.resource.data.active == false
+        && request.resource.data.revokedAt == request.time;
+
+      allow delete: if owner();
+    }
+
+    // =========================================
+    // ADMIN ACTIVITY LOGS
+    // Client-side writes are disabled.
+    // =========================================
+
+    match /activityLogs/{logId} {
+
+      allow read: if owner();
+
+      allow create, update, delete: if false;
+    }
+
+    // =========================================
+    // DEFAULT DENY
+    // Any collection not listed above is denied.
+    // =========================================
+
+    match /{document=**} {
+
+      allow read, write: if false;
     }
   }
 }
