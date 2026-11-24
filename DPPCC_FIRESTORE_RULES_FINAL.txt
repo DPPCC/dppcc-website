@@ -247,7 +247,9 @@ service cloud.firestore {
         && request.resource.data.createdBy ==
           request.auth.token.email;
 
-      allow update: if matchManager()
+      // Managers can update normal match information.
+      allow update: if (
+        matchManager()
         && request.resource.data.diff(resource.data)
           .affectedKeys()
           .hasOnly([
@@ -264,7 +266,27 @@ service cloud.firestore {
           ])
         && request.resource.data.updatedAt == request.time
         && request.resource.data.updatedBy ==
-          request.auth.token.email;
+          request.auth.token.email
+      ) || (
+        // Captains can only set an unfinished match to Live
+        // while submitting live scoring updates.
+        scoreManager()
+        && resource.data.status in [
+          'Upcoming',
+          'Live'
+        ]
+        && request.resource.data.diff(resource.data)
+          .affectedKeys()
+          .hasOnly([
+            'status',
+            'updatedAt',
+            'updatedBy'
+          ])
+        && request.resource.data.status == 'Live'
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.updatedBy ==
+          request.auth.token.email
+      );
 
       allow delete: if owner();
     }
@@ -516,8 +538,8 @@ service cloud.firestore {
 
     // =========================================
     // PLAYER QR VERIFICATION
-    // Matches functions/index.js:
-    // playerQrTokens
+    // QR records must be written by trusted
+    // Admin SDK code, never directly by clients.
     // =========================================
 
     match /playerQrTokens/{token} {
@@ -526,60 +548,15 @@ service cloud.firestore {
 
       allow list: if false;
 
-      allow create: if playerManager()
-        && token.matches('^[a-f0-9]{64}$')
-        && request.resource.data.keys().hasAll([
-          'playerId',
-          'name',
-          'role',
-          'jerseyNo',
-          'entryNo',
-          'photoUrl',
-          'active',
-          'createdBy',
-          'createdAt'
-        ])
-        && request.resource.data.keys().hasOnly([
-          'playerId',
-          'name',
-          'role',
-          'jerseyNo',
-          'entryNo',
-          'photoUrl',
-          'active',
-          'createdBy',
-          'createdAt'
-        ])
-        && request.resource.data.playerId is string
-        && request.resource.data.name is string
-        && request.resource.data.role is string
-        && request.resource.data.jerseyNo is int
-        && request.resource.data.entryNo is string
-        && request.resource.data.photoUrl is string
-        && request.resource.data.active == true
-        && request.resource.data.createdBy ==
-          request.auth.token.email
-        && request.resource.data.createdAt == request.time;
-
-      allow update: if admin()
-        && request.resource.data.diff(resource.data)
-          .affectedKeys()
-          .hasOnly([
-            'active',
-            'revokedBy',
-            'revokedAt'
-          ])
-        && request.resource.data.active == false
-        && request.resource.data.revokedBy ==
-          request.auth.token.email
-        && request.resource.data.revokedAt == request.time;
-
-      allow delete: if owner();
+      // Cloud Functions using Firebase Admin SDK
+      // bypass Firestore client security rules.
+      allow create, update, delete: if false;
     }
 
     // =========================================
     // ADMIN ACTIVITY LOGS
-    // Client-side writes disabled
+    // Client-side writes disabled.
+    // Trusted Admin SDK writes only.
     // =========================================
 
     match /activityLogs/{logId} {
