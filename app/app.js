@@ -464,3 +464,26 @@ if (year) {
 }
 
 loadAllData();
+
+// ========================================
+// APP SERVICE WORKER REGISTRATION
+// ========================================
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./sw.js", { scope: "./" })
+      .then((registration) => {
+        console.log(
+          "DPPCC App Service Worker registered:",
+          registration.scope
+        );
+      })
+      .catch((error) => {
+        console.error(
+          "DPPCC App Service Worker registration failed:",
+          error
+        );
+      });
+  });
+}
